@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    <ImageView android:id="@+id/user_icon"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="3dp"
+            android:src="@drawable/user_icon" />
+    <TextView android:id="@+id/user_label" 
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" 
+            android:gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/logo_color" />
+</LinearLayout>

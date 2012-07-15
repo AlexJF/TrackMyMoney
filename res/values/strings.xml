@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TrackMyMoney</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_trackmymoney">Track My Money</string>
+    <string name="userpassword_label">Password:</string>
+    <string name="user_add_label">Add new user</string>
+    <string name="userpassword_login">Login</string>
+</resources>
