@@ -1,15 +1,53 @@
 package com.alexjf.tmm.domain;
 
+import com.alexjf.tmm.exceptions.LoginFailedException;
+
+import android.content.Context;
+
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteException;
+
 /**
  * This class represents a single user of the application.
  */
 public class User {
     private String name;
-    private String passHash;
+    private String password;
+    private DatabaseHelper dbHelper;
+    private Context context;
 
-    public User(String name, String passHash) {
+    User(String name, Context context) {
         this.name = name;
-        this.passHash = passHash;
+        this.password = null;
+        this.context = context;
+        this.dbHelper = null;
+        this.dbHelper = new DatabaseHelper(this.context, getName() + ".db");
+    }
+
+    public void login(String password) throws LoginFailedException {
+        SQLiteDatabase db = null;
+
+        try {
+            db = dbHelper.getReadableDatabase(password);
+            db.query("sqlite_master", new String[] { "count(*)" }, null, null, null, null, null, null);
+        } catch (SQLiteException e) {
+            this.password = null;
+            throw new LoginFailedException(this.name, e);
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+        }
+
+        this.password = password;
+    }
+
+    public SQLiteDatabase getReadableDatabase() {
+        return dbHelper.getReadableDatabase(password);
+    }
+
+    public SQLiteDatabase getWritableDatabase() {
+        return dbHelper.getReadableDatabase(password);
     }
 
     /**
@@ -28,24 +66,6 @@ public class User {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Sets the passHash for this instance.
-     *
-     * @param passHash The passHash.
-     */
-    public void setPassHash(String passHash) {
-        this.passHash = passHash;
-    }
-
-    /**
-     * Gets the passHash for this instance.
-     *
-     * @return The passHash.
-     */
-    public String getPassHash() {
-        return this.passHash;
     }
 
     public String toString() {

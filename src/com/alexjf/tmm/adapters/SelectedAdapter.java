@@ -1,5 +1,7 @@
 package com.alexjf.tmm.adapters;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,7 @@ public class SelectedAdapter<T> extends ArrayAdapter<T> {
     private int selectedColorResourceId;
 
     public SelectedAdapter(Context context, int rowViewResourceId, 
-            int textViewResourceId, T[] objects, int normalColorResourceId,
+            int textViewResourceId, List<T> objects, int normalColorResourceId,
             int selectedColorResourceId) {
         super(context, rowViewResourceId, textViewResourceId, objects);
         this.rowViewResourceId = rowViewResourceId;

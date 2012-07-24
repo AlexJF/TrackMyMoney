@@ -12,6 +12,7 @@
 /home/alex/Projects/track-my-money/res/menu/activity_money_nodes.xml \
 /home/alex/Projects/track-my-money/res/values-v14/styles.xml \
 /home/alex/Projects/track-my-money/res/layout/activity_trackmymoney.xml \
+/home/alex/Projects/track-my-money/res/layout/activity_user_add.xml \
 /home/alex/Projects/track-my-money/res/layout/user_list_footer.xml \
 /home/alex/Projects/track-my-money/res/layout/user_list_row.xml \
 /home/alex/Projects/track-my-money/res/values-v11/styles.xml \

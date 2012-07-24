@@ -51,7 +51,7 @@
                 android:layout_marginRight="5dp"
                 android:gravity="center_vertical"
                 android:textColor="@color/logo_color"
-                android:text="@string/userpassword_label" />
+                android:text="@string/password" />
         <EditText android:id="@+id/userpassword_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -61,6 +61,6 @@
         <Button android:id="@+id/userpassword_login"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/userpassword_login" />
+                android:text="@string/login" />
     </LinearLayout>
 </LinearLayout>
