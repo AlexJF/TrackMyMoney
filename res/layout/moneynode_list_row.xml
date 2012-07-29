@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    <ImageView android:id="@+id/moneynode_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:src="@drawable/moneynode_icon" />
+    <TextView android:id="@+id/moneynode_name" 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/moneynode_icon"
+            android:layout_alignParentRight="true" />
+    <TextView android:id="@+id/moneynode_balance" 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/moneynode_icon"
+            android:layout_alignParentRight="true" />
+</RelativeLayout>

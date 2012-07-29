@@ -1,4 +1,4 @@
-package com.alexjf.tmm.domain;
+package net.alexjf.tmm.domain;
 
 import java.util.ArrayList;
 import java.util.List;

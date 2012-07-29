@@ -1,7 +1,4 @@
-package com.alexjf.tmm.domain;
-
-import java.util.LinkedList;
-import java.util.List;
+package net.alexjf.tmm.domain;
 
 import android.content.Context;
 
@@ -27,19 +24,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        List<String> sqlStatements = new LinkedList<String>();
-        sqlStatements.add(
-            "CREATE TABLE MoneyNodes (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "name TEXT NOT NULL," +
-                "description TEXT," +
-                "location TEXT," + 
-                "icon BLOB," + 
-                "currency TEXT," + 
-                "creationDate DATETIME DEFAULT (DATETIME('now', 'localtime'))," +
-                "initialBalance DECIMAL DEFAULT 0" +
-            ");");
-        sqlStatements.add(
+        MoneyNode.onDatabaseCreation(db);
+        Transaction.onDatabaseCreation(db);
+        ImmediateTransaction.onDatabaseCreation(db);
+        /*sqlStatements.add(
             "CREATE TABLE Transactions (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "value DECIMAL NOT NULL," +
@@ -70,10 +58,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         for (String sql : sqlStatements) {
             db.execSQL(sql);
-        }
+        }*/
     }
 
 	@Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        MoneyNode.onDatabaseUpgrade(db, oldVersion, newVersion);
+        Transaction.onDatabaseUpgrade(db, oldVersion, newVersion);
+        ImmediateTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
     }
 }

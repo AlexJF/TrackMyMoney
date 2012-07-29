@@ -1,4 +1,4 @@
-package com.alexjf.tmm.adapters;
+package net.alexjf.tmm.adapters;
 
 import java.util.List;
 

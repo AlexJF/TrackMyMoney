@@ -1,4 +1,6 @@
-package com.alexjf.tmm;
+package net.alexjf.tmm;
+
+import com.alexjf.tmm.R;
 
 import android.content.Intent;
 

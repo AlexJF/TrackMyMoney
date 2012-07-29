@@ -1,4 +1,4 @@
-package com.alexjf.tmm;
+package net.alexjf.tmm;
 
 import android.app.Application;
 

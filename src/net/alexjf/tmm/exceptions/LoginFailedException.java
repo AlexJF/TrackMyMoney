@@ -1,4 +1,4 @@
-package com.alexjf.tmm.exceptions;
+package net.alexjf.tmm.exceptions;
 
 public class LoginFailedException extends TMMException {
     static final long serialVersionUID = 1;

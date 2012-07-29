@@ -1,9 +1,9 @@
-package com.alexjf.tmm.domain;
+package net.alexjf.tmm.domain;
 
-import com.alexjf.tmm.exceptions.LoginFailedException;
 
 import android.content.Context;
 
+import net.alexjf.tmm.exceptions.LoginFailedException;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteException;
 

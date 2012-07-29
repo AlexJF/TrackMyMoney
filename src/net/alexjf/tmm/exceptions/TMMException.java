@@ -1,4 +1,4 @@
-package com.alexjf.tmm.exceptions;
+package net.alexjf.tmm.exceptions;
 
 public class TMMException extends Exception {
     static final long serialVersionUID = 1;

@@ -1,11 +1,13 @@
-package com.alexjf.tmm;
+package net.alexjf.tmm;
 
-import com.alexjf.tmm.adapters.SelectedAdapter;
+import net.alexjf.tmm.adapters.SelectedAdapter;
+import net.alexjf.tmm.domain.User;
+import net.alexjf.tmm.domain.UserList;
+import net.alexjf.tmm.exceptions.LoginFailedException;
 
-import com.alexjf.tmm.domain.User;
-import com.alexjf.tmm.domain.UserList;
+import com.alexjf.tmm.R;
 
-import com.alexjf.tmm.exceptions.LoginFailedException;
+
 
 import android.content.Intent;
 
