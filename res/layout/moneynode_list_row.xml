@@ -17,6 +17,8 @@
     <TextView android:id="@+id/moneynode_balance" 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@id/moneynode_name"
             android:layout_toRightOf="@id/moneynode_icon"
             android:layout_alignParentRight="true" />
 </RelativeLayout>

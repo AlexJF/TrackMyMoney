@@ -1,13 +1,10 @@
 package net.alexjf.tmm;
 
 import net.alexjf.tmm.adapters.SelectedAdapter;
+import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
-import net.alexjf.tmm.exceptions.LoginFailedException;
-
-import com.alexjf.tmm.R;
-
-
+import net.alexjf.tmm.R;
 
 import android.content.Intent;
 
@@ -15,7 +12,6 @@ import android.os.Bundle;
 import android.app.Activity;
 
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 
 import android.view.View.OnClickListener;
@@ -47,10 +43,12 @@ public class TrackMyMoneyActivity extends Activity {
                 R.layout.user_list_row, R.id.user_label, userList.getUsers(),
                 R.color.user_bg_normal, R.color.user_bg_selected);
 
-        View footer = (View) getLayoutInflater().inflate(R.layout.user_list_footer, null);
+        View footer = (View) getLayoutInflater().inflate(
+                R.layout.user_list_footer, null);
         footer.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(TrackMyMoneyActivity.this, UserAddActivity.class);
+                Intent intent = new Intent(TrackMyMoneyActivity.this, 
+                    UserAddActivity.class);
                 startActivityForResult(intent, 0);
             };
         });
@@ -60,48 +58,58 @@ public class TrackMyMoneyActivity extends Activity {
         userListView.addFooterView(footer);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, 
+                                    int position, long id) {
                 Log.d("TTM", "Item selected at position " + position);
-                View userPasswordLayout = findViewById(R.id.userpassword_layout);
-                userPasswordLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+                View userPasswordLayout = findViewById(
+                    R.id.userpassword_layout);
+                userPasswordLayout.setLayoutParams(
+                    new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
+                                                  LayoutParams.WRAP_CONTENT));
                 adapter.setSelectedPosition(position);
             }
         });
 
-        final EditText passwordText = (EditText) findViewById(R.id.userpassword_text);
+        final EditText passwordText = (EditText) 
+            findViewById(R.id.userpassword_text);
 
         Button loginButton = (Button) findViewById(R.id.userpassword_login);
         loginButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                User selectedUser = adapter.getItem(adapter.getSelectedPosition());
-                try {
-                    selectedUser.login(passwordText.getText().toString());
-                    Toast.makeText(TrackMyMoneyActivity.this, "Successful!", 3).show();
-                } catch (LoginFailedException e) {
-                    Toast.makeText(TrackMyMoneyActivity.this, "Failure!", 3).show();
+                User selectedUser = adapter.getItem(
+                    adapter.getSelectedPosition());
+                DatabaseHelper dbHelper = new DatabaseHelper(
+                    getApplicationContext(),
+                    selectedUser);
+                String password = passwordText.getText().toString();
+                if (dbHelper.login(password)) {
+                    selectedUser.setPassword(password);
+
+                    Intent intent = new Intent(TrackMyMoneyActivity.this,
+                        MoneyNodesActivity.class);
+                    intent.putExtra(User.EXTRA_CURRENTUSER, selectedUser);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(TrackMyMoneyActivity.this, 
+                        "Login Failure!", 3).show();
                 }
             };
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_money_nodes, menu);
-        return true;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, 
+            Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            String username = data.getStringExtra("username");
-            String password = data.getStringExtra("password");
+            String username = data.getStringExtra(UserAddActivity.EXTRA_USERNAME);
+            String password = data.getStringExtra(UserAddActivity.EXTRA_PASSWORD);
 
             // Add user and login to initiate the database
-            try {
-                userList.addUser(username).login(password);
-                adapter.notifyDataSetChanged();
-            } catch (LoginFailedException e) {
-            }
+            User newUser = userList.addUser(username);
+            DatabaseHelper dbHelper = new DatabaseHelper(
+                    getApplicationContext(), newUser);
+            dbHelper.login(password);
+            adapter.notifyDataSetChanged();
         }
     }
 }

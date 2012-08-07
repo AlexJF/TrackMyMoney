@@ -6,12 +6,17 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import net.alexjf.tmm.exceptions.DbObjectLoadException;
+import net.alexjf.tmm.exceptions.DbObjectSaveException;
+
 import net.sqlcipher.database.SQLiteDatabase;
 
 /**
  * This class represents a base transaction of the application.
  */
 public abstract class Transaction extends DatabaseObject {
+    private static final long serialVersionUID = 1;
+
     // Database tables
     public static final String TABLE_NAME = "Transactions";
 
@@ -22,7 +27,6 @@ public abstract class Transaction extends DatabaseObject {
     public static final String COL_DESCRIPTION = "description";
     public static final String COL_CATEGORYID = "categoryId";
 
-    private Long id;
     private MoneyNode moneyNode;
     private BigDecimal value;
     private String description;
@@ -31,9 +35,9 @@ public abstract class Transaction extends DatabaseObject {
     public static void onDatabaseCreation(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                COL_MONEYNODEID + " INTEGER REFERENCES " + 
+                COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " + 
                     MoneyNode.TABLE_NAME + "," + 
-                COL_VALUE + " TEXT NOT NULL," +
+                COL_VALUE + " NUMERIC NOT NULL," +
                 COL_DESCRIPTION + " TEXT," +
                 COL_CATEGORYID + " INTEGER REFERENCES Categories" +
             ");");
@@ -44,21 +48,19 @@ public abstract class Transaction extends DatabaseObject {
     }
 
     public Transaction(Long id) {
-        this.id = id;
+        setId(id);
     }
 
     /**
      * Constructs a new instance.
      *
-     * @param id The id for this instance.
      * @param moneyNode The moneyNode for this instance.
      * @param value The value for this instance.
      * @param description The description for this instance.
      * @param categoryId The categoryId for this instance.
      */
-    public Transaction(Long id, MoneyNode moneyNode, BigDecimal value,
+    public Transaction(MoneyNode moneyNode, BigDecimal value,
             String description, Long categoryId) {
-        this.id = id;
         this.moneyNode = moneyNode;
         this.value = value;
         this.description = description;
@@ -67,45 +69,44 @@ public abstract class Transaction extends DatabaseObject {
     }
 
     @Override
-    protected void internalLoad(SQLiteDatabase db) throws Exception {
-        if (id == null) {
-            throw new Exception("Id not specified");
-        }
-
-        Cursor cursor = db.query(TABLE_NAME, null, COL_ID + " = ?", 
-                new String[] {id.toString()}, null, null, null, null);
+    protected void internalLoad() throws DbObjectLoadException {
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+                new String[] {getId().toString()}, null, null, null, null);
         
         if (cursor.moveToFirst()) {
             value = new BigDecimal(cursor.getString(1));
-            moneyNode = new MoneyNode(cursor.getLong(2));
+            long moneyNodeId = cursor.getLong(2);
+
+            if (moneyNode == null || !moneyNode.getId().equals(moneyNodeId)) {
+                moneyNode = new MoneyNode(moneyNodeId);
+            }
+
             description = cursor.getString(3);
             categoryId = cursor.getLong(4);
         } else {
-            throw new Exception("Couldn't find transaction associated with id "
-                    + id);
+            throw new DbObjectLoadException("Couldn't find transaction " + 
+                    "associated with id " + getId());
         }
     }
 
     @Override
-    protected void internalSave(SQLiteDatabase db) throws Exception {
+    protected long internalSave() throws DbObjectSaveException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_ID, id);
+        contentValues.put(COL_ID, getId());
         contentValues.put(COL_MONEYNODEID, moneyNode.getId());
         contentValues.put(COL_VALUE, value.toString());
         contentValues.put(COL_DESCRIPTION, description);
         contentValues.put(COL_CATEGORYID, categoryId);
 
-        db.insertWithOnConflict(TABLE_NAME, null, contentValues, 
-                SQLiteDatabase.CONFLICT_REPLACE);
-    }
+        long result = getDb().insertWithOnConflict(TABLE_NAME, null, 
+                contentValues, SQLiteDatabase.CONFLICT_REPLACE);
 
-    /**
-     * Gets the id for this instance.
-     *
-     * @return The id.
-     */
-    public Long getId() {
-        return this.id;
+        if (result > 0) {
+            return result;
+        } else {
+            throw new DbObjectSaveException("Couldn't save transaction " + 
+                    "associated with id " + getId());
+        }
     }
 
     /**
@@ -133,16 +134,6 @@ public abstract class Transaction extends DatabaseObject {
      */
     public String getDescription() {
         return this.description;
-    }
-
-    /**
-     * Sets the id for this instance.
-     *
-     * @param id The id.
-     */
-    public void setId(Long id) {
-        this.id = id;
-        setChanged(true);
     }
 
     /**

@@ -24,13 +24,13 @@ public class UserList {
 
         for (String username : userNames) {
             if (!username.equals("")) {
-                this.users.add(new User(username, context));
+                this.users.add(new User(username));
             }
         }
     }
 
     public User addUser(String name) {
-        User newUser = new User(name, context);
+        User newUser = new User(name);
         this.users.add(newUser);
         saveData();
         return newUser;

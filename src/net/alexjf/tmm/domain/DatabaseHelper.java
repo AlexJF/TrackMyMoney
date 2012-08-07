@@ -1,15 +1,61 @@
 package net.alexjf.tmm.domain;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import android.content.Context;
 
+import android.database.Cursor;
+
 import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteException;
 import net.sqlcipher.database.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
+    
+    private String password;
 
-    public DatabaseHelper(Context context, String databaseName) {
-        super(context, databaseName, null, DATABASE_VERSION);
+    public DatabaseHelper(Context context, User user) {
+        super(context, user.getName() + ".db", null, DATABASE_VERSION);
+        this.password = user.getPassword();
+    }
+
+    @Override
+    public SQLiteDatabase getReadableDatabase(String password) {
+        this.password = password;
+        return super.getReadableDatabase(password);
+    }
+
+    @Override
+    public SQLiteDatabase getWritableDatabase(String password) {
+        this.password = password;
+        return super.getWritableDatabase(password);
+    }
+
+    public SQLiteDatabase getReadableDatabase() {
+        return getReadableDatabase(password);
+    }
+
+    public SQLiteDatabase getWritableDatabase() {
+        return getWritableDatabase(password);
+    }
+
+    public boolean login(String password) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getReadableDatabase(password);
+            db.query("sqlite_master", new String[] { "count(*)" }, null, null, 
+                    null, null, null, null);
+            return true;
+        } catch (SQLiteException e) {
+            return false;
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+        }
     }
 
     @Override
@@ -27,23 +73,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         MoneyNode.onDatabaseCreation(db);
         Transaction.onDatabaseCreation(db);
         ImmediateTransaction.onDatabaseCreation(db);
-        /*sqlStatements.add(
-            "CREATE TABLE Transactions (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "value DECIMAL NOT NULL," +
-                "description TEXT" +
-            ");");
-        sqlStatements.add(
-            "CREATE TABLE ImmediateTransactions (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT REFERENCES Transactions ON DELETE CASCADE," +
-                "executionDate DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))" +
-            ");");
-        sqlStatements.add(
-            "CREATE TABLE ScheduledTransactions (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT REFERENCES Transactions ON DELETE CASCADE," +
-                "scheduledDate DATETIME NOT NULL," +
-                "recurrence TEXT" + 
-            ");");
+        ScheduledTransaction.onDatabaseCreation(db);
+        /*
         sqlStatements.add(
             "CREATE TABLE ScheduledToImmediate (" +
                 "scheduledId INTEGER NOT NULL REFERENCES ScheduledTransactions ON DELETE CASCADE," + 
@@ -61,10 +92,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }*/
     }
 
-	@Override
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         MoneyNode.onDatabaseUpgrade(db, oldVersion, newVersion);
         Transaction.onDatabaseUpgrade(db, oldVersion, newVersion);
         ImmediateTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
+        ScheduledTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
     }
+
+    public List<MoneyNode> getMoneyNodes() throws Exception {
+        SQLiteDatabase db = getReadableDatabase();
+
+        List<MoneyNode> moneyNodes = new LinkedList<MoneyNode>();
+
+        Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
+                new String[] {MoneyNode.COL_ID}, 
+                null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            MoneyNode moneyNode = new MoneyNode(cursor.getLong(0));
+            moneyNode.setDb(db);
+            moneyNodes.add(moneyNode);
+        }
+
+        return moneyNodes;
+    }
+
+    /**
+     * Sets the password for this instance.
+     *
+     * @param password The password.
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }

@@ -14,26 +14,30 @@ import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.sqlcipher.database.SQLiteDatabase;
 
 /**
- * This class represents an immediate transaction of the application.
+ * This class represents a scheduled transaction of the application.
  */
-public class ImmediateTransaction extends Transaction {
+public class ScheduledTransaction extends Transaction {
     private static final long serialVersionUID = 1;
 
     // Database tables
-    public static final String TABLE_NAME = "ImmediateTransactions";
+    public static final String TABLE_NAME = "ScheduledTransactions";
 
     // Table Columns
     public static final String COL_ID = "id";
-    public static final String COL_EXECUTIONDATE = "executionDate";
+    public static final String COL_SCHEDULEDDATE = "scheduledDate";
+    public static final String COL_RECURRENCE = "recurrence";
 
-    private Date executionDate;
+    private Date scheduledDate;
+    // TODO: Change to Recurrence object
+    private String recurrence;
 
     public static void onDatabaseCreation(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
                     "REFERENCES " + Transaction.TABLE_NAME + "," +
-                COL_EXECUTIONDATE + " DATETIME " + 
-                    "DEFAULT (DATETIME('now', 'localtime'))" +
+                COL_SCHEDULEDDATE + " DATETIME " + 
+                    "DEFAULT (DATETIME('now', 'localtime'))," +
+                COL_RECURRENCE + " TEXT" + 
             ");");
     }
 
@@ -41,7 +45,7 @@ public class ImmediateTransaction extends Transaction {
                                         int newVersion) {
     }
 
-    public ImmediateTransaction(Long id) {
+    public ScheduledTransaction(Long id) {
         super(id);
     }
 
@@ -54,10 +58,12 @@ public class ImmediateTransaction extends Transaction {
      * @param categoryId The categoryId of this transaction.
      * @param executionDate The executionDate for this instance.
      */
-    public ImmediateTransaction(MoneyNode moneyNode, BigDecimal value, 
-            String description, Long categoryId, Date executionDate) {
+    public ScheduledTransaction(MoneyNode moneyNode, BigDecimal value, 
+            String description, Long categoryId, Date scheduledDate,
+            String recurrence) {
         super(moneyNode, value, description, categoryId);
-        this.executionDate = executionDate;
+        this.scheduledDate = scheduledDate;
+        this.recurrence = recurrence;
     }
 
     @Override
@@ -66,7 +72,7 @@ public class ImmediateTransaction extends Transaction {
                 new String[] {getId().toString()}, null, null, null, null);
         
         if (cursor.moveToFirst()) {
-            executionDate = new Date(cursor.getLong(1));
+            scheduledDate = new Date(cursor.getLong(1));
         } else {
             throw new DbObjectLoadException("Couldn't find immediate transaction " +
                     "associated with id "+ getId());
@@ -84,7 +90,7 @@ public class ImmediateTransaction extends Transaction {
 
             ContentValues contentValues = new ContentValues();
             contentValues.put(COL_ID, getId());
-            contentValues.put(COL_EXECUTIONDATE, executionDate.getTime());
+            contentValues.put(COL_SCHEDULEDDATE, scheduledDate.getTime());
 
             long result = db.insertWithOnConflict(TABLE_NAME, null, 
                     contentValues, SQLiteDatabase.CONFLICT_REPLACE);
@@ -93,7 +99,7 @@ public class ImmediateTransaction extends Transaction {
                 db.setTransactionSuccessful();
                 return getId();
             } else {
-                throw new DbObjectSaveException("Couldn't save immediate " +
+                throw new DbObjectSaveException("Couldn't save scheduled " +
                         "transaction data associated with id " + getId());
             }
         } finally {
@@ -102,21 +108,40 @@ public class ImmediateTransaction extends Transaction {
     }
 
     /**
-     * Gets the executionDate for this instance.
+     * Gets the scheduledDate for this instance.
      *
-     * @return The executionDate.
+     * @return The scheduledDate.
      */
-    public Date getExecutionDate() {
-        return this.executionDate;
+    public Date getScheduledDate() {
+        return this.scheduledDate;
     }
 
     /**
-     * Sets the executionDate for this instance.
+     * Sets the scheduledDate for this instance.
      *
-     * @param executionDate The executionDate.
+     * @param scheduledDate The scheduledDate.
      */
-    public void setExecutionDate(Date executionDate) {
-        this.executionDate = executionDate;
+    public void setScheduledDate(Date scheduledDate) {
+        this.scheduledDate = scheduledDate;
         setChanged(true);
+    }
+
+    /**
+     * Sets the recurrence for this instance.
+     *
+     * @param recurrence The recurrence.
+     */
+    public void setRecurrence(String recurrence) {
+        this.recurrence = recurrence;
+        setChanged(true);
+    }
+
+    /**
+     * Gets the recurrence for this instance.
+     *
+     * @return The recurrence.
+     */
+    public String getRecurrence() {
+        return this.recurrence;
     }
 }

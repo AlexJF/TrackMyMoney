@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.alexjf.tmm;
+package net.alexjf.tmm;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;

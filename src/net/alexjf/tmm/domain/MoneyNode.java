@@ -3,11 +3,16 @@ package net.alexjf.tmm.domain;
 import java.math.BigDecimal;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 
 import android.content.ContentValues;
 
 import android.database.Cursor;
+
+import net.alexjf.tmm.exceptions.DbObjectLoadException;
+import net.alexjf.tmm.exceptions.DbObjectSaveException;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
@@ -15,6 +20,8 @@ import net.sqlcipher.database.SQLiteDatabase;
  * This class represents a single user of the application.
  */
 public class MoneyNode extends DatabaseObject {
+    private static final long serialVersionUID = 1;
+
     // Database tables
     public static final String TABLE_NAME = "MoneyNodes";
 
@@ -28,7 +35,47 @@ public class MoneyNode extends DatabaseObject {
     public static final String COL_CREATIONDATE = "creationDate";
     public static final String COL_INITIALBALANCE = "initialBalance";
 
-    private Long id;
+    // Queries
+    private static final String QUERY_CREATETABLE = 
+        "CREATE TABLE " + TABLE_NAME + " (" +
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            COL_NAME + " TEXT NOT NULL," +
+            COL_DESCRIPTION + " TEXT," +
+            COL_LOCATION + " TEXT," + 
+            COL_CURRENCY + " TEXT," + 
+            COL_CREATIONDATE + " DATETIME " + 
+                "DEFAULT (DATETIME('now', 'localtime'))," +
+            COL_INITIALBALANCE + " NUMERIC DEFAULT 0" +
+        ");";
+    private static final String QUERY_SINGLE = 
+        "SELECT * FROM " + TABLE_NAME +
+        " WHERE " + COL_ID + " = ?";
+    private static final String QUERY_BALANCE = 
+        "SELECT TOTAL(" + Transaction.COL_VALUE + ") " + 
+        " FROM " + Transaction.TABLE_NAME +
+        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + " USING (id) " +
+        " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
+    private static final String QUERY_IMMEDIATETRANSACTIONS =
+        "SELECT " + ImmediateTransaction.COL_ID + 
+        " FROM " + Transaction.TABLE_NAME +
+        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + " USING (id) " +
+        " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
+    private static final String QUERY_SCHEDULEDTRANSACTIONS =
+        "SELECT " + ScheduledTransaction.COL_ID + 
+        " FROM " + Transaction.TABLE_NAME +
+        "  INNER JOIN " + ScheduledTransaction.TABLE_NAME + " USING (id) " +
+        " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
+
+    // Database maintenance
+    public static void onDatabaseCreation(SQLiteDatabase db) {
+        db.execSQL(QUERY_CREATETABLE);
+    }
+
+    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
+                                        int newVersion) {
+    }
+
+    // Private members
     private String name;
     private String description;
     private String location;
@@ -38,77 +85,68 @@ public class MoneyNode extends DatabaseObject {
 
     private BigDecimal balance;
 
-    public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                COL_NAME + " TEXT NOT NULL," +
-                COL_DESCRIPTION + " TEXT," +
-                COL_LOCATION + " TEXT," + 
-                COL_CURRENCY + " TEXT," + 
-                COL_CREATIONDATE + " DATETIME " + 
-                    "DEFAULT (DATETIME('now', 'localtime'))," +
-                COL_INITIALBALANCE + " TEXT DEFAULT 0" +
-            ");");
-    }
-
-    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
-                                        int newVersion) {
-    }
-
     public MoneyNode(Long id) {
-        this.id = id;
+        setId(id);
     }
 
     /**
      * Constructs a new instance.
      *
-     * @param id The id for this instance.
      * @param name The name for this instance.
      * @param description The description for this instance.
      * @param location The location for this instance.
-     * @param currency The currency for this instance.
      * @param creationDate The creationDate for this instance.
      * @param initialBalance The initialBalance for this instance.
+     * @param currency The currency for this instance.
      */
-    public MoneyNode(Long id, String name, String description,
-            String location, String currency, Date creationDate,
-            BigDecimal initialBalance) {
-        this.id = id;
+    public MoneyNode(String name, String description,
+            String location, Date creationDate, BigDecimal initialBalance, 
+            String currency) {
         this.name = name;
         this.description = description;
         this.location = location;
         this.currency = currency;
         this.creationDate = creationDate;
         this.initialBalance = initialBalance;
+        // TODO: Change this to take into account transactions
+        // and cache the value
+        this.balance = initialBalance;
         setChanged(true);
     }
 
     @Override
-    protected void internalLoad(SQLiteDatabase db) throws Exception {
-        if (id == null) {
-            throw new Exception("Id not specified");
-        }
-
-        Cursor cursor = db.query(TABLE_NAME, null, COL_ID + " = ?", 
-                new String[] {id.toString()}, null, null, null, null);
+    protected void internalLoad() throws DbObjectLoadException {
+        Cursor cursor = getDb().rawQuery(QUERY_SINGLE, 
+                new String[] {getId().toString()});
         
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToNext()) {
             name = cursor.getString(1);
             description = cursor.getString(2);
             location = cursor.getString(3);
             currency = cursor.getString(4);
             creationDate = new Date(cursor.getLong(5));
+            // TODO: Change this to take into account transactions
+            // and cache the value
             initialBalance = new BigDecimal(cursor.getString(6));
         } else {
-            throw new Exception("Couldn't find money node associated with id " 
-                    + id);
+            throw new DbObjectLoadException("Couldn't find money node" + 
+                    "associated with id " + getId());
+        }
+
+        cursor = getDb().rawQuery(QUERY_BALANCE, 
+                new String[] {getId().toString()});
+
+        if (cursor.moveToNext()) {
+            balance = initialBalance.add(new BigDecimal(cursor.getString(0)));
+        } else {
+            balance = new BigDecimal(0);
         }
     }
 
     @Override
-    protected void internalSave(SQLiteDatabase db) throws Exception {
+    protected long internalSave() throws DbObjectSaveException {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_ID, id);
+        contentValues.put(COL_ID, getId());
         contentValues.put(COL_NAME, name);
         contentValues.put(COL_DESCRIPTION, description);
         contentValues.put(COL_LOCATION, location);
@@ -116,18 +154,14 @@ public class MoneyNode extends DatabaseObject {
         contentValues.put(COL_CREATIONDATE, creationDate.getTime());
         contentValues.put(COL_INITIALBALANCE, initialBalance.toString());
 
-        db.insertWithOnConflict(TABLE_NAME, null, contentValues, 
-                SQLiteDatabase.CONFLICT_REPLACE);
-    }
+        long result = getDb().insertWithOnConflict(TABLE_NAME, null, 
+                contentValues, SQLiteDatabase.CONFLICT_REPLACE);
 
-    /**
-     * Sets the id for this instance.
-     *
-     * @param id The id.
-     */
-    public void setId(Long id) {
-        this.id = id;
-        setChanged(true);
+        if (result >= 0) {
+            return result;
+        } else {
+            throw new DbObjectSaveException("Error saving moneynode to database");
+        }
     }
 
     /**
@@ -201,15 +235,6 @@ public class MoneyNode extends DatabaseObject {
     }
 
     /**
-     * Gets the id for this instance.
-     *
-     * @return The id.
-     */
-    public Long getId() {
-        return this.id;
-    }
-
-    /**
      * Gets the name for this instance.
      *
      * @return The name.
@@ -270,6 +295,52 @@ public class MoneyNode extends DatabaseObject {
      */
     public BigDecimal getBalance() {
         return this.balance;
+    }
+
+    public List<ImmediateTransaction> getImmediateTransactions() 
+        throws Exception {
+        dbReadyOrThrow();
+
+        SQLiteDatabase db = getDb();
+
+        List<ImmediateTransaction> immediateTransactions = 
+            new LinkedList<ImmediateTransaction>();
+
+        Cursor cursor = db.rawQuery(QUERY_IMMEDIATETRANSACTIONS, 
+                new String[] {getId().toString()});
+
+        while (cursor.moveToNext()) {
+            ImmediateTransaction immediateTransaction = 
+                new ImmediateTransaction(cursor.getLong(0));
+            immediateTransaction.setDb(db);
+            immediateTransaction.setMoneyNode(this);
+            immediateTransactions.add(immediateTransaction);
+        }
+
+        return immediateTransactions;
+    }
+
+    public List<ScheduledTransaction> getScheduledTransactions() 
+        throws Exception {
+        dbReadyOrThrow();
+
+        SQLiteDatabase db = getDb();
+
+        List<ScheduledTransaction> immediateTransactions = 
+            new LinkedList<ScheduledTransaction>();
+
+        Cursor cursor = db.rawQuery(QUERY_SCHEDULEDTRANSACTIONS, 
+                new String[] {getId().toString()});
+
+        while (cursor.moveToNext()) {
+            ScheduledTransaction immediateTransaction = 
+                new ScheduledTransaction(cursor.getLong(0));
+            immediateTransaction.setDb(db);
+            immediateTransaction.setMoneyNode(this);
+            immediateTransactions.add(immediateTransaction);
+        }
+
+        return immediateTransactions;
     }
 
     public String toString() {

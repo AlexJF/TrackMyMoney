@@ -1,53 +1,20 @@
 package net.alexjf.tmm.domain;
 
-
-import android.content.Context;
-
-import net.alexjf.tmm.exceptions.LoginFailedException;
-import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteException;
+import java.io.Serializable;
 
 /**
  * This class represents a single user of the application.
  */
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1;
+
+    public static final String EXTRA_CURRENTUSER = "currentUser";
+
     private String name;
     private String password;
-    private DatabaseHelper dbHelper;
-    private Context context;
 
-    User(String name, Context context) {
+    User(String name) {
         this.name = name;
-        this.password = null;
-        this.context = context;
-        this.dbHelper = null;
-        this.dbHelper = new DatabaseHelper(this.context, getName() + ".db");
-    }
-
-    public void login(String password) throws LoginFailedException {
-        SQLiteDatabase db = null;
-
-        try {
-            db = dbHelper.getReadableDatabase(password);
-            db.query("sqlite_master", new String[] { "count(*)" }, null, null, null, null, null, null);
-        } catch (SQLiteException e) {
-            this.password = null;
-            throw new LoginFailedException(this.name, e);
-        } finally {
-            if (db != null) {
-                db.close();
-            }
-        }
-
-        this.password = password;
-    }
-
-    public SQLiteDatabase getReadableDatabase() {
-        return dbHelper.getReadableDatabase(password);
-    }
-
-    public SQLiteDatabase getWritableDatabase() {
-        return dbHelper.getReadableDatabase(password);
     }
 
     /**
@@ -60,12 +27,21 @@ public class User {
     }
 
     /**
-     * Sets the name for this instance.
+     * Sets the password for this instance.
      *
-     * @param name The name.
+     * @param password The password.
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * Gets the password for this instance.
+     *
+     * @return The password.
+     */
+    public String getPassword() {
+        return this.password;
     }
 
     public String toString() {

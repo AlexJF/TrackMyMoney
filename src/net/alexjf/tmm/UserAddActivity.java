@@ -1,6 +1,6 @@
 package net.alexjf.tmm;
 
-import com.alexjf.tmm.R;
+import net.alexjf.tmm.R;
 
 import android.content.Intent;
 
@@ -17,6 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class UserAddActivity extends Activity {
+    public static final String EXTRA_USERNAME = "username";
+    public static final String EXTRA_PASSWORD = "password";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +32,10 @@ public class UserAddActivity extends Activity {
         addButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
                 Intent data = new Intent();
-                data.putExtra("username", usernameText.getText().toString());
-                data.putExtra("password", passwordText.getText().toString());
+                data.putExtra(EXTRA_USERNAME, 
+                    usernameText.getText().toString().trim());
+                data.putExtra(EXTRA_PASSWORD, 
+                    passwordText.getText().toString().trim());
                 Log.d("TMM", "Adding user " + usernameText.getText().toString());
                 setResult(Activity.RESULT_OK, data);
                 finish();

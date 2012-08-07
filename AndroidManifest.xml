@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.alexjf.tmm"
+    package="net.alexjf.tmm"
     android:versionCode="1"
+    android:installLocation="preferExternal"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -25,6 +26,14 @@
         <activity
             android:name=".UserAddActivity"
             android:label="@string/title_activity_user_add" >
+        </activity>
+        <activity
+            android:name=".MoneyNodesActivity"
+            android:label="@string/title_activity_moneynodes" >
+        </activity>
+        <activity
+            android:name=".MoneyNodeAddActivity"
+            android:label="@string/title_activity_moneynode_add" >
         </activity>
     </application>
 

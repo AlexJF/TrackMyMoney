@@ -1,18 +1,23 @@
-/home/alex/Projects/track-my-money/gen/com/alexjf/tmm/R.java \
+/home/alex/Projects/track-my-money/gen/net/alexjf/tmm/R.java \
  : /home/alex/Projects/track-my-money/res/drawable-ldpi/ic_launcher.png \
 /home/alex/Projects/track-my-money/res/values-large/dimens.xml \
 /home/alex/Projects/track-my-money/res/drawable-hdpi/ic_action_search.png \
 /home/alex/Projects/track-my-money/res/drawable-hdpi/ic_launcher.png \
+/home/alex/Projects/track-my-money/res/drawable-xhdpi/moneynode_icon.png \
 /home/alex/Projects/track-my-money/res/drawable-xhdpi/ic_action_search.png \
 /home/alex/Projects/track-my-money/res/drawable-xhdpi/ic_launcher.png \
 /home/alex/Projects/track-my-money/res/values/styles.xml \
+/home/alex/Projects/track-my-money/res/values/currencies.xml \
 /home/alex/Projects/track-my-money/res/values/dimens.xml \
 /home/alex/Projects/track-my-money/res/values/strings.xml \
 /home/alex/Projects/track-my-money/res/values/colors.xml \
-/home/alex/Projects/track-my-money/res/menu/activity_money_nodes.xml \
+/home/alex/Projects/track-my-money/res/menu/activity_moneynodes.xml \
 /home/alex/Projects/track-my-money/res/values-v14/styles.xml \
 /home/alex/Projects/track-my-money/res/layout/activity_trackmymoney.xml \
+/home/alex/Projects/track-my-money/res/layout/moneynode_list_row.xml \
+/home/alex/Projects/track-my-money/res/layout/activity_moneynodes.xml \
 /home/alex/Projects/track-my-money/res/layout/activity_user_add.xml \
+/home/alex/Projects/track-my-money/res/layout/activity_moneynode_add.xml \
 /home/alex/Projects/track-my-money/res/layout/user_list_footer.xml \
 /home/alex/Projects/track-my-money/res/layout/user_list_row.xml \
 /home/alex/Projects/track-my-money/res/values-v11/styles.xml \
@@ -23,6 +28,7 @@
 /home/alex/Projects/track-my-money/bin/res/drawable-ldpi/ic_launcher.png \
 /home/alex/Projects/track-my-money/bin/res/drawable-hdpi/ic_action_search.png \
 /home/alex/Projects/track-my-money/bin/res/drawable-hdpi/ic_launcher.png \
+/home/alex/Projects/track-my-money/bin/res/drawable-xhdpi/moneynode_icon.png \
 /home/alex/Projects/track-my-money/bin/res/drawable-xhdpi/ic_action_search.png \
 /home/alex/Projects/track-my-money/bin/res/drawable-xhdpi/ic_launcher.png \
 /home/alex/Projects/track-my-money/bin/res/drawable-mdpi/user_icon.png \

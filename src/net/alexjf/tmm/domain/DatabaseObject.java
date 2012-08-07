@@ -1,35 +1,135 @@
 package net.alexjf.tmm.domain;
 
+import java.io.Serializable;
+
+import net.alexjf.tmm.exceptions.DatabaseNotReadyException;
+import net.alexjf.tmm.exceptions.DbObjectLoadException;
+import net.alexjf.tmm.exceptions.DbObjectSaveException;
+import net.alexjf.tmm.exceptions.UnknownIdException;
+
 import net.sqlcipher.database.SQLiteDatabase;
 
-public abstract class DatabaseObject {
+public abstract class DatabaseObject implements Serializable {
+    private static final long serialVersionUID = 1;
+
+    private Long id;
+    private transient SQLiteDatabase db;
     private boolean loaded;
     private boolean changed;
 
-    public void load(SQLiteDatabase db) throws Exception {
-        load(db, false);
+    public DatabaseObject() {
+        id = null;
+        db = null;
+        loaded = false;
+        changed = false;
     }
 
-    public void load(SQLiteDatabase db, boolean force) throws Exception {
+    public void load()
+        throws DatabaseNotReadyException, UnknownIdException, 
+               DbObjectLoadException {
+        load(false);
+    }
+
+    public void load(SQLiteDatabase db) 
+        throws DatabaseNotReadyException, UnknownIdException, 
+               DbObjectLoadException {
+        setDb(db);
+        load(false);
+    }
+
+    public void load(boolean force) 
+        throws DatabaseNotReadyException, UnknownIdException, 
+               DbObjectLoadException {
+        dbReadyOrThrow();
+
         if (!isLoaded() || force) {
-            internalLoad(db);
+            if (getId() == null) {
+                throw new UnknownIdException();
+            }
+
+            internalLoad();
             setLoaded(true);
         }
     }
 
-    public void save(SQLiteDatabase db) throws Exception {
-        save(db, false);
+    public void load(SQLiteDatabase db, boolean force) 
+        throws DatabaseNotReadyException, UnknownIdException, 
+               DbObjectLoadException {
+        setDb(db);
+        load(force);
     }
 
-    public void save(SQLiteDatabase db, boolean force) throws Exception {
+    public void save() 
+        throws DatabaseNotReadyException, DbObjectSaveException {
+        save(false);
+    }
+
+    public void save(SQLiteDatabase db)
+        throws DatabaseNotReadyException, DbObjectSaveException {
+        setDb(db);
+        save(false);
+    }
+
+    public void save(boolean force)
+        throws DatabaseNotReadyException, DbObjectSaveException {
+        dbReadyOrThrow();
+
         if (isChanged() || force) {
-            internalSave(db);
+            id = internalSave();
             setChanged(false);
         }
     }
 
-    protected abstract void internalLoad(SQLiteDatabase db) throws Exception;
-    protected abstract void internalSave(SQLiteDatabase db) throws Exception;
+    public void save(SQLiteDatabase db, boolean force) 
+        throws DatabaseNotReadyException, DbObjectSaveException {
+        setDb(db);
+        save(force);
+    }
+
+    protected abstract void internalLoad() throws DbObjectLoadException;
+    protected abstract long internalSave() throws DbObjectSaveException;
+
+    protected void dbReadyOrThrow() throws DatabaseNotReadyException {
+        if (db == null || !db.isOpen()) {
+            throw new DatabaseNotReadyException();
+        }
+    }
+
+    /**
+     * Gets the id for this instance.
+     *
+     * @return The id.
+     */
+    public Long getId() {
+        return this.id;
+    }
+
+    /**
+     * Sets the id for this instance.
+     *
+     * @param id The id.
+     */
+    void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets the db for this instance.
+     *
+     * @return The db.
+     */
+    public SQLiteDatabase getDb() {
+        return this.db;
+    }
+
+    /**
+     * Sets the db for this instance.
+     *
+     * @param db The db.
+     */
+    public void setDb(SQLiteDatabase db) {
+        this.db = db;
+    }
 
     /**
      * Determines if this instance is loaded.
