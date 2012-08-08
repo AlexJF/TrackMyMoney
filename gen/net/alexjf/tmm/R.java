@@ -34,6 +34,8 @@ public final class R {
     }
     public static final class id {
         public static final int add_button=0x7f0a000c;
+        public static final int balance_label=0x7f0a000e;
+        public static final int balance_value=0x7f0a000f;
         public static final int creationDate_button=0x7f0a0007;
         public static final int creationDate_label=0x7f0a0006;
         public static final int currency_label=0x7f0a000a;
@@ -44,59 +46,69 @@ public final class R {
         public static final int initialBalance_text=0x7f0a0009;
         public static final int location_label=0x7f0a0004;
         public static final int location_text=0x7f0a0005;
-        public static final int logo_symbol=0x7f0a000e;
-        public static final int logo_text=0x7f0a000f;
-        public static final int menu_add=0x7f0a001f;
-        public static final int moneynode_balance=0x7f0a001b;
-        public static final int moneynode_icon=0x7f0a0019;
-        public static final int moneynode_list=0x7f0a000d;
-        public static final int moneynode_name=0x7f0a001a;
+        public static final int logo_symbol=0x7f0a0017;
+        public static final int logo_text=0x7f0a0018;
+        public static final int menu_add=0x7f0a0026;
+        public static final int menu_addTransaction=0x7f0a0025;
+        public static final int moneynode_balance_label=0x7f0a0020;
+        public static final int moneynode_balance_value=0x7f0a0021;
+        public static final int moneynode_icon=0x7f0a001e;
+        public static final int moneynode_list=0x7f0a0011;
+        public static final int moneynode_list_empty=0x7f0a0012;
+        public static final int moneynode_name=0x7f0a001f;
+        public static final int name=0x7f0a000d;
         public static final int name_label=0x7f0a0000;
         public static final int name_text=0x7f0a0001;
-        public static final int password_label=0x7f0a0017;
-        public static final int password_text=0x7f0a0018;
-        public static final int user_add_icon=0x7f0a001c;
-        public static final int user_icon=0x7f0a001e;
-        public static final int user_label=0x7f0a001d;
-        public static final int user_list=0x7f0a0010;
-        public static final int username_label=0x7f0a0015;
-        public static final int username_text=0x7f0a0016;
-        public static final int userpassword_label=0x7f0a0012;
-        public static final int userpassword_layout=0x7f0a0011;
-        public static final int userpassword_login=0x7f0a0014;
-        public static final int userpassword_text=0x7f0a0013;
+        public static final int password_label=0x7f0a0015;
+        public static final int password_text=0x7f0a0016;
+        public static final int transaction_list=0x7f0a0010;
+        public static final int user_add_icon=0x7f0a0022;
+        public static final int user_icon=0x7f0a0024;
+        public static final int user_label=0x7f0a0023;
+        public static final int user_list=0x7f0a0019;
+        public static final int username_label=0x7f0a0013;
+        public static final int username_text=0x7f0a0014;
+        public static final int userpassword_label=0x7f0a001b;
+        public static final int userpassword_layout=0x7f0a001a;
+        public static final int userpassword_login=0x7f0a001d;
+        public static final int userpassword_text=0x7f0a001c;
     }
     public static final class layout {
         public static final int activity_moneynode_add=0x7f030000;
-        public static final int activity_moneynodes=0x7f030001;
-        public static final int activity_trackmymoney=0x7f030002;
+        public static final int activity_moneynode_details=0x7f030001;
+        public static final int activity_moneynode_list=0x7f030002;
         public static final int activity_user_add=0x7f030003;
-        public static final int moneynode_list_row=0x7f030004;
-        public static final int user_list_footer=0x7f030005;
-        public static final int user_list_row=0x7f030006;
+        public static final int activity_user_list=0x7f030004;
+        public static final int moneynode_list_row=0x7f030005;
+        public static final int user_list_footer=0x7f030006;
+        public static final int user_list_row=0x7f030007;
     }
     public static final class menu {
-        public static final int activity_moneynodes=0x7f090000;
+        public static final int activity_moneynode_details=0x7f090000;
+        public static final int activity_moneynode_list=0x7f090001;
     }
     public static final class string {
         public static final int add=0x7f070006;
+        public static final int addTransaction=0x7f070009;
+        public static final int addUser=0x7f070008;
         public static final int app_name=0x7f070000;
-        public static final int creationDate=0x7f07000f;
-        public static final int currency=0x7f07000e;
-        public static final int description=0x7f07000c;
-        public static final int error_loginFailed=0x7f070011;
-        public static final int initialBalance=0x7f070010;
-        public static final int location=0x7f07000d;
+        public static final int balance=0x7f070012;
+        public static final int creationDate=0x7f070010;
+        public static final int currency=0x7f07000f;
+        public static final int description=0x7f07000d;
+        public static final int error_loginFailed=0x7f070014;
+        public static final int initialBalance=0x7f070011;
+        public static final int location=0x7f07000e;
         public static final int login=0x7f070007;
         public static final int menu_settings=0x7f070001;
-        public static final int name=0x7f07000b;
-        public static final int password=0x7f07000a;
+        public static final int moneynode_empty=0x7f070013;
+        public static final int name=0x7f07000c;
+        public static final int password=0x7f07000b;
         public static final int title_activity_moneynode_add=0x7f070005;
-        public static final int title_activity_moneynodes=0x7f070004;
-        public static final int title_activity_trackmymoney=0x7f070002;
+        public static final int title_activity_moneynode_list=0x7f070004;
         public static final int title_activity_user_add=0x7f070003;
-        public static final int user_add=0x7f070008;
-        public static final int username=0x7f070009;
+        public static final int title_activity_user_list=0x7f070002;
+        public static final int username=0x7f07000a;
     }
     public static final class style {
         public static final int AppTheme=0x7f080000;

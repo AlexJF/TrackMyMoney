@@ -28,14 +28,23 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class TrackMyMoneyActivity extends Activity {
+public class UserListActivity extends Activity {
     private UserList userList;
     private SelectedAdapter<User> adapter;
+    private View userPasswordLayout;
+    private EditText userPasswordText;
+
+    public UserListActivity() {
+        userList = null;
+        adapter = null;
+        userPasswordLayout = null;
+        userPasswordText = null;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trackmymoney);
+        setContentView(R.layout.activity_user_list);
 
         userList = new UserList(getApplicationContext());
 
@@ -47,11 +56,14 @@ public class TrackMyMoneyActivity extends Activity {
                 R.layout.user_list_footer, null);
         footer.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(TrackMyMoneyActivity.this, 
+                Intent intent = new Intent(UserListActivity.this, 
                     UserAddActivity.class);
                 startActivityForResult(intent, 0);
             };
         });
+
+        userPasswordLayout = findViewById(R.id.userpassword_layout);
+        userPasswordText = (EditText) findViewById(R.id.userpassword_text);
 
         ListView userListView = (ListView) findViewById(R.id.user_list);
 
@@ -61,11 +73,10 @@ public class TrackMyMoneyActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, 
                                     int position, long id) {
                 Log.d("TTM", "Item selected at position " + position);
-                View userPasswordLayout = findViewById(
-                    R.id.userpassword_layout);
                 userPasswordLayout.setLayoutParams(
                     new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
                                                   LayoutParams.WRAP_CONTENT));
+                userPasswordText.setText("");
                 adapter.setSelectedPosition(position);
             }
         });
@@ -83,14 +94,16 @@ public class TrackMyMoneyActivity extends Activity {
                     selectedUser);
                 String password = passwordText.getText().toString();
                 if (dbHelper.login(password)) {
+                    userPasswordText.setText("");
                     selectedUser.setPassword(password);
 
-                    Intent intent = new Intent(TrackMyMoneyActivity.this,
-                        MoneyNodesActivity.class);
+                    Intent intent = new Intent(UserListActivity.this,
+                        MoneyNodeListActivity.class);
                     intent.putExtra(User.EXTRA_CURRENTUSER, selectedUser);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(TrackMyMoneyActivity.this, 
+                    userPasswordText.setText("");
+                    Toast.makeText(UserListActivity.this, 
                         "Login Failure!", 3).show();
                 }
             };

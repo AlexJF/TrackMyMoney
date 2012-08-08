@@ -14,9 +14,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".TrackMyMoneyActivity"
+            android:name=".UserListActivity"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:label="@string/title_activity_trackmymoney" >
+            android:label="@string/title_activity_user_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,8 +28,8 @@
             android:label="@string/title_activity_user_add" >
         </activity>
         <activity
-            android:name=".MoneyNodesActivity"
-            android:label="@string/title_activity_moneynodes" >
+            android:name=".MoneyNodeListActivity"
+            android:label="@string/title_activity_moneynode_list" >
         </activity>
         <activity
             android:name=".MoneyNodeAddActivity"

@@ -46,8 +46,8 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
             nameLabel.setText(node.getName());
 
             TextView balanceLabel = (TextView) view.findViewById(
-                    R.id.moneynode_balance);
-            balanceLabel.setText(node.getBalance().toString() + "" + 
+                    R.id.moneynode_balance_value);
+            balanceLabel.setText(node.getBalance().toString() + " " + 
                     node.getCurrency());
         } catch (DatabaseException e) {
             Log.e("TMM", e.getMessage());

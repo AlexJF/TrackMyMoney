@@ -14,11 +14,18 @@
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@id/moneynode_icon"
             android:layout_alignParentRight="true" />
-    <TextView android:id="@+id/moneynode_balance" 
+    <TextView android:id="@+id/moneynode_balance_label" 
+            android:text="@string/balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@id/moneynode_name"
+            android:layout_toRightOf="@id/moneynode_icon" />
+    <TextView android:id="@+id/moneynode_balance_value" 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_below="@id/moneynode_name"
-            android:layout_toRightOf="@id/moneynode_icon"
+            android:layout_toRightOf="@id/moneynode_balance_label"
             android:layout_alignParentRight="true" />
 </RelativeLayout>

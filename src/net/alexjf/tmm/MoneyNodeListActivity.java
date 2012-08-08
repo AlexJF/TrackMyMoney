@@ -28,13 +28,13 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import android.widget.ListView;
 
-public class MoneyNodesActivity extends Activity {
+public class MoneyNodeListActivity extends Activity {
     private DatabaseHelper dbHelper;
     private User currentUser;
     private List<MoneyNode> moneyNodes;
     private MoneyNodeAdapter adapter;
 
-    public MoneyNodesActivity() {
+    public MoneyNodeListActivity() {
         dbHelper = null;
         currentUser = null;
         moneyNodes = null;
@@ -44,7 +44,7 @@ public class MoneyNodesActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_moneynodes);
+        setContentView(R.layout.activity_moneynode_list);
 
         Intent intent = getIntent();
         currentUser = (User) intent.getSerializableExtra(
@@ -65,6 +65,9 @@ public class MoneyNodesActivity extends Activity {
         ListView moneyNodesListView = (ListView) findViewById(
                 R.id.moneynode_list);
 
+        View emptyView = findViewById(R.id.moneynode_list_empty);
+
+        moneyNodesListView.setEmptyView(emptyView);
         moneyNodesListView.setAdapter(adapter);
         moneyNodesListView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, 
@@ -83,7 +86,7 @@ public class MoneyNodesActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_moneynodes, menu);
+        inflater.inflate(R.menu.activity_moneynode_list, menu);
         return true;
     }
 

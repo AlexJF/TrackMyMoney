@@ -9,7 +9,7 @@
             android:padding="3dp"
             android:src="@drawable/user_add_icon" />
     <TextView android:id="@+id/user_label" 
-            android:text="@string/user_add"
+            android:text="@string/addUser"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" 
             android:gravity="center_vertical"
