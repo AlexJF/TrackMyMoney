@@ -33,6 +33,7 @@
     <ListView android:id="@+id/user_list"
             android:cacheColorHint="@color/user_bg_normal"
             android:choiceMode="singleChoice"
+            android:divider="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

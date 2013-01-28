@@ -2,21 +2,18 @@ package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
 
-import android.content.ContentValues;
-
-import android.database.Cursor;
-
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
-
 import net.sqlcipher.database.SQLiteDatabase;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Parcel;
 
 /**
  * This class represents a base transaction of the application.
  */
 public abstract class Transaction extends DatabaseObject {
-    private static final long serialVersionUID = 1;
-
     // Database tables
     public static final String TABLE_NAME = "Transactions";
 
@@ -51,6 +48,11 @@ public abstract class Transaction extends DatabaseObject {
         setId(id);
     }
 
+    public Transaction(Parcel in) {
+        super(in);
+        readFromParcel(in);
+    }
+
     /**
      * Constructs a new instance.
      *
@@ -73,19 +75,23 @@ public abstract class Transaction extends DatabaseObject {
         Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
                 new String[] {getId().toString()}, null, null, null, null);
         
-        if (cursor.moveToFirst()) {
-            value = new BigDecimal(cursor.getString(1));
-            long moneyNodeId = cursor.getLong(2);
+        try {
+            if (cursor.moveToFirst()) {
+                value = new BigDecimal(cursor.getString(1));
+                long moneyNodeId = cursor.getLong(2);
 
-            if (moneyNode == null || !moneyNode.getId().equals(moneyNodeId)) {
-                moneyNode = new MoneyNode(moneyNodeId);
+                if (moneyNode == null || !moneyNode.getId().equals(moneyNodeId)) {
+                    moneyNode = new MoneyNode(moneyNodeId);
+                }
+
+                description = cursor.getString(3);
+                categoryId = cursor.getLong(4);
+            } else {
+                throw new DbObjectLoadException("Couldn't find transaction " + 
+                        "associated with id " + getId());
             }
-
-            description = cursor.getString(3);
-            categoryId = cursor.getLong(4);
-        } else {
-            throw new DbObjectLoadException("Couldn't find transaction " + 
-                    "associated with id " + getId());
+        } finally {
+            cursor.close();
         }
     }
 
@@ -183,5 +189,25 @@ public abstract class Transaction extends DatabaseObject {
      */
     public Long getCategoryId() {
         return this.categoryId;
+    }
+
+    public void readFromParcel(Parcel in) {
+        super.readFromParcel(in);
+        moneyNode = in.readParcelable(MoneyNode.class.getClassLoader());
+        value = new BigDecimal(in.readString());
+        description = in.readString();
+        categoryId = in.readLong();
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        super.writeToParcel(out, flags);
+        out.writeParcelable(moneyNode, flags);
+        out.writeString(value.toString());
+        out.writeString(description);
+        out.writeLong(categoryId);
+    }
+
+    public int describeContents() {
+        return 0;
     }
 }

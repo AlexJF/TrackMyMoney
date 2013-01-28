@@ -1,27 +1,25 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import android.content.ContentValues;
-
-import android.database.Cursor;
-
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
-
 import net.sqlcipher.database.SQLiteDatabase;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * This class represents a single user of the application.
  */
 public class MoneyNode extends DatabaseObject {
-    private static final long serialVersionUID = 1;
-
     // Database tables
     public static final String TABLE_NAME = "MoneyNodes";
 
@@ -82,11 +80,15 @@ public class MoneyNode extends DatabaseObject {
     private String currency;
     private Date creationDate;
     private BigDecimal initialBalance;
-
     private BigDecimal balance;
 
     public MoneyNode(Long id) {
         setId(id);
+    }
+
+    public MoneyNode(Parcel in) {
+        super(in);
+        readFromParcel(in);
     }
 
     /**
@@ -133,6 +135,7 @@ public class MoneyNode extends DatabaseObject {
                     "associated with id " + getId());
         }
 
+        cursor.close();
         cursor = getDb().rawQuery(QUERY_BALANCE, 
                 new String[] {getId().toString()});
 
@@ -141,6 +144,7 @@ public class MoneyNode extends DatabaseObject {
         } else {
             balance = new BigDecimal(0);
         }
+        cursor.close();
     }
 
     @Override
@@ -317,6 +321,8 @@ public class MoneyNode extends DatabaseObject {
             immediateTransactions.add(immediateTransaction);
         }
 
+        cursor.close();
+
         return immediateTransactions;
     }
 
@@ -339,6 +345,8 @@ public class MoneyNode extends DatabaseObject {
             immediateTransaction.setMoneyNode(this);
             immediateTransactions.add(immediateTransaction);
         }
+        
+        cursor.close();
 
         return immediateTransactions;
     }
@@ -346,4 +354,45 @@ public class MoneyNode extends DatabaseObject {
     public String toString() {
         return getName();
     }
+
+    public void readFromParcel(Parcel in) {
+        super.readFromParcel(in);
+        name = in.readString();
+        description = in.readString();
+        location = in.readString();
+        currency = in.readString();
+        try {
+            creationDate = (new SimpleDateFormat()).parse(in.readString());
+        } catch (ParseException e) {
+            creationDate = new Date();
+        }
+        initialBalance = new BigDecimal(in.readString());
+        balance = new BigDecimal(in.readString());
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        super.writeToParcel(out, flags);
+        out.writeString(name);
+        out.writeString(description);
+        out.writeString(location);
+        out.writeString(currency);
+        out.writeString(creationDate.toString());
+        out.writeString(initialBalance.toString());
+        out.writeString(balance.toString());
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<MoneyNode> CREATOR =
+        new Parcelable.Creator<MoneyNode>() {
+            public MoneyNode createFromParcel(Parcel in) {
+                return new MoneyNode(in);
+            }
+ 
+            public MoneyNode[] newArray(int size) {
+                return new MoneyNode[size];
+            }
+        };
 }

@@ -6,16 +6,16 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="14" />
 
     <application
         android:name="TrackMyMoneyApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.Sherlock" >
         <activity
-            android:name=".UserListActivity"
-            android:theme="@android:style/Theme.NoTitleBar"
+            android:name=".activities.UserListActivity"
+            android:theme="@style/Theme.Sherlock.NoActionBar"
             android:label="@string/title_activity_user_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,15 +24,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".UserAddActivity"
+            android:name=".activities.UserAddActivity"
             android:label="@string/title_activity_user_add" >
         </activity>
         <activity
-            android:name=".MoneyNodeListActivity"
+            android:name=".activities.MoneyNodeListActivity"
             android:label="@string/title_activity_moneynode_list" >
         </activity>
         <activity
-            android:name=".MoneyNodeAddActivity"
+            android:name=".activities.MoneyNodeAddActivity"
             android:label="@string/title_activity_moneynode_add" >
         </activity>
     </application>

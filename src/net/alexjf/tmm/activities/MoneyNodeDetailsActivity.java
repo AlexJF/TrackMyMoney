@@ -1,34 +1,20 @@
-package net.alexjf.tmm;
+package net.alexjf.tmm.activities;
 
-import java.util.LinkedList;
 import java.util.List;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-
-import net.alexjf.tmm.adapters.MoneyNodeAdapter;
+import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
-import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.User;
 
-import net.alexjf.tmm.R;
-
 import android.content.Intent;
-
 import android.os.Bundle;
-import android.app.Activity;
 
-import android.util.Log;
-import android.view.View;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
-import android.widget.AdapterView;
-
-import android.widget.AdapterView.OnItemClickListener;
-
-import android.widget.ListView;
-
-public class MoneyNodeDetailsActivity extends Activity {
+public class MoneyNodeDetailsActivity extends SherlockActivity {
     private DatabaseHelper dbHelper;
     private User currentUser;
     private List<ImmediateTransaction> immediateTransactions;
@@ -60,8 +46,6 @@ public class MoneyNodeDetailsActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_moneynodes, menu);
         return true;
     }
 
@@ -76,18 +60,6 @@ public class MoneyNodeDetailsActivity extends Activity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
-            Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            MoneyNode node = (MoneyNode) data.getSerializableExtra(
-                    MoneyNodeAddActivity.EXTRA_NEWMONEYNODE);
-
-            moneyNodes.add(node);
-            adapter.notifyDataSetChanged();
         }
     }
 }

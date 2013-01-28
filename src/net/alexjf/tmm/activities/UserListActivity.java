@@ -1,34 +1,31 @@
-package net.alexjf.tmm;
+package net.alexjf.tmm.activities;
 
+import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.SelectedAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
-import net.alexjf.tmm.R;
 
-import android.content.Intent;
-
-import android.os.Bundle;
 import android.app.Activity;
-
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
 import android.view.View.OnClickListener;
-
 import android.view.ViewGroup.LayoutParams;
-
 import android.widget.AdapterView;
-
 import android.widget.AdapterView.OnItemClickListener;
-
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class UserListActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class UserListActivity extends SherlockActivity {
+    private static final String EXTRA_CURUSERINDEX = "curUserIdx";
+
     private UserList userList;
     private SelectedAdapter<User> adapter;
     private View userPasswordLayout;
@@ -108,8 +105,16 @@ public class UserListActivity extends Activity {
                 }
             };
         });
-    }
 
+        if (savedInstanceState != null) {
+            adapter.setSelectedPosition(savedInstanceState.getInt(EXTRA_CURUSERINDEX));
+            userPasswordLayout.setLayoutParams(
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
+                                              LayoutParams.WRAP_CONTENT));
+        }
+
+    }
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
@@ -122,7 +127,14 @@ public class UserListActivity extends Activity {
             DatabaseHelper dbHelper = new DatabaseHelper(
                     getApplicationContext(), newUser);
             dbHelper.login(password);
+            adapter.setSelectedPosition(-1);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(EXTRA_CURUSERINDEX, adapter.getSelectedPosition());
+        super.onSaveInstanceState(outState);
     }
 }

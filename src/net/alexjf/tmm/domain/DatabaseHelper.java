@@ -74,6 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Transaction.onDatabaseCreation(db);
         ImmediateTransaction.onDatabaseCreation(db);
         ScheduledTransaction.onDatabaseCreation(db);
+        // TODO: Add these domain classes
         /*
         sqlStatements.add(
             "CREATE TABLE ScheduledToImmediate (" +
@@ -114,6 +115,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             moneyNode.setDb(db);
             moneyNodes.add(moneyNode);
         }
+
+        cursor.close();
 
         return moneyNodes;
     }

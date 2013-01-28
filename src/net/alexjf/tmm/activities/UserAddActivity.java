@@ -1,22 +1,19 @@
-package net.alexjf.tmm;
+package net.alexjf.tmm.activities;
 
 import net.alexjf.tmm.R;
 
-import android.content.Intent;
-
-import android.os.Bundle;
 import android.app.Activity;
-
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
-
 import android.view.View;
-
 import android.view.View.OnClickListener;
-
 import android.widget.Button;
 import android.widget.EditText;
 
-public class UserAddActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+public class UserAddActivity extends SherlockActivity {
     public static final String EXTRA_USERNAME = "username";
     public static final String EXTRA_PASSWORD = "password";
 

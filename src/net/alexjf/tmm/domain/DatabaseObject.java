@@ -1,17 +1,15 @@
 package net.alexjf.tmm.domain;
 
-import java.io.Serializable;
-
 import net.alexjf.tmm.exceptions.DatabaseNotReadyException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.exceptions.UnknownIdException;
-
 import net.sqlcipher.database.SQLiteDatabase;
 
-public abstract class DatabaseObject implements Serializable {
-    private static final long serialVersionUID = 1;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+public abstract class DatabaseObject implements Parcelable {
     private Long id;
     private transient SQLiteDatabase db;
     private boolean loaded;
@@ -22,6 +20,10 @@ public abstract class DatabaseObject implements Serializable {
         db = null;
         loaded = false;
         changed = false;
+    }
+
+    public DatabaseObject(Parcel in) {
+        readFromParcel(in);
     }
 
     public void load()
@@ -165,5 +167,23 @@ public abstract class DatabaseObject implements Serializable {
      */
     public void setChanged(boolean changed) {
         this.changed = changed;
+    }
+
+    public void readFromParcel(Parcel in) {
+        id = in.readLong();
+        db = null;
+        boolean[] arr = new boolean[2];
+        in.readBooleanArray(arr);
+        loaded = arr[0];
+        changed = arr[1];
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(id);
+        out.writeBooleanArray(new boolean[]{loaded, changed});
+    }
+
+    public int describeContents() {
+        return 0;
     }
 }

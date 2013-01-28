@@ -1,4 +1,5 @@
 *.swp
+gen/*
 bin/*
 local.properties
 .settings/*

@@ -1,13 +1,12 @@
 package net.alexjf.tmm.domain;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * This class represents a single user of the application.
  */
-public class User implements Serializable {
-    private static final long serialVersionUID = 1;
-
+public class User implements Parcelable {
     public static final String EXTRA_CURRENTUSER = "currentUser";
 
     private String name;
@@ -15,6 +14,10 @@ public class User implements Serializable {
 
     User(String name) {
         this.name = name;
+    }
+
+    User(Parcel in) {
+        readFromParcel(in);
     }
 
     /**
@@ -47,4 +50,29 @@ public class User implements Serializable {
     public String toString() {
         return getName();
     };
+
+    public void readFromParcel(Parcel in) {
+        name = in.readString();
+        password = in.readString();
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(name);
+        out.writeString(password);
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<User> CREATOR =
+        new Parcelable.Creator<User>() {
+            public User createFromParcel(Parcel in) {
+                return new User(in);
+            }
+ 
+            public User[] newArray(int size) {
+                return new User[size];
+            }
+        };
 }

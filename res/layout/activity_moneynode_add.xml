@@ -59,7 +59,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/creationDate_label"
-            android:layout_below="@id/location_text" />
+            android:layout_below="@id/location_text"
+            android:freezesText="true" />
     <TextView android:id="@+id/initialBalance_label"
             android:text="@string/initialBalance"
             android:layout_width="0dp"

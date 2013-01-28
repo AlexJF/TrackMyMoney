@@ -1,24 +1,23 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import android.content.ContentValues;
-
-import android.database.Cursor;
 
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
-
 import net.sqlcipher.database.SQLiteDatabase;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * This class represents an immediate transaction of the application.
  */
 public class ImmediateTransaction extends Transaction {
-    private static final long serialVersionUID = 1;
-
     // Database tables
     public static final String TABLE_NAME = "ImmediateTransactions";
 
@@ -45,6 +44,11 @@ public class ImmediateTransaction extends Transaction {
         super(id);
     }
 
+    public ImmediateTransaction(Parcel in) {
+        super(in);
+        readFromParcel(in);
+    }
+
     /**
      * Constructs a new instance.
      *
@@ -65,11 +69,15 @@ public class ImmediateTransaction extends Transaction {
         Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
                 new String[] {getId().toString()}, null, null, null, null);
         
-        if (cursor.moveToFirst()) {
-            executionDate = new Date(cursor.getLong(1));
-        } else {
-            throw new DbObjectLoadException("Couldn't find immediate transaction " +
-                    "associated with id "+ getId());
+        try {
+            if (cursor.moveToFirst()) {
+                executionDate = new Date(cursor.getLong(1));
+            } else {
+                throw new DbObjectLoadException("Couldn't find immediate transaction " +
+                        "associated with id "+ getId());
+            }
+        } finally {
+            cursor.close();
         }
 
         super.internalLoad();
@@ -119,4 +127,33 @@ public class ImmediateTransaction extends Transaction {
         this.executionDate = executionDate;
         setChanged(true);
     }
+
+    public void readFromParcel(Parcel in) {
+        super.readFromParcel(in);
+        try {
+            executionDate = (new SimpleDateFormat()).parse(in.readString());
+        } catch (ParseException e) {
+            executionDate = new Date();
+        }
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        super.writeToParcel(out, flags);
+        out.writeString(executionDate.toString());
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<ImmediateTransaction> CREATOR =
+        new Parcelable.Creator<ImmediateTransaction>() {
+            public ImmediateTransaction createFromParcel(Parcel in) {
+                return new ImmediateTransaction(in);
+            }
+ 
+            public ImmediateTransaction[] newArray(int size) {
+                return new ImmediateTransaction[size];
+            }
+        };
 }

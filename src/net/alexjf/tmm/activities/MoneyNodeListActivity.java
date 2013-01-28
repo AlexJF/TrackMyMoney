@@ -1,34 +1,29 @@
-package net.alexjf.tmm;
+package net.alexjf.tmm.activities;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-
+import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.domain.User;
 
-import net.alexjf.tmm.R;
-
-import android.content.Intent;
-
-import android.os.Bundle;
 import android.app.Activity;
-
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-
 import android.widget.AdapterView;
-
 import android.widget.AdapterView.OnItemClickListener;
-
 import android.widget.ListView;
 
-public class MoneyNodeListActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
+public class MoneyNodeListActivity extends SherlockActivity {
     private DatabaseHelper dbHelper;
     private User currentUser;
     private List<MoneyNode> moneyNodes;
@@ -47,7 +42,7 @@ public class MoneyNodeListActivity extends Activity {
         setContentView(R.layout.activity_moneynode_list);
 
         Intent intent = getIntent();
-        currentUser = (User) intent.getSerializableExtra(
+        currentUser = (User) intent.getParcelableExtra(
                 User.EXTRA_CURRENTUSER);
         dbHelper = new DatabaseHelper(getApplicationContext(), 
                 currentUser);
@@ -85,7 +80,7 @@ public class MoneyNodeListActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.activity_moneynode_list, menu);
         return true;
     }
@@ -108,7 +103,7 @@ public class MoneyNodeListActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            MoneyNode node = (MoneyNode) data.getSerializableExtra(
+            MoneyNode node = (MoneyNode) data.getParcelableExtra(
                     MoneyNodeAddActivity.EXTRA_NEWMONEYNODE);
 
             moneyNodes.add(node);

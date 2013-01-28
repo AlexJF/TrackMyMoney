@@ -1,24 +1,23 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import android.content.ContentValues;
-
-import android.database.Cursor;
 
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
-
 import net.sqlcipher.database.SQLiteDatabase;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * This class represents a scheduled transaction of the application.
  */
 public class ScheduledTransaction extends Transaction {
-    private static final long serialVersionUID = 1;
-
     // Database tables
     public static final String TABLE_NAME = "ScheduledTransactions";
 
@@ -49,6 +48,11 @@ public class ScheduledTransaction extends Transaction {
         super(id);
     }
 
+    public ScheduledTransaction(Parcel in) {
+        super(in);
+        readFromParcel(in);
+    }
+
     /**
      * Constructs a new instance.
      *
@@ -71,11 +75,15 @@ public class ScheduledTransaction extends Transaction {
         Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
                 new String[] {getId().toString()}, null, null, null, null);
         
-        if (cursor.moveToFirst()) {
-            scheduledDate = new Date(cursor.getLong(1));
-        } else {
-            throw new DbObjectLoadException("Couldn't find immediate transaction " +
-                    "associated with id "+ getId());
+        try {
+            if (cursor.moveToFirst()) {
+                scheduledDate = new Date(cursor.getLong(1));
+            } else {
+                throw new DbObjectLoadException("Couldn't find immediate transaction " +
+                        "associated with id "+ getId());
+            }
+        } finally {
+            cursor.close();
         }
 
         super.internalLoad();
@@ -144,4 +152,35 @@ public class ScheduledTransaction extends Transaction {
     public String getRecurrence() {
         return this.recurrence;
     }
+
+    public void readFromParcel(Parcel in) {
+        super.readFromParcel(in);
+        try {
+            scheduledDate = (new SimpleDateFormat()).parse(in.readString());
+        } catch (ParseException e) {
+            scheduledDate = new Date();
+        }
+        recurrence = in.readString();
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        super.writeToParcel(out, flags);
+        out.writeString(scheduledDate.toString());
+        out.writeString(recurrence);
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Parcelable.Creator<ScheduledTransaction> CREATOR =
+        new Parcelable.Creator<ScheduledTransaction>() {
+            public ScheduledTransaction createFromParcel(Parcel in) {
+                return new ScheduledTransaction(in);
+            }
+ 
+            public ScheduledTransaction[] newArray(int size) {
+                return new ScheduledTransaction[size];
+            }
+        };
 }
