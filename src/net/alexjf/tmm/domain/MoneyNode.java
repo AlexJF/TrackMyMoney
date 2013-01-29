@@ -91,7 +91,6 @@ public class MoneyNode extends DatabaseObject {
     }
 
     public MoneyNode(Parcel in) {
-        super(in);
         readFromParcel(in);
     }
 

@@ -3,9 +3,6 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <color name="logo_color">#FFFFFFFF</color>
-    <color name="logo_shadow">#FF000000</color>
-    <color name="logo_background">#FF008000</color>
-    <color name="user_bg_normal">#FF008000</color>
-    <color name="user_bg_selected">#FF004000</color>
+    <color name="user_bg_normal">#00008000</color>
+    <color name="user_bg_selected">#212121</color>
 </resources>

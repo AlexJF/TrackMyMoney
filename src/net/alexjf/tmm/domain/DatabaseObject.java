@@ -176,15 +176,14 @@ public abstract class DatabaseObject implements Parcelable {
     public void readFromParcel(Parcel in) {
         id = in.readLong();
         db = null;
-        boolean[] arr = new boolean[2];
-        in.readBooleanArray(arr);
-        loaded = arr[0];
-        changed = arr[1];
+        loaded = in.readByte() == 1;
+        changed = in.readByte() == 1;
     }
 
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(id);
-        out.writeBooleanArray(new boolean[]{loaded, changed});
+        out.writeByte((byte) (loaded ? 1 : 0));
+        out.writeByte((byte) (changed ? 1 : 0));
     }
 
     public int describeContents() {

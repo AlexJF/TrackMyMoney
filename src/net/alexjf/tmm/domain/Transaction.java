@@ -48,12 +48,14 @@ public abstract class Transaction extends DatabaseObject {
                                         int newVersion) {
     }
 
+    Transaction() {
+    }
+
     public Transaction(Long id) {
         setId(id);
     }
 
     public Transaction(Parcel in) {
-        super(in);
         readFromParcel(in);
     }
 

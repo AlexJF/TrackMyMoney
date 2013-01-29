@@ -49,7 +49,6 @@ public class ImmediateTransaction extends Transaction {
     }
 
     public ImmediateTransaction(Parcel in) {
-        super(in);
         readFromParcel(in);
     }
 

@@ -53,7 +53,6 @@ public class ScheduledTransaction extends Transaction {
     }
 
     public ScheduledTransaction(Parcel in) {
-        super(in);
         readFromParcel(in);
     }
 
