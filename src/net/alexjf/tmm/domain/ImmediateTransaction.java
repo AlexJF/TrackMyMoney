@@ -5,12 +5,11 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
+import net.alexjf.tmm.utils.Cache;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import android.content.ContentValues;
@@ -29,27 +28,65 @@ public class ImmediateTransaction extends Transaction {
     public static final String COL_ID = "id";
     public static final String COL_EXECUTIONDATE = "executionDate";
 
-    private Date executionDate;
+    // Queries
+    public static final String QUERY_CREATETABLE = 
+        "CREATE TABLE " + TABLE_NAME + " (" +
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
+                "REFERENCES " + Transaction.TABLE_NAME + "," +
+            COL_EXECUTIONDATE + " DATETIME " + 
+                "DEFAULT (DATETIME('now', 'localtime'))" +
+        ");";
 
+    // Database maintenance
+    /**
+     * Creates schemas associated with an ImmediateTransaction domain.
+     *
+     * @param db Database where to create the schemas.
+     */
     public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
-                    "REFERENCES " + Transaction.TABLE_NAME + "," +
-                COL_EXECUTIONDATE + " DATETIME " + 
-                    "DEFAULT (DATETIME('now', 'localtime'))" +
-            ");");
+        db.execSQL(QUERY_CREATETABLE);
     }
 
+    /**
+     * Updates schemas associated with an ImmediateTransaction domain.
+     *
+     * @param db Database where to update the schemas.
+     * @param oldVersion The old version of the schemas.
+     * @param newVersion The new version of the schemas.
+     */
     public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
                                         int newVersion) {
     }
 
-    public ImmediateTransaction(Long id) {
-        super(id);
+    // Caching
+    private static Cache<Long, ImmediateTransaction> cache = 
+        new Cache<Long, ImmediateTransaction>();
+
+    /**
+     * Gets an instance of ImmediateTransaction with the specified id.
+     *
+     * The instance is reused from the cache or created if it doesn't exist on
+     * the cache yet.
+     *
+     * @param id The id of the transaction we want.
+     * @return ImmediateTransaction instance with specified id.
+     */
+    public static ImmediateTransaction createFromId(Long id) {
+        ImmediateTransaction trans = cache.get(id);
+
+        if (trans == null) {
+            trans = new ImmediateTransaction(id);
+            cache.put(id, trans);
+        }
+
+        return trans;
     }
 
-    public ImmediateTransaction(Parcel in) {
-        readFromParcel(in);
+    // Private fields
+    private Date executionDate;
+
+    public ImmediateTransaction(Long id) {
+        super(id);
     }
 
     /**
@@ -58,12 +95,12 @@ public class ImmediateTransaction extends Transaction {
      * @param moneyNode The money node associated with this transaction.
      * @param value The value of this transaction.
      * @param description The description of this transaction.
-     * @param categoryId The categoryId of this transaction.
+     * @param category The category of this transaction.
      * @param executionDate The executionDate for this instance.
      */
     public ImmediateTransaction(MoneyNode moneyNode, BigDecimal value, 
-            String description, Long categoryId, Date executionDate) {
-        super(moneyNode, value, description, categoryId);
+            String description, Category category, Date executionDate) {
+        super(moneyNode, value, description, category);
         this.executionDate = executionDate;
     }
 
@@ -131,32 +168,16 @@ public class ImmediateTransaction extends Transaction {
         setChanged(true);
     }
 
-    public void readFromParcel(Parcel in) {
-        super.readFromParcel(in);
-        try {
-            executionDate = (new SimpleDateFormat()).parse(in.readString());
-        } catch (ParseException e) {
-            executionDate = new Date();
-        }
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        super.writeToParcel(out, flags);
-        out.writeString(executionDate.toString());
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
     public static final Parcelable.Creator<ImmediateTransaction> CREATOR =
         new Parcelable.Creator<ImmediateTransaction>() {
             public ImmediateTransaction createFromParcel(Parcel in) {
-                return new ImmediateTransaction(in);
+                Long id = in.readLong();
+                return cache.get(id);
             }
  
             public ImmediateTransaction[] newArray(int size) {
                 return new ImmediateTransaction[size];
             }
         };
+
 }

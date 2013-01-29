@@ -78,6 +78,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Transaction.onDatabaseCreation(db);
         ImmediateTransaction.onDatabaseCreation(db);
         ScheduledTransaction.onDatabaseCreation(db);
+        Category.onDatabaseCreation(db);
         // TODO: Add these domain classes
         /*
         sqlStatements.add(
@@ -103,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Transaction.onDatabaseUpgrade(db, oldVersion, newVersion);
         ImmediateTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
         ScheduledTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
+        Category.onDatabaseUpgrade(db, oldVersion, newVersion);
     }
 
     public List<MoneyNode> getMoneyNodes() throws Exception {
@@ -115,7 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null, null, null, null, null, null);
 
         while (cursor.moveToNext()) {
-            MoneyNode moneyNode = new MoneyNode(cursor.getLong(0));
+            MoneyNode moneyNode = MoneyNode.createFromId(cursor.getLong(0));
             moneyNode.setDb(db);
             moneyNodes.add(moneyNode);
         }

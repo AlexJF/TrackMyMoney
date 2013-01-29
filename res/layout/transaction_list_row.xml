@@ -1,0 +1,29 @@
+<!--
+  Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
+  License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    <ImageView android:id="@+id/transaction_caticon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="3dp" />
+    <TextView android:id="@+id/transaction_cat" 
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/transaction_caticon"
+            android:layout_alignParentRight="true" />
+    <TextView android:id="@+id/transaction_value" 
+            android:text="@string/balance"
+            android:gravity="right|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_below="@id/moneynode_name"
+            android:layout_toRightOf="@id/moneynode_icon"
+            android:layout_alignParentRight="true" />
+</RelativeLayout>

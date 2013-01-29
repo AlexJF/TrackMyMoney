@@ -54,7 +54,7 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
             balanceLabel.setText(node.getBalance().toString() + " " + 
                     node.getCurrency());
         } catch (DatabaseException e) {
-            Log.e("TMM", e.getMessage());
+            Log.e("TMM", e.getMessage(), e);
         }
 
         return view;

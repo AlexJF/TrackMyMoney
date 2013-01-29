@@ -5,14 +5,14 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
+import net.alexjf.tmm.utils.Cache;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import android.content.ContentValues;
@@ -24,10 +24,13 @@ import android.os.Parcelable;
  * This class represents a single user of the application.
  */
 public class MoneyNode extends DatabaseObject {
+    // Intent keys
+    public static final String EXTRA_CURRENTMONEYNODE = "curMoneyNode";
+
     // Database tables
     public static final String TABLE_NAME = "MoneyNodes";
 
-    // Table Columns
+    // Table columns
     public static final String COL_ID = "id";
     public static final String COL_NAME = "name";
     public static final String COL_DESCRIPTION = "description";
@@ -69,12 +72,47 @@ public class MoneyNode extends DatabaseObject {
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
 
     // Database maintenance
+    /**
+     * Creates schemas associated with a MoneyNode domain.
+     *
+     * @param db Database where to create the schemas.
+     */
     public static void onDatabaseCreation(SQLiteDatabase db) {
         db.execSQL(QUERY_CREATETABLE);
     }
 
+    /**
+     * Updates schemas associated with a Category domain.
+     *
+     * @param db Database where to update the schemas.
+     * @param oldVersion The old version of the schemas.
+     * @param newVersion The new version of the schemas.
+     */
     public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
                                         int newVersion) {
+    }
+
+    // Caching
+    private static Cache<Long, MoneyNode> cache = new Cache<Long, MoneyNode>();
+
+    /**
+     * Gets an instance of MoneyNode with the specified id.
+     *
+     * The instance is reused from the cache or created if it doesn't exist on
+     * the cache yet.
+     *
+     * @param id The id of the moneynode we want.
+     * @return MoneyNode instance with specified id.
+     */
+    public static MoneyNode createFromId(Long id) {
+        MoneyNode node = cache.get(id);
+
+        if (node == null) {
+            node = new MoneyNode(id);
+            cache.put(id, node);
+        }
+
+        return node;
     }
 
     // Private members
@@ -86,12 +124,8 @@ public class MoneyNode extends DatabaseObject {
     private BigDecimal initialBalance;
     private BigDecimal balance;
 
-    public MoneyNode(Long id) {
+    private MoneyNode(Long id) {
         setId(id);
-    }
-
-    public MoneyNode(Parcel in) {
-        readFromParcel(in);
     }
 
     /**
@@ -165,6 +199,7 @@ public class MoneyNode extends DatabaseObject {
                 contentValues, SQLiteDatabase.CONFLICT_REPLACE);
 
         if (result >= 0) {
+            cache.put(result, this);
             return result;
         } else {
             throw new DbObjectSaveException("Error saving moneynode to database");
@@ -305,7 +340,7 @@ public class MoneyNode extends DatabaseObject {
     }
 
     public List<ImmediateTransaction> getImmediateTransactions() 
-        throws Exception {
+        throws DatabaseException {
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();
@@ -330,7 +365,7 @@ public class MoneyNode extends DatabaseObject {
     }
 
     public List<ScheduledTransaction> getScheduledTransactions() 
-        throws Exception {
+        throws DatabaseException {
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();
@@ -358,40 +393,11 @@ public class MoneyNode extends DatabaseObject {
         return getName();
     }
 
-    public void readFromParcel(Parcel in) {
-        super.readFromParcel(in);
-        name = in.readString();
-        description = in.readString();
-        location = in.readString();
-        currency = in.readString();
-        try {
-            creationDate = (new SimpleDateFormat()).parse(in.readString());
-        } catch (ParseException e) {
-            creationDate = new Date();
-        }
-        initialBalance = new BigDecimal(in.readString());
-        balance = new BigDecimal(in.readString());
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        super.writeToParcel(out, flags);
-        out.writeString(name);
-        out.writeString(description);
-        out.writeString(location);
-        out.writeString(currency);
-        out.writeString(creationDate.toString());
-        out.writeString(initialBalance.toString());
-        out.writeString(balance.toString());
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
     public static final Parcelable.Creator<MoneyNode> CREATOR =
         new Parcelable.Creator<MoneyNode>() {
             public MoneyNode createFromParcel(Parcel in) {
-                return new MoneyNode(in);
+                Long id = in.readLong();
+                return cache.get(id);
             }
  
             public MoneyNode[] newArray(int size) {

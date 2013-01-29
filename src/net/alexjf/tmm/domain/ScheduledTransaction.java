@@ -5,12 +5,11 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
+import net.alexjf.tmm.utils.Cache;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import android.content.ContentValues;
@@ -30,10 +29,12 @@ public class ScheduledTransaction extends Transaction {
     public static final String COL_SCHEDULEDDATE = "scheduledDate";
     public static final String COL_RECURRENCE = "recurrence";
 
-    private Date scheduledDate;
-    // TODO: Change to Recurrence object
-    private String recurrence;
-
+    // Database maintenance
+    /**
+     * Creates schemas associated with a ScheduledTransaction domain.
+     *
+     * @param db Database where to create the schemas.
+     */
     public static void onDatabaseCreation(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
@@ -44,16 +45,48 @@ public class ScheduledTransaction extends Transaction {
             ");");
     }
 
+    /**
+     * Updates schemas associated with a ScheduledTransaction domain.
+     *
+     * @param db Database where to update the schemas.
+     * @param oldVersion The old version of the schemas.
+     * @param newVersion The new version of the schemas.
+     */
     public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
                                         int newVersion) {
     }
 
-    public ScheduledTransaction(Long id) {
-        super(id);
+    // Caching
+    private static Cache<Long, ScheduledTransaction> cache = 
+        new Cache<Long, ScheduledTransaction>();
+
+    /**
+     * Gets an instance of ScheduledTransaction with the specified id.
+     *
+     * The instance is reused from the cache or created if it doesn't exist on
+     * the cache yet.
+     *
+     * @param id The id of the transaction we want.
+     * @return ScheduledTransaction instance with specified id.
+     */
+    public static ScheduledTransaction createFromId(Long id) {
+        ScheduledTransaction trans = cache.get(id);
+
+        if (trans == null) {
+            trans = new ScheduledTransaction(id);
+            cache.put(id, trans);
+        }
+
+        return trans;
     }
 
-    public ScheduledTransaction(Parcel in) {
-        readFromParcel(in);
+    // Private fields
+    private Date scheduledDate;
+    // TODO: Change to Recurrence object
+    private String recurrence;
+
+    public ScheduledTransaction(Long id) {
+        super(id);
     }
 
     /**
@@ -62,13 +95,13 @@ public class ScheduledTransaction extends Transaction {
      * @param moneyNode The money node associated with this transaction.
      * @param value The value of this transaction.
      * @param description The description of this transaction.
-     * @param categoryId The categoryId of this transaction.
+     * @param category The category of this transaction.
      * @param executionDate The executionDate for this instance.
      */
     public ScheduledTransaction(MoneyNode moneyNode, BigDecimal value, 
-            String description, Long categoryId, Date scheduledDate,
+            String description, Category category, Date scheduledDate,
             String recurrence) {
-        super(moneyNode, value, description, categoryId);
+        super(moneyNode, value, description, category);
         this.scheduledDate = scheduledDate;
         this.recurrence = recurrence;
     }
@@ -156,34 +189,16 @@ public class ScheduledTransaction extends Transaction {
         return this.recurrence;
     }
 
-    public void readFromParcel(Parcel in) {
-        super.readFromParcel(in);
-        try {
-            scheduledDate = (new SimpleDateFormat()).parse(in.readString());
-        } catch (ParseException e) {
-            scheduledDate = new Date();
-        }
-        recurrence = in.readString();
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        super.writeToParcel(out, flags);
-        out.writeString(scheduledDate.toString());
-        out.writeString(recurrence);
-    }
-
-    public int describeContents() {
-        return 0;
-    }
-
     public static final Parcelable.Creator<ScheduledTransaction> CREATOR =
         new Parcelable.Creator<ScheduledTransaction>() {
             public ScheduledTransaction createFromParcel(Parcel in) {
-                return new ScheduledTransaction(in);
+                Long id = in.readLong();
+                return cache.get(id);
             }
  
             public ScheduledTransaction[] newArray(int size) {
                 return new ScheduledTransaction[size];
             }
         };
+
 }

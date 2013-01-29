@@ -35,6 +35,9 @@
             android:name=".activities.MoneyNodeAddActivity"
             android:label="@string/title_activity_moneynode_add" >
         </activity>
+        <activity
+            android:name=".activities.MoneyNodeDetailsActivity">
+        </activity>
     </application>
 
 </manifest>

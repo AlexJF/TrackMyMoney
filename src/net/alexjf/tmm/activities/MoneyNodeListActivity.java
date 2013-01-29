@@ -71,7 +71,12 @@ public class MoneyNodeListActivity extends SherlockActivity {
         moneyNodesListView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, 
                 int position, long id) {
-                Log.d("TTM", "Item selected at position " + position);
+                MoneyNode selectedNode = adapter.getItem(position);
+                Intent intent = new Intent(MoneyNodeListActivity.this, 
+                    MoneyNodeDetailsActivity.class);
+                intent.putExtra(User.EXTRA_CURRENTUSER, currentUser);
+                intent.putExtra(MoneyNode.EXTRA_CURRENTMONEYNODE, selectedNode);
+                startActivity(intent);
             }
         });
     }

@@ -11,7 +11,8 @@ import android.os.Parcelable;
  * This class represents a single user of the application.
  */
 public class User implements Parcelable {
-    public static final String EXTRA_CURRENTUSER = "currentUser";
+    // Intent keys
+    public static final String EXTRA_CURRENTUSER = "curUser";
 
     private String name;
     private String password;

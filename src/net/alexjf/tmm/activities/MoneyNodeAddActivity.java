@@ -100,8 +100,15 @@ public class MoneyNodeAddActivity extends SherlockFragmentActivity {
                 } catch (ParseException e) {
                     creationDate = new Date();
                 }
-                BigDecimal initialBalance = new BigDecimal(
-                    initialBalanceText.getText().toString());
+
+                BigDecimal initialBalance;
+                try {
+                    initialBalance = new BigDecimal(
+                        initialBalanceText.getText().toString());
+                } catch (NumberFormatException e) {
+                    initialBalance = new BigDecimal(0);
+                }
+
                 String currency = currencySpinner.getSelectedItem().toString().trim();
                 MoneyNode newNode = new MoneyNode(name, description, location,
                     creationDate, initialBalance, currency);

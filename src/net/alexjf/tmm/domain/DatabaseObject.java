@@ -26,10 +26,6 @@ public abstract class DatabaseObject implements Parcelable {
         changed = false;
     }
 
-    public DatabaseObject(Parcel in) {
-        readFromParcel(in);
-    }
-
     public void load()
         throws DatabaseNotReadyException, UnknownIdException, 
                DbObjectLoadException {
@@ -173,17 +169,8 @@ public abstract class DatabaseObject implements Parcelable {
         this.changed = changed;
     }
 
-    public void readFromParcel(Parcel in) {
-        id = in.readLong();
-        db = null;
-        loaded = in.readByte() == 1;
-        changed = in.readByte() == 1;
-    }
-
     public void writeToParcel(Parcel out, int flags) {
         out.writeLong(id);
-        out.writeByte((byte) (loaded ? 1 : 0));
-        out.writeByte((byte) (changed ? 1 : 0));
     }
 
     public int describeContents() {

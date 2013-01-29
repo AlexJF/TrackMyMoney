@@ -12,7 +12,6 @@ import net.sqlcipher.database.SQLiteDatabase;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.os.Parcel;
 
 /**
  * This class represents a base transaction of the application.
@@ -28,35 +27,46 @@ public abstract class Transaction extends DatabaseObject {
     public static final String COL_DESCRIPTION = "description";
     public static final String COL_CATEGORYID = "categoryId";
 
-    private MoneyNode moneyNode;
-    private BigDecimal value;
-    private String description;
-    private Long categoryId;
+    // Queries
+    private static final String QUERY_CREATETABLE = 
+        "CREATE TABLE " + TABLE_NAME + " (" +
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " + 
+                MoneyNode.TABLE_NAME + "," + 
+            COL_VALUE + " NUMERIC NOT NULL," +
+            COL_DESCRIPTION + " TEXT," +
+            COL_CATEGORYID + " INTEGER REFERENCES Categories" +
+        ");";
 
+    // Database maintenance
+    /**
+     * Creates schemas associated with a Transaction domain.
+     *
+     * @param db Database where to create the schemas.
+     */
     public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " + 
-                    MoneyNode.TABLE_NAME + "," + 
-                COL_VALUE + " NUMERIC NOT NULL," +
-                COL_DESCRIPTION + " TEXT," +
-                COL_CATEGORYID + " INTEGER REFERENCES Categories" +
-            ");");
+        db.execSQL(QUERY_CREATETABLE);
     }
 
+    /**
+     * Updates schemas associated with a Transaction domain.
+     *
+     * @param db Database where to update the schemas.
+     * @param oldVersion The old version of the schemas.
+     * @param newVersion The new version of the schemas.
+     */
     public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
                                         int newVersion) {
     }
 
-    Transaction() {
-    }
+    // Private members
+    private MoneyNode moneyNode;
+    private BigDecimal value;
+    private String description;
+    private Category category;
 
     public Transaction(Long id) {
         setId(id);
-    }
-
-    public Transaction(Parcel in) {
-        readFromParcel(in);
     }
 
     /**
@@ -68,11 +78,11 @@ public abstract class Transaction extends DatabaseObject {
      * @param categoryId The categoryId for this instance.
      */
     public Transaction(MoneyNode moneyNode, BigDecimal value,
-            String description, Long categoryId) {
+            String description, Category category) {
         this.moneyNode = moneyNode;
         this.value = value;
         this.description = description;
-        this.categoryId = categoryId;
+        this.category = category;
         setChanged(true);
     }
 
@@ -87,11 +97,15 @@ public abstract class Transaction extends DatabaseObject {
                 long moneyNodeId = cursor.getLong(2);
 
                 if (moneyNode == null || !moneyNode.getId().equals(moneyNodeId)) {
-                    moneyNode = new MoneyNode(moneyNodeId);
+                    moneyNode = MoneyNode.createFromId(moneyNodeId);
                 }
 
                 description = cursor.getString(3);
-                categoryId = cursor.getLong(4);
+
+                long categoryId = cursor.getLong(4);
+                if (category == null || !category.getId().equals(categoryId)) {
+                    category = Category.createFromId(categoryId);
+                }
             } else {
                 throw new DbObjectLoadException("Couldn't find transaction " + 
                         "associated with id " + getId());
@@ -108,7 +122,7 @@ public abstract class Transaction extends DatabaseObject {
         contentValues.put(COL_MONEYNODEID, moneyNode.getId());
         contentValues.put(COL_VALUE, value.toString());
         contentValues.put(COL_DESCRIPTION, description);
-        contentValues.put(COL_CATEGORYID, categoryId);
+        contentValues.put(COL_CATEGORYID, category.getId());
 
         long result = getDb().insertWithOnConflict(TABLE_NAME, null, 
                 contentValues, SQLiteDatabase.CONFLICT_REPLACE);
@@ -179,41 +193,21 @@ public abstract class Transaction extends DatabaseObject {
     }
 
     /**
-     * Sets the categoryId for this instance.
+     * Sets the category for this instance.
      *
-     * @param categoryId The categoryId.
+     * @param category The category.
      */
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
         setChanged(true);
     }
 
     /**
-     * Gets the categoryId for this instance.
+     * Gets the category for this instance.
      *
-     * @return The categoryId.
+     * @return The category.
      */
-    public Long getCategoryId() {
-        return this.categoryId;
-    }
-
-    public void readFromParcel(Parcel in) {
-        super.readFromParcel(in);
-        moneyNode = in.readParcelable(MoneyNode.class.getClassLoader());
-        value = new BigDecimal(in.readString());
-        description = in.readString();
-        categoryId = in.readLong();
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        super.writeToParcel(out, flags);
-        out.writeParcelable(moneyNode, flags);
-        out.writeString(value.toString());
-        out.writeString(description);
-        out.writeLong(categoryId);
-    }
-
-    public int describeContents() {
-        return 0;
+    public Category getCategory() {
+        return this.category;
     }
 }
