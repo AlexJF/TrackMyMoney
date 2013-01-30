@@ -4,16 +4,15 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-
-import android.content.Context;
-
-import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteException;
 import net.sqlcipher.database.SQLiteOpenHelper;
+
+import android.content.Context;
+import android.database.Cursor;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
@@ -110,11 +109,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<MoneyNode> getMoneyNodes() throws Exception {
         SQLiteDatabase db = getReadableDatabase();
 
-        List<MoneyNode> moneyNodes = new LinkedList<MoneyNode>();
-
         Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
                 new String[] {MoneyNode.COL_ID}, 
                 null, null, null, null, null, null);
+
+        List<MoneyNode> moneyNodes = new ArrayList<MoneyNode>(cursor.getCount());
 
         while (cursor.moveToNext()) {
             MoneyNode moneyNode = MoneyNode.createFromId(cursor.getLong(0));

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import net.alexjf.tmm.domain.DatabaseHelper;
@@ -45,6 +46,17 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
         MoneyNode node = getItem(position);
         try {
             node.load(dbHelper.getReadableDatabase());
+
+            ImageView iconImageView = (ImageView) view.findViewById(R.id.moneynode_icon);
+            String iconName = node.getIcon();
+            if (iconName != null) {
+                // TODO: Use an application-level drawable cache here
+                int iconId = parent.getResources().getIdentifier(
+                        iconName, "drawable", parent.getContext().getPackageName());
+                if (iconId != 0) {
+                    iconImageView.setImageResource(iconId);
+                }
+            }
 
             TextView nameLabel = (TextView) view.findViewById(R.id.moneynode_name);
             nameLabel.setText(node.getName());

@@ -26,7 +26,8 @@
     <!-- Money Node Related -->
     <string name="name">Name:</string>
     <string name="description">Description:</string>
-    <string name="location">Location:</string>
+    <string name="icon">Icon:</string>
+    <string name="choose">Choose...</string>
     <string name="currency">Currency:</string>
     <string name="creationDate">Creation Date:</string>
     <string name="initialBalance">Initial Balance:</string>

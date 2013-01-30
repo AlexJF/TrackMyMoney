@@ -31,7 +31,7 @@ public class Category extends DatabaseObject {
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_NAME + " TEXT NOT NULL," +
-            COL_ICON + " TEXT," +
+            COL_ICON + " TEXT" +
         ");";
 
     // Database maintenance

@@ -34,7 +34,6 @@ public class MoneyNode extends DatabaseObject {
     public static final String COL_ID = "id";
     public static final String COL_NAME = "name";
     public static final String COL_DESCRIPTION = "description";
-    public static final String COL_LOCATION = "location";
     public static final String COL_ICON = "icon";
     public static final String COL_CURRENCY = "currency";
     public static final String COL_CREATIONDATE = "creationDate";
@@ -46,7 +45,7 @@ public class MoneyNode extends DatabaseObject {
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_NAME + " TEXT NOT NULL," +
             COL_DESCRIPTION + " TEXT," +
-            COL_LOCATION + " TEXT," + 
+            COL_ICON + " TEXT," + 
             COL_CURRENCY + " TEXT," + 
             COL_CREATIONDATE + " DATETIME " + 
                 "DEFAULT (DATETIME('now', 'localtime'))," +
@@ -118,7 +117,7 @@ public class MoneyNode extends DatabaseObject {
     // Private members
     private String name;
     private String description;
-    private String location;
+    private String icon;
     private String currency;
     private Date creationDate;
     private BigDecimal initialBalance;
@@ -133,22 +132,20 @@ public class MoneyNode extends DatabaseObject {
      *
      * @param name The name for this instance.
      * @param description The description for this instance.
-     * @param location The location for this instance.
+     * @param icon The icon drawable entry name for this instance.
      * @param creationDate The creationDate for this instance.
      * @param initialBalance The initialBalance for this instance.
      * @param currency The currency for this instance.
      */
     public MoneyNode(String name, String description,
-            String location, Date creationDate, BigDecimal initialBalance, 
+            String icon, Date creationDate, BigDecimal initialBalance, 
             String currency) {
         this.name = name;
         this.description = description;
-        this.location = location;
+        this.icon = icon;
         this.currency = currency;
         this.creationDate = creationDate;
         this.initialBalance = initialBalance;
-        // TODO: Change this to take into account transactions
-        // and cache the value
         this.balance = initialBalance;
         setChanged(true);
     }
@@ -161,7 +158,7 @@ public class MoneyNode extends DatabaseObject {
         if (cursor.moveToNext()) {
             name = cursor.getString(1);
             description = cursor.getString(2);
-            location = cursor.getString(3);
+            icon = cursor.getString(3);
             currency = cursor.getString(4);
             creationDate = new Date(cursor.getLong(5));
             // TODO: Change this to take into account transactions
@@ -190,7 +187,7 @@ public class MoneyNode extends DatabaseObject {
         contentValues.put(COL_ID, getId());
         contentValues.put(COL_NAME, name);
         contentValues.put(COL_DESCRIPTION, description);
-        contentValues.put(COL_LOCATION, location);
+        contentValues.put(COL_ICON, icon);
         contentValues.put(COL_CURRENCY, currency);
         contentValues.put(COL_CREATIONDATE, creationDate.getTime());
         contentValues.put(COL_INITIALBALANCE, initialBalance.toString());
@@ -227,12 +224,12 @@ public class MoneyNode extends DatabaseObject {
     }
 
     /**
-     * Sets the location for this instance.
+     * Sets the icon drawable entry name for this instance.
      *
-     * @param location The location.
+     * @param icon The icon drawable entry name.
      */
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLocation(String icon) {
+        this.icon = icon;
         setChanged(true);
     }
 
@@ -295,12 +292,12 @@ public class MoneyNode extends DatabaseObject {
     }
 
     /**
-     * Gets the location for this instance.
+     * Gets the icon drawable entry name for this instance.
      *
      * @return The location.
      */
-    public String getLocation() {
-        return this.location;
+    public String getIcon() {
+        return this.icon;
     }
 
     /**

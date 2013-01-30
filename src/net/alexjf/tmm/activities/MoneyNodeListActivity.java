@@ -4,6 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +29,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 public class MoneyNodeListActivity extends SherlockActivity {
+    public static final String EXTRA_MONEYNODES = "moneyNodes";
+
     private DatabaseHelper dbHelper;
     private User currentUser;
     private List<MoneyNode> moneyNodes;
@@ -51,12 +54,16 @@ public class MoneyNodeListActivity extends SherlockActivity {
         dbHelper = new DatabaseHelper(getApplicationContext(), 
                 currentUser);
 
-        try {
-            moneyNodes = dbHelper.getMoneyNodes();
-        } catch (Exception e) {
-            Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
-                    "\n" + e.getStackTrace());
-            moneyNodes = new LinkedList<MoneyNode>();
+        if (savedInstanceState == null) {
+            try {
+                moneyNodes = dbHelper.getMoneyNodes();
+            } catch (Exception e) {
+                Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
+                        "\n" + e.getStackTrace());
+                moneyNodes = new LinkedList<MoneyNode>();
+            }
+        } else {
+            moneyNodes = savedInstanceState.getParcelableArrayList(EXTRA_MONEYNODES);
         }
 
         adapter = new MoneyNodeAdapter(this, dbHelper, moneyNodes);
@@ -118,5 +125,11 @@ public class MoneyNodeListActivity extends SherlockActivity {
             moneyNodes.add(node);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(EXTRA_MONEYNODES, new ArrayList<MoneyNode>(moneyNodes));
+        super.onSaveInstanceState(outState);
     }
 }

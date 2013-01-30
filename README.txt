@@ -1,6 +1,8 @@
 TrackMyMoney
 ====================
 
+Note: Not functional yet
+
 TrackMyMoney is an Android application that allows you to manage expenses and
 revenues on one or more "money nodes" (wallet, bank account, etc...).
 
@@ -12,6 +14,5 @@ Dependencies:
     - SQLCipher (https://github.com/sqlcipher/android-database-sqlcipher)
     - ActionBarSherlock (https://github.com/JakeWharton/ActionBarSherlock)
 
-====================
-
-Notes: Application is not fully functional yet
+Icons:
+    - Category and money node icons: "Icons by Glyphish" (http://glyphish.com)
