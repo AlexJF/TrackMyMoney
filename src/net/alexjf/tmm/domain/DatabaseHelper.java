@@ -126,6 +126,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return moneyNodes;
     }
 
+    public void deleteMoneyNode(MoneyNode node) {
+        if (node == null) {
+            return;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(MoneyNode.TABLE_NAME, MoneyNode.COL_ID + " = ?",
+                new String[]{node.getId().toString()});
+    }
+
     /**
      * Sets the password for this instance.
      *

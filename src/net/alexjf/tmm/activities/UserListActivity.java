@@ -168,6 +168,7 @@ public class UserListActivity extends SherlockActivity {
                 userList.removeUser(user);
                 refreshUserList();
                 return true;
+            // TODO: Allow user to change passwords
             default:
                 return super.onContextItemSelected(item);
         }

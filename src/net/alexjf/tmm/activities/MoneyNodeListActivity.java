@@ -18,8 +18,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
@@ -86,6 +89,8 @@ public class MoneyNodeListActivity extends SherlockActivity {
                 startActivity(intent);
             }
         });
+
+        registerForContextMenu(moneyNodesListView);
     }
 
     @Override
@@ -131,5 +136,29 @@ public class MoneyNodeListActivity extends SherlockActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(EXTRA_MONEYNODES, new ArrayList<MoneyNode>(moneyNodes));
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        android.view.MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_moneynode_list, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        MoneyNode node = adapter.getItem(info.position);
+        switch (item.getItemId()) {
+            case R.id.remove:
+                dbHelper.deleteMoneyNode(node);
+                moneyNodes.remove(node);
+                adapter.notifyDataSetChanged();
+                return true;
+            // TODO: Allow money node editing
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 }

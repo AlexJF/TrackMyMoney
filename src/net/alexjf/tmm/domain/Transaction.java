@@ -32,7 +32,7 @@ public abstract class Transaction extends DatabaseObject {
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " + 
-                MoneyNode.TABLE_NAME + "," + 
+                MoneyNode.TABLE_NAME + " ON DELETE CASCADE," + 
             COL_VALUE + " NUMERIC NOT NULL," +
             COL_DESCRIPTION + " TEXT," +
             COL_CATEGORYID + " INTEGER REFERENCES Categories" +

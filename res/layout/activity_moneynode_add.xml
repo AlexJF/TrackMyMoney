@@ -93,7 +93,7 @@
             android:layout_below="@id/creationDate_button"
             android:gravity="center_vertical" />
     <EditText android:id="@id/initialBalance_text"
-            android:inputType="numberDecimal"
+            android:inputType="number|numberSigned|numberDecimal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

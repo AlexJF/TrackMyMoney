@@ -32,7 +32,7 @@ public class ImmediateTransaction extends Transaction {
     public static final String QUERY_CREATETABLE = 
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
-                "REFERENCES " + Transaction.TABLE_NAME + "," +
+                "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
             COL_EXECUTIONDATE + " DATETIME " + 
                 "DEFAULT (DATETIME('now', 'localtime'))" +
         ");";

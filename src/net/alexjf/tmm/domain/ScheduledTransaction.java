@@ -38,7 +38,7 @@ public class ScheduledTransaction extends Transaction {
     public static void onDatabaseCreation(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
-                    "REFERENCES " + Transaction.TABLE_NAME + "," +
+                    "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
                 COL_SCHEDULEDDATE + " DATETIME " + 
                     "DEFAULT (DATETIME('now', 'localtime'))," +
                 COL_RECURRENCE + " TEXT" + 

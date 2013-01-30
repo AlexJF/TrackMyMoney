@@ -4,10 +4,15 @@
  ******************************************************************************/
 package net.alexjf.tmm.adapters;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-import android.content.Context;
+import net.alexjf.tmm.R;
+import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.exceptions.DatabaseException;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,22 +21,21 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import net.alexjf.tmm.domain.DatabaseHelper;
-import net.alexjf.tmm.domain.MoneyNode;
-
-import net.alexjf.tmm.exceptions.DatabaseException;
-
-import net.alexjf.tmm.R;
-
 public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
     private static final int ROW_VIEW_RESID = R.layout.moneynode_list_row;
 
     private DatabaseHelper dbHelper;
+    private Context context;
+    private int colorBalancePositive;
+    private int colorBalanceNegative;
 
     public MoneyNodeAdapter(Context context, DatabaseHelper dbHelper, 
             List<MoneyNode> objects) {
         super(context, ROW_VIEW_RESID, objects);
         this.dbHelper = dbHelper;
+        this.context = context;
+        colorBalancePositive = context.getResources().getColor(R.color.balance_positive);
+        colorBalanceNegative = context.getResources().getColor(R.color.balance_negative);
     }
 
     @Override
@@ -52,7 +56,7 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
             if (iconName != null) {
                 // TODO: Use an application-level drawable cache here
                 int iconId = parent.getResources().getIdentifier(
-                        iconName, "drawable", parent.getContext().getPackageName());
+                        iconName, "drawable", context.getPackageName());
                 if (iconId != 0) {
                     iconImageView.setImageResource(iconId);
                 }
@@ -65,6 +69,19 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
                     R.id.moneynode_balance_value);
             balanceLabel.setText(node.getBalance().toString() + " " + 
                     node.getCurrency());
+            int signum = node.getBalance().signum();
+            // If balance is positive
+            if (signum == 1) {
+                balanceLabel.setTextColor(colorBalancePositive);
+            } 
+            // If balance is neutral
+            else if (signum == 0) {
+                balanceLabel.setTextColor(balanceLabel.getTextColors().getDefaultColor());
+            }
+            // If balance is negative
+            else {
+                balanceLabel.setTextColor(colorBalanceNegative);
+            }
         } catch (DatabaseException e) {
             Log.e("TMM", e.getMessage(), e);
         }
