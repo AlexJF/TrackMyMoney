@@ -13,6 +13,7 @@ import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.domain.Transaction;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.utils.DrawableResolver;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -30,13 +31,17 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
     private DatabaseHelper dbHelper;
     private Resources resources;
     private String packageName;
+    private int colorValuePositive;
+    private int colorValueNegative;
 
     public ImmediateTransactionAdapter(Context context, DatabaseHelper dbHelper, 
             List<ImmediateTransaction> objects) {
         super(context, ROW_VIEW_RESID, objects);
         this.dbHelper = dbHelper;
-        this.resources = context.getResources();
-        this.packageName = context.getPackageName();
+        resources = context.getResources();
+        packageName = context.getPackageName();
+        colorValuePositive = context.getResources().getColor(R.color.balance_positive);
+        colorValueNegative = context.getResources().getColor(R.color.balance_negative);
     }
 
     @Override
@@ -54,11 +59,12 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
 
             ImageView categoryIconImageView = (ImageView) view.findViewById(
                     R.id.transaction_caticon);
-
-            int iconId = resources.getIdentifier("cat_icon_supermarket", 
-                    "drawable", packageName);
-            categoryIconImageView.setImageDrawable(
-                    resources.getDrawable(iconId));
+            int iconId = DrawableResolver.getInstance().getDrawableId(
+                    transaction.getCategory().getIcon());
+            if (iconId != 0) {
+                categoryIconImageView.setImageDrawable(
+                        resources.getDrawable(iconId));
+            }
 
             TextView categoryTextView = (TextView) view.findViewById(
                     R.id.transaction_cat);
@@ -75,6 +81,19 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
                     R.id.transaction_value);
             valueTextView.setText(transaction.getValue().toString() + " " + 
                     node.getCurrency());
+            int signum = transaction.getValue().signum();
+            // If value is positive
+            if (signum == 1) {
+                valueTextView.setTextColor(colorValuePositive);
+            } 
+            // If value is neutral
+            else if (signum == 0) {
+                valueTextView.setTextColor(valueTextView.getTextColors().getDefaultColor());
+            }
+            // If value is negative
+            else {
+                valueTextView.setTextColor(colorValueNegative);
+            }
         } catch (DatabaseException e) {
             Log.e("TMM", e.getMessage(), e);
         }

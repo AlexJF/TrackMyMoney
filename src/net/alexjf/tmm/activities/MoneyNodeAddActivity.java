@@ -18,6 +18,7 @@ import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.DatePickerFragment;
 import net.alexjf.tmm.fragments.DrawablePickerFragment;
 import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
+import net.alexjf.tmm.utils.DrawableResolver;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.Intent;
@@ -153,13 +154,9 @@ public class MoneyNodeAddActivity extends SherlockFragmentActivity
         
         if (savedInstanceState != null) {
             selectedDrawableName = savedInstanceState.getString(EXTRA_SELECTEDICON);
-            // TODO: Use an application-level drawable cache here
-            if (selectedDrawableName != null) {
-                int iconId = getResources().getIdentifier(
-                        selectedDrawableName, "drawable", getPackageName());
-                if (iconId != 0) {
-                    iconImageView.setImageResource(iconId);
-                }
+            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
+            if (iconId != 0) {
+                iconImageView.setImageResource(iconId);
             }
         }
     }

@@ -4,13 +4,13 @@
  ******************************************************************************/
 package net.alexjf.tmm.adapters;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.utils.DrawableResolver;
 
 import android.content.Context;
 import android.util.Log;
@@ -25,7 +25,6 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
     private static final int ROW_VIEW_RESID = R.layout.moneynode_list_row;
 
     private DatabaseHelper dbHelper;
-    private Context context;
     private int colorBalancePositive;
     private int colorBalanceNegative;
 
@@ -33,7 +32,6 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
             List<MoneyNode> objects) {
         super(context, ROW_VIEW_RESID, objects);
         this.dbHelper = dbHelper;
-        this.context = context;
         colorBalancePositive = context.getResources().getColor(R.color.balance_positive);
         colorBalanceNegative = context.getResources().getColor(R.color.balance_negative);
     }
@@ -53,13 +51,9 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
 
             ImageView iconImageView = (ImageView) view.findViewById(R.id.moneynode_icon);
             String iconName = node.getIcon();
-            if (iconName != null) {
-                // TODO: Use an application-level drawable cache here
-                int iconId = parent.getResources().getIdentifier(
-                        iconName, "drawable", context.getPackageName());
-                if (iconId != 0) {
-                    iconImageView.setImageResource(iconId);
-                }
+            int iconId = DrawableResolver.getInstance().getDrawableId(iconName);
+            if (iconId != 0) {
+                iconImageView.setImageResource(iconId);
             }
 
             TextView nameLabel = (TextView) view.findViewById(R.id.moneynode_name);
