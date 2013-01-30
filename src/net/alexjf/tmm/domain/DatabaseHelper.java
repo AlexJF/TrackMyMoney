@@ -135,4 +135,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         this.password = password;
     }
 
+    /**
+     * Deletes a database associated with a particular user
+     *
+     * @param User user whose database we want to delete.
+     */
+    static public void deleteDatabase(Context context, User user) {
+        context.deleteDatabase(user.getName() + ".db");
+    }
 }

@@ -22,6 +22,16 @@ public class SelectedAdapter<T> extends ArrayAdapter<T> {
     private int normalColorResourceId;
     private int selectedColorResourceId;
 
+    public SelectedAdapter(Context context, int rowViewResourceId,
+            int textViewResourceId, int normalColorResourceId, 
+            int selectedColorResourceId) {
+        super(context, rowViewResourceId, textViewResourceId);
+        this.rowViewResourceId = rowViewResourceId;
+        this.textViewResourceId = textViewResourceId;
+        this.normalColorResourceId = normalColorResourceId;
+        this.selectedColorResourceId = selectedColorResourceId;
+    }
+
     public SelectedAdapter(Context context, int rowViewResourceId, 
             int textViewResourceId, List<T> objects, int normalColorResourceId,
             int selectedColorResourceId) {

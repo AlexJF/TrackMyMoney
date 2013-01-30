@@ -4,6 +4,8 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
+import java.util.ArrayList;
+
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.SelectedAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
@@ -14,10 +16,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,7 +57,7 @@ public class UserListActivity extends SherlockActivity {
         userList = new UserList(getApplicationContext());
 
         adapter = new SelectedAdapter<User>(this, 
-                R.layout.user_list_row, R.id.user_label, userList.getUsers(),
+                R.layout.user_list_row, R.id.user_label, 
                 R.color.user_bg_normal, R.color.user_bg_selected);
 
         View footer = (View) getLayoutInflater().inflate(
@@ -117,6 +124,8 @@ public class UserListActivity extends SherlockActivity {
                                               LayoutParams.WRAP_CONTENT));
         }
 
+        registerForContextMenu(userListView);
+        refreshUserList();
     }
     
     @Override
@@ -131,8 +140,8 @@ public class UserListActivity extends SherlockActivity {
             DatabaseHelper dbHelper = new DatabaseHelper(
                     getApplicationContext(), newUser);
             dbHelper.login(password);
+            refreshUserList();
             adapter.setSelectedPosition(-1);
-            adapter.notifyDataSetChanged();
         }
     }
 
@@ -140,5 +149,35 @@ public class UserListActivity extends SherlockActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(EXTRA_CURUSERINDEX, adapter.getSelectedPosition());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_user_list, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        User user = adapter.getItem(info.position);
+        switch (item.getItemId()) {
+            case R.id.remove:
+                userList.removeUser(user);
+                refreshUserList();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    private void refreshUserList() {
+        adapter.clear();
+        for (User user : userList.getUsers()) {
+            adapter.add(user);
+        }
+        adapter.sort(new User.Comparator());
     }
 }

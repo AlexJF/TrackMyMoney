@@ -80,4 +80,10 @@ public class User implements Parcelable {
                 return new User[size];
             }
         };
+
+    public static class Comparator implements java.util.Comparator<User> {
+        public int compare(User lhs, User rhs) {
+            return lhs.getName().compareTo(rhs.getName());
+        }
+    }
 }

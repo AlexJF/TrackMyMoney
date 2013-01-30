@@ -103,7 +103,7 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getSupportMenuInflater();
-        inflater.inflate(R.menu.activity_moneynode_details, menu);
+        inflater.inflate(R.menu.main_moneynode_details, menu);
         return true;
     }
 
