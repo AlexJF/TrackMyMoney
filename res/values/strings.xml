@@ -11,25 +11,26 @@
     <string name="title_activity_user_add">Add User</string>
     <string name="title_activity_moneynode_list">Money Nodes</string>
     <string name="title_activity_moneynode_add">Add Money Node</string>
+    <string name="title_activity_moneynode_edit">Edit Money Node</string>
 
-    <!-- User Related -->
+    <!-- General -->
     <string name="add">Add</string>
     <string name="remove">Remove</string>
-    <string name="login">Login</string>
-    <string name="addUser">Add new user</string>
-    <string name="addTransaction">Add new transaction</string>
-
-    <string name="username">Username:</string>
-    <string name="password">Password:</string>
-
-    <string name="error_loginFailed">Login failed for user \'%s\'</string>
-
-    <!-- Money Node Related -->
+    <string name="edit">Edit</string>
     <string name="name">Name:</string>
     <string name="description">Description:</string>
     <string name="icon">Icon:</string>
     <string name="choose">Choose...</string>
     <string name="currency">Currency:</string>
+
+    <!-- User Related -->
+    <string name="login">Login</string>
+    <string name="addUser">Add new user</string>
+    <string name="username">Username:</string>
+    <string name="password">Password:</string>
+    <string name="error_loginFailed">Login failed for user \'%s\'</string>
+
+    <!-- Money Node Related -->
     <string name="creationDate">Creation Date:</string>
     <string name="initialBalance">Initial Balance:</string>
     <string name="balance">Balance:</string>
@@ -38,5 +39,6 @@
     <!-- Transaction Related -->
     <string name="total_transactions">Total transactions:</string>
     <string name="transaction_empty">There are no transactions.\nPlease add one via the menu.</string>
+    <string name="addTransaction">Add new transaction</string>
 
 </resources>

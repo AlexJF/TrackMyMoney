@@ -32,7 +32,9 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 public class MoneyNodeListActivity extends SherlockActivity {
-    public static final String EXTRA_MONEYNODES = "moneyNodes";
+    private static final int REQCODE_ADD = 0;
+    private static final int REQCODE_EDIT = 1;
+    private static final String KEY_MONEYNODES = "moneyNodes";
 
     private DatabaseHelper dbHelper;
     private User currentUser;
@@ -53,7 +55,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
 
         Intent intent = getIntent();
         currentUser = (User) intent.getParcelableExtra(
-                User.EXTRA_CURRENTUSER);
+                User.KEY_USER);
         dbHelper = new DatabaseHelper(getApplicationContext(), 
                 currentUser);
 
@@ -66,7 +68,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
                 moneyNodes = new LinkedList<MoneyNode>();
             }
         } else {
-            moneyNodes = savedInstanceState.getParcelableArrayList(EXTRA_MONEYNODES);
+            moneyNodes = savedInstanceState.getParcelableArrayList(KEY_MONEYNODES);
         }
 
         adapter = new MoneyNodeAdapter(this, dbHelper, moneyNodes);
@@ -84,8 +86,8 @@ public class MoneyNodeListActivity extends SherlockActivity {
                 MoneyNode selectedNode = adapter.getItem(position);
                 Intent intent = new Intent(MoneyNodeListActivity.this, 
                     MoneyNodeDetailsActivity.class);
-                intent.putExtra(User.EXTRA_CURRENTUSER, currentUser);
-                intent.putExtra(MoneyNode.EXTRA_CURRENTMONEYNODE, selectedNode);
+                intent.putExtra(User.KEY_USER, currentUser);
+                intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
                 startActivity(intent);
             }
         });
@@ -111,9 +113,9 @@ public class MoneyNodeListActivity extends SherlockActivity {
         switch (item.getItemId()) {
             case R.id.menu_add:
                 Intent intent = new Intent(this, 
-                    MoneyNodeAddActivity.class);
-                intent.putExtra(User.EXTRA_CURRENTUSER, currentUser);
-                startActivityForResult(intent, 0);
+                    MoneyNodeEditActivity.class);
+                intent.putExtra(User.KEY_USER, currentUser);
+                startActivityForResult(intent, REQCODE_ADD);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -124,17 +126,23 @@ public class MoneyNodeListActivity extends SherlockActivity {
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            MoneyNode node = (MoneyNode) data.getParcelableExtra(
-                    MoneyNodeAddActivity.EXTRA_NEWMONEYNODE);
-
-            moneyNodes.add(node);
-            adapter.notifyDataSetChanged();
+            switch (requestCode) {
+                case REQCODE_ADD:
+                    MoneyNode node = (MoneyNode) data.getParcelableExtra(
+                        MoneyNode.KEY_MONEYNODE);
+                    moneyNodes.add(node);
+                    adapter.notifyDataSetChanged();
+                    break;
+                case REQCODE_EDIT:
+                    adapter.notifyDataSetChanged();
+                    break;
+            }
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(EXTRA_MONEYNODES, new ArrayList<MoneyNode>(moneyNodes));
+        outState.putParcelableArrayList(KEY_MONEYNODES, new ArrayList<MoneyNode>(moneyNodes));
         super.onSaveInstanceState(outState);
     }
 
@@ -151,12 +159,18 @@ public class MoneyNodeListActivity extends SherlockActivity {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         MoneyNode node = adapter.getItem(info.position);
         switch (item.getItemId()) {
-            case R.id.remove:
+            case R.id.menu_remove:
                 dbHelper.deleteMoneyNode(node);
                 moneyNodes.remove(node);
                 adapter.notifyDataSetChanged();
                 return true;
-            // TODO: Allow money node editing
+            case R.id.menu_edit:
+                Intent intent = new Intent(this, 
+                    MoneyNodeEditActivity.class);
+                intent.putExtra(User.KEY_USER, currentUser);
+                intent.putExtra(MoneyNode.KEY_MONEYNODE, node);
+                startActivityForResult(intent, REQCODE_EDIT);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }

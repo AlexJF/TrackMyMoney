@@ -35,7 +35,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 
 public class UserListActivity extends SherlockActivity {
-    private static final String EXTRA_CURUSERINDEX = "curUserIdx";
+    private static final String KEY_CURUSERINDEX = "curUserIdx";
 
     private UserList userList;
     private SelectedAdapter<User> adapter;
@@ -107,7 +107,7 @@ public class UserListActivity extends SherlockActivity {
 
                     Intent intent = new Intent(UserListActivity.this,
                         MoneyNodeListActivity.class);
-                    intent.putExtra(User.EXTRA_CURRENTUSER, selectedUser);
+                    intent.putExtra(User.KEY_USER, selectedUser);
                     startActivity(intent);
                 } else {
                     userPasswordText.setText("");
@@ -118,7 +118,7 @@ public class UserListActivity extends SherlockActivity {
         });
 
         if (savedInstanceState != null) {
-            adapter.setSelectedPosition(savedInstanceState.getInt(EXTRA_CURUSERINDEX));
+            adapter.setSelectedPosition(savedInstanceState.getInt(KEY_CURUSERINDEX));
             userPasswordLayout.setLayoutParams(
                 new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
                                               LayoutParams.WRAP_CONTENT));
@@ -132,8 +132,8 @@ public class UserListActivity extends SherlockActivity {
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            String username = data.getStringExtra(UserAddActivity.EXTRA_USERNAME);
-            String password = data.getStringExtra(UserAddActivity.EXTRA_PASSWORD);
+            String username = data.getStringExtra(UserAddActivity.KEY_USERNAME);
+            String password = data.getStringExtra(UserAddActivity.KEY_PASSWORD);
 
             // Add user and login to initiate the database
             User newUser = userList.addUser(username);
@@ -147,7 +147,7 @@ public class UserListActivity extends SherlockActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(EXTRA_CURUSERINDEX, adapter.getSelectedPosition());
+        outState.putInt(KEY_CURUSERINDEX, adapter.getSelectedPosition());
         super.onSaveInstanceState(outState);
     }
 
@@ -164,7 +164,7 @@ public class UserListActivity extends SherlockActivity {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         User user = adapter.getItem(info.position);
         switch (item.getItemId()) {
-            case R.id.remove:
+            case R.id.menu_remove:
                 userList.removeUser(user);
                 refreshUserList();
                 return true;

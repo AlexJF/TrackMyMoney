@@ -27,11 +27,13 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
     private DatabaseHelper dbHelper;
     private int colorBalancePositive;
     private int colorBalanceNegative;
+    private Integer colorBalanceDefault;
 
     public MoneyNodeAdapter(Context context, DatabaseHelper dbHelper, 
             List<MoneyNode> objects) {
         super(context, ROW_VIEW_RESID, objects);
         this.dbHelper = dbHelper;
+        colorBalanceDefault = null;
         colorBalancePositive = context.getResources().getColor(R.color.balance_positive);
         colorBalanceNegative = context.getResources().getColor(R.color.balance_negative);
     }
@@ -63,6 +65,11 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
                     R.id.moneynode_balance_value);
             balanceLabel.setText(node.getBalance().toString() + " " + 
                     node.getCurrency());
+
+            if (colorBalanceDefault == null) {
+                colorBalanceDefault = balanceLabel.getTextColors().getDefaultColor();
+            }
+
             int signum = node.getBalance().signum();
             // If balance is positive
             if (signum == 1) {
@@ -70,7 +77,7 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
             } 
             // If balance is neutral
             else if (signum == 0) {
-                balanceLabel.setTextColor(balanceLabel.getTextColors().getDefaultColor());
+                balanceLabel.setTextColor(colorBalanceDefault);
             }
             // If balance is negative
             else {

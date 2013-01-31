@@ -18,8 +18,8 @@ import android.widget.EditText;
 import com.actionbarsherlock.app.SherlockActivity;
 
 public class UserAddActivity extends SherlockActivity {
-    public static final String EXTRA_USERNAME = "username";
-    public static final String EXTRA_PASSWORD = "password";
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_PASSWORD = "password";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,9 +33,9 @@ public class UserAddActivity extends SherlockActivity {
         addButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
                 Intent data = new Intent();
-                data.putExtra(EXTRA_USERNAME, 
+                data.putExtra(KEY_USERNAME, 
                     usernameText.getText().toString().trim());
-                data.putExtra(EXTRA_PASSWORD, 
+                data.putExtra(KEY_PASSWORD, 
                     passwordText.getText().toString().trim());
                 Log.d("TMM", "Adding user " + usernameText.getText().toString());
                 setResult(Activity.RESULT_OK, data);

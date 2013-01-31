@@ -12,7 +12,7 @@ import android.os.Parcelable;
  */
 public class User implements Parcelable {
     // Intent keys
-    public static final String EXTRA_CURRENTUSER = "curUser";
+    public static final String KEY_USER = "curUser";
 
     private String name;
     private String password;

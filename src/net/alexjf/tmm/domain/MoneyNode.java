@@ -25,7 +25,7 @@ import android.os.Parcelable;
  */
 public class MoneyNode extends DatabaseObject {
     // Intent keys
-    public static final String EXTRA_CURRENTMONEYNODE = "curMoneyNode";
+    public static final String KEY_MONEYNODE = "curMoneyNode";
 
     // Database tables
     public static final String TABLE_NAME = "MoneyNodes";
@@ -228,7 +228,7 @@ public class MoneyNode extends DatabaseObject {
      *
      * @param icon The icon drawable entry name.
      */
-    public void setLocation(String icon) {
+    public void setIcon(String icon) {
         this.icon = icon;
         setChanged(true);
     }
@@ -260,16 +260,7 @@ public class MoneyNode extends DatabaseObject {
      */
     public void setInitialBalance(BigDecimal initialBalance) {
         this.initialBalance = initialBalance;
-        setChanged(true);
-    }
-
-    /**
-     * Sets the balance for this instance.
-     *
-     * @param balance The initialBalance.
-     */
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+        this.balance = null;
         setChanged(true);
     }
 
@@ -333,7 +324,11 @@ public class MoneyNode extends DatabaseObject {
      * @return The balance.
      */
     public BigDecimal getBalance() {
-        return this.balance;
+        if (balance == null) {
+            // TODO: use transaction values
+            balance = initialBalance;
+        }
+        return balance;
     }
 
     public List<ImmediateTransaction> getImmediateTransactions() 

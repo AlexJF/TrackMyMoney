@@ -57,11 +57,11 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
 
         Intent intent = getIntent();
         currentUser = (User) intent.getParcelableExtra(
-                User.EXTRA_CURRENTUSER);
+                User.KEY_USER);
         dbHelper = new DatabaseHelper(getApplicationContext(), 
                 currentUser);
         currentMoneyNode = (MoneyNode) intent.getParcelableExtra(
-                MoneyNode.EXTRA_CURRENTMONEYNODE);
+                MoneyNode.KEY_MONEYNODE);
 
         setTitle(currentMoneyNode.getName());
 
