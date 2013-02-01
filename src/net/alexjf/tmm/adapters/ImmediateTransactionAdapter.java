@@ -26,11 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransaction> {
-    private static final int ROW_VIEW_RESID = R.layout.transaction_list_row;
+    private static final int ROW_VIEW_RESID = R.layout.list_row_immedtransaction;
 
     private DatabaseHelper dbHelper;
     private Resources resources;
-    private String packageName;
     private int colorValuePositive;
     private int colorValueNegative;
 
@@ -39,7 +38,6 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
         super(context, ROW_VIEW_RESID, objects);
         this.dbHelper = dbHelper;
         resources = context.getResources();
-        packageName = context.getPackageName();
         colorValuePositive = context.getResources().getColor(R.color.balance_positive);
         colorValueNegative = context.getResources().getColor(R.color.balance_negative);
     }
@@ -57,20 +55,21 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
         try {
             transaction.load(dbHelper.getReadableDatabase());
 
-            ImageView categoryIconImageView = (ImageView) view.findViewById(
-                    R.id.transaction_caticon);
-            int iconId = DrawableResolver.getInstance().getDrawableId(
-                    transaction.getCategory().getIcon());
-            if (iconId != 0) {
-                categoryIconImageView.setImageDrawable(
-                        resources.getDrawable(iconId));
-            }
-
-            TextView categoryTextView = (TextView) view.findViewById(
-                    R.id.transaction_cat);
             Category cat = transaction.getCategory();
             if (cat != null) {
                 cat.load(dbHelper.getReadableDatabase());
+
+                ImageView categoryIconImageView = (ImageView) view.findViewById(
+                        R.id.transaction_caticon);
+                int iconId = DrawableResolver.getInstance().getDrawableId(
+                        transaction.getCategory().getIcon());
+                if (iconId != 0) {
+                    categoryIconImageView.setImageDrawable(
+                            resources.getDrawable(iconId));
+                }
+
+                TextView categoryTextView = (TextView) view.findViewById(
+                        R.id.transaction_cat);
                 categoryTextView.setText(cat.getName());
             }
 

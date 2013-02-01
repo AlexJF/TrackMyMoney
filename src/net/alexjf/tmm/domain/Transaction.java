@@ -93,12 +93,13 @@ public abstract class Transaction extends DatabaseObject {
         
         try {
             if (cursor.moveToFirst()) {
-                value = new BigDecimal(cursor.getString(1));
-                long moneyNodeId = cursor.getLong(2);
+                long moneyNodeId = cursor.getLong(1);
 
                 if (moneyNode == null || !moneyNode.getId().equals(moneyNodeId)) {
                     moneyNode = MoneyNode.createFromId(moneyNodeId);
                 }
+
+                value = new BigDecimal(cursor.getString(2));
 
                 description = cursor.getString(3);
 

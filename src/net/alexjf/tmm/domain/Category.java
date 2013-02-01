@@ -18,6 +18,8 @@ import android.os.Parcelable;
  * This class represents a transaction category.
  */
 public class Category extends DatabaseObject {
+    public static final String KEY_CATEGORY = "category";
+
     // Database tables
     public static final String TABLE_NAME = "Categories";
 
@@ -135,6 +137,7 @@ public class Category extends DatabaseObject {
                 contentValues, SQLiteDatabase.CONFLICT_REPLACE);
 
         if (result > 0) {
+            cache.put(result, this);
             return result;
         } else {
             throw new DbObjectSaveException("Couldn't save category " + 
@@ -172,11 +175,16 @@ public class Category extends DatabaseObject {
         setChanged(true);
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     public static final Parcelable.Creator<Category> CREATOR =
         new Parcelable.Creator<Category>() {
             public Category createFromParcel(Parcel in) {
                 Long id = in.readLong();
-                return cache.get(id);
+                return createFromId(id);
             }
  
             public Category[] newArray(int size) {

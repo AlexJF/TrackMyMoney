@@ -57,11 +57,11 @@ public class UserListActivity extends SherlockActivity {
         userList = new UserList(getApplicationContext());
 
         adapter = new SelectedAdapter<User>(this, 
-                R.layout.user_list_row, R.id.user_label, 
+                R.layout.list_row_user, R.id.user_label, 
                 R.color.user_bg_normal, R.color.user_bg_selected);
 
         View footer = (View) getLayoutInflater().inflate(
-                R.layout.user_list_footer, null);
+                R.layout.list_footer_user, null);
         footer.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(UserListActivity.this, 

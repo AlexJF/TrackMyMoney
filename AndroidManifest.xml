@@ -37,6 +37,16 @@
         <activity
             android:name=".activities.MoneyNodeDetailsActivity">
         </activity>
+        <activity
+            android:name=".activities.ImmedTransactionEditActivity">
+        </activity>
+        <activity
+            android:name=".activities.CategoryListActivity"
+            android:label="@string/title_activity_category_list" >
+        </activity>
+        <activity
+            android:name=".activities.CategoryEditActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -32,8 +32,8 @@ import android.widget.Spinner;
 
 public class MoneyNodeEditorFragment extends Fragment 
     implements OnDateSetListener, OnDrawablePickedListener {
-    private static final String EXTRA_CURRENTNODE = "currentNode";
-    private static final String EXTRA_SELECTEDICON = "selectedIcon";
+    private static final String KEY_CURRENTNODE = "currentNode";
+    private static final String KEY_SELECTEDICON = "selectedIcon";
 
     private OnMoneyNodeEditListener listener;
 
@@ -135,13 +135,13 @@ public class MoneyNodeEditorFragment extends Fragment
         });
 
         if (savedInstanceState != null) {
-            node = savedInstanceState.getParcelable(EXTRA_CURRENTNODE);
+            node = savedInstanceState.getParcelable(KEY_CURRENTNODE);
         }
         
         updateNodeFields();
 
         if (savedInstanceState != null) {
-            selectedDrawableName = savedInstanceState.getString(EXTRA_SELECTEDICON);
+            selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
             int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
             iconImageView.setImageResource(iconId);
         }
@@ -161,8 +161,8 @@ public class MoneyNodeEditorFragment extends Fragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(EXTRA_SELECTEDICON, selectedDrawableName);
-        outState.putParcelable(EXTRA_CURRENTNODE, node);
+        outState.putString(KEY_SELECTEDICON, selectedDrawableName);
+        outState.putParcelable(KEY_CURRENTNODE, node);
         super.onSaveInstanceState(outState);
     }
 

@@ -8,9 +8,4 @@
         android:icon="@android:drawable/ic_menu_add"
         android:orderInCategory="100"
         android:showAsAction="always" />
-    <item android:id="@+id/menu_manage_categories"
-        android:title="@string/manage_categories"
-        android:icon="@*android:drawable/ic_menu_friendslist"
-        android:orderInCategory="101"
-        android:showAsAction="never" />
 </menu>

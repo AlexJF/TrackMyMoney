@@ -26,7 +26,7 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_moneynode_add);
+        setContentView(R.layout.activity_moneynode_edit);
 
         Intent intent = getIntent();
         User currentUser = (User) intent.getParcelableExtra(

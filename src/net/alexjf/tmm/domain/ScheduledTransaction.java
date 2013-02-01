@@ -193,7 +193,7 @@ public class ScheduledTransaction extends Transaction {
         new Parcelable.Creator<ScheduledTransaction>() {
             public ScheduledTransaction createFromParcel(Parcel in) {
                 Long id = in.readLong();
-                return cache.get(id);
+                return createFromId(id);
             }
  
             public ScheduledTransaction[] newArray(int size) {

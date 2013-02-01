@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * This class represents a single user of the application.
@@ -51,9 +52,6 @@ public class MoneyNode extends DatabaseObject {
                 "DEFAULT (DATETIME('now', 'localtime'))," +
             COL_INITIALBALANCE + " NUMERIC DEFAULT 0" +
         ");";
-    private static final String QUERY_SINGLE = 
-        "SELECT * FROM " + TABLE_NAME +
-        " WHERE " + COL_ID + " = ?";
     private static final String QUERY_BALANCE = 
         "SELECT TOTAL(" + Transaction.COL_VALUE + ") " + 
         " FROM " + Transaction.TABLE_NAME +
@@ -152,33 +150,26 @@ public class MoneyNode extends DatabaseObject {
 
     @Override
     protected void internalLoad() throws DbObjectLoadException {
-        Cursor cursor = getDb().rawQuery(QUERY_SINGLE, 
-                new String[] {getId().toString()});
-        
-        if (cursor.moveToNext()) {
-            name = cursor.getString(1);
-            description = cursor.getString(2);
-            icon = cursor.getString(3);
-            currency = cursor.getString(4);
-            creationDate = new Date(cursor.getLong(5));
-            // TODO: Change this to take into account transactions
-            // and cache the value
-            initialBalance = new BigDecimal(cursor.getString(6));
-        } else {
-            throw new DbObjectLoadException("Couldn't find money node" + 
-                    "associated with id " + getId());
-        }
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+                new String[] {getId().toString()}, null, null, null, null);
 
-        cursor.close();
-        cursor = getDb().rawQuery(QUERY_BALANCE, 
-                new String[] {getId().toString()});
-
-        if (cursor.moveToNext()) {
-            balance = initialBalance.add(new BigDecimal(cursor.getString(0)));
-        } else {
-            balance = new BigDecimal(0);
+        try {
+            if (cursor.moveToFirst()) {
+                name = cursor.getString(1);
+                description = cursor.getString(2);
+                icon = cursor.getString(3);
+                currency = cursor.getString(4);
+                creationDate = new Date(cursor.getLong(5));
+                initialBalance = new BigDecimal(cursor.getString(6));
+                // Update balance
+                getBalance();
+            } else {
+                throw new DbObjectLoadException("Couldn't find money node" + 
+                        "associated with id " + getId());
+            }
+        } finally {
+            cursor.close();
         }
-        cursor.close();
     }
 
     @Override
@@ -325,9 +316,13 @@ public class MoneyNode extends DatabaseObject {
      */
     public BigDecimal getBalance() {
         if (balance == null) {
-            // TODO: use transaction values
-            balance = initialBalance;
+            try {
+                updateBalance();
+            } catch (DatabaseException e) {
+                Log.e("TMM", "Unable to get money node's balance", e);
+            }
         }
+
         return balance;
     }
 
@@ -345,15 +340,33 @@ public class MoneyNode extends DatabaseObject {
 
         while (cursor.moveToNext()) {
             ImmediateTransaction immediateTransaction = 
-                new ImmediateTransaction(cursor.getLong(0));
+                ImmediateTransaction.createFromId(cursor.getLong(0));
             immediateTransaction.setDb(db);
-            immediateTransaction.setMoneyNode(this);
             immediateTransactions.add(immediateTransaction);
         }
 
         cursor.close();
 
         return immediateTransactions;
+    }
+
+    public void removeImmediateTransaction(ImmediateTransaction transaction)
+        throws DatabaseException {
+        if (transaction == null) {
+            return;
+        }
+        dbReadyOrThrow();
+
+        SQLiteDatabase db = getDb();
+
+        int result = db.delete(ImmediateTransaction.TABLE_NAME, 
+                ImmediateTransaction.COL_ID + " = ?",
+                new String[]{transaction.getId().toString()});
+
+        if (result == 1) {
+            notifyBalanceChange(transaction.getValue().multiply(
+                        BigDecimal.valueOf(-1)));
+        }
     }
 
     public List<ScheduledTransaction> getScheduledTransactions() 
@@ -372,7 +385,6 @@ public class MoneyNode extends DatabaseObject {
             ScheduledTransaction immediateTransaction = 
                 new ScheduledTransaction(cursor.getLong(0));
             immediateTransaction.setDb(db);
-            immediateTransaction.setMoneyNode(this);
             immediateTransactions.add(immediateTransaction);
         }
         
@@ -389,11 +401,34 @@ public class MoneyNode extends DatabaseObject {
         new Parcelable.Creator<MoneyNode>() {
             public MoneyNode createFromParcel(Parcel in) {
                 Long id = in.readLong();
-                return cache.get(id);
+                return createFromId(id);
             }
  
             public MoneyNode[] newArray(int size) {
                 return new MoneyNode[size];
             }
         };
+
+    private void updateBalance()
+        throws DatabaseException {
+        dbReadyOrThrow();
+
+        SQLiteDatabase db = getDb();
+
+        Cursor cursor = db.rawQuery(QUERY_BALANCE, 
+                new String[] {getId().toString()});
+
+        cursor.moveToFirst();
+        balance = new BigDecimal(cursor.getString(0)).add(initialBalance);
+
+        cursor.close();
+    }
+
+    void notifyBalanceChange(BigDecimal delta) {
+        if (balance == null || delta == null) {
+            return;
+        }
+
+        balance = balance.add(delta);
+    }
 }

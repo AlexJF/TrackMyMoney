@@ -12,6 +12,9 @@
     <string name="title_activity_moneynode_list">Money Nodes</string>
     <string name="title_activity_moneynode_add">Add Money Node</string>
     <string name="title_activity_moneynode_edit">Edit Money Node</string>
+    <string name="title_activity_category_list">Categories</string>
+    <string name="title_activity_category_add">Add Category</string>
+    <string name="title_activity_category_edit">Edit Category</string>
 
     <!-- General -->
     <string name="add">Add</string>
@@ -22,6 +25,7 @@
     <string name="icon">Icon:</string>
     <string name="choose">Choose...</string>
     <string name="currency">Currency:</string>
+    <string name="value">Value:</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -40,5 +44,11 @@
     <string name="total_transactions">Total transactions:</string>
     <string name="transaction_empty">There are no transactions.\nPlease add one via the menu.</string>
     <string name="addTransaction">Add new transaction</string>
+    <string name="executionDate">Execution Date:</string>
+
+    <!-- Category Related -->
+    <string name="category">Category:</string>
+    <string name="manage_categories">Manage Categories</string>
+    <string name="category_empty">There are no categories.\nPlease add one via the menu.</string>
 
 </resources>

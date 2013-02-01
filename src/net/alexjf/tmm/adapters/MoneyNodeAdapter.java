@@ -22,7 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
-    private static final int ROW_VIEW_RESID = R.layout.moneynode_list_row;
+    private static final int ROW_VIEW_RESID = R.layout.list_row_moneynode;
 
     private DatabaseHelper dbHelper;
     private int colorBalancePositive;

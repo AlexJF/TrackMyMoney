@@ -137,6 +137,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{node.getId().toString()});
     }
 
+    public List<Category> getCategories() throws Exception {
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(Category.TABLE_NAME, 
+                new String[] {Category.COL_ID}, 
+                null, null, null, null, null, null);
+
+        List<Category> categories = new ArrayList<Category>(cursor.getCount());
+
+        while (cursor.moveToNext()) {
+            Category category = Category.createFromId(cursor.getLong(0));
+            category.setDb(db);
+            categories.add(category);
+        }
+
+        cursor.close();
+
+        return categories;
+    }
+
+    public void deleteCategory(Category category) {
+        if (category == null) {
+            return;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(Category.TABLE_NAME, Category.COL_ID + " = ?",
+                new String[]{category.getId().toString()});
+    }
+
     /**
      * Sets the password for this instance.
      *

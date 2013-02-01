@@ -21,6 +21,8 @@ import android.os.Parcelable;
  * This class represents an immediate transaction of the application.
  */
 public class ImmediateTransaction extends Transaction {
+    public static final String KEY_TRANSACTION = "immediateTransaction";
+
     // Database tables
     public static final String TABLE_NAME = "ImmediateTransactions";
 
@@ -84,9 +86,13 @@ public class ImmediateTransaction extends Transaction {
 
     // Private fields
     private Date executionDate;
+    private BigDecimal deltaValueFromPrevious;
+    private BigDecimal valueOnDatabase;
 
-    public ImmediateTransaction(Long id) {
+    private ImmediateTransaction(Long id) {
         super(id);
+        deltaValueFromPrevious = BigDecimal.valueOf(0);
+        valueOnDatabase = BigDecimal.valueOf(0);
     }
 
     /**
@@ -102,6 +108,8 @@ public class ImmediateTransaction extends Transaction {
             String description, Category category, Date executionDate) {
         super(moneyNode, value, description, category);
         this.executionDate = executionDate;
+        deltaValueFromPrevious = BigDecimal.valueOf(0);
+        valueOnDatabase = BigDecimal.valueOf(0);
     }
 
     @Override
@@ -121,10 +129,13 @@ public class ImmediateTransaction extends Transaction {
         }
 
         super.internalLoad();
+        valueOnDatabase = getValue();
     }
 
     @Override
     protected long internalSave() throws DbObjectSaveException {
+        boolean newTransaction = getId() == null;
+
         SQLiteDatabase db = getDb();
         try {
             db.beginTransaction();
@@ -139,6 +150,8 @@ public class ImmediateTransaction extends Transaction {
 
             if (result > 0) {
                 db.setTransactionSuccessful();
+                getMoneyNode().notifyBalanceChange(deltaValueFromPrevious);
+                deltaValueFromPrevious = BigDecimal.valueOf(0);
                 return getId();
             } else {
                 throw new DbObjectSaveException("Couldn't save immediate " +
@@ -172,12 +185,18 @@ public class ImmediateTransaction extends Transaction {
         new Parcelable.Creator<ImmediateTransaction>() {
             public ImmediateTransaction createFromParcel(Parcel in) {
                 Long id = in.readLong();
-                return cache.get(id);
+                return createFromId(id);
             }
  
             public ImmediateTransaction[] newArray(int size) {
                 return new ImmediateTransaction[size];
             }
         };
+
+    @Override
+    public void setValue(BigDecimal value) {
+        super.setValue(value);
+        deltaValueFromPrevious = valueOnDatabase.subtract(value);
+    }
 
 }
