@@ -7,7 +7,6 @@ package net.alexjf.tmm.activities;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment.OnMoneyNodeEditListener;
@@ -21,7 +20,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class MoneyNodeEditActivity extends SherlockFragmentActivity 
     implements OnMoneyNodeEditListener {
-    private DatabaseHelper dbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,10 +27,6 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
         setContentView(R.layout.activity_moneynode_edit);
 
         Intent intent = getIntent();
-        User currentUser = (User) intent.getParcelableExtra(
-                User.KEY_USER);
-        dbHelper = new DatabaseHelper(getApplicationContext(), 
-                currentUser);
         MoneyNode node = (MoneyNode) intent.getParcelableExtra(
                 MoneyNode.KEY_MONEYNODE);
 
@@ -50,14 +44,14 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
     @Override
     protected void onStop() {
         super.onStop();
-        dbHelper.close();
+        DatabaseHelper.getInstance().close();
     }
 
     public void onMoneyNodeEdited(MoneyNode node) {
         try {
             Intent data = new Intent();
             Log.d("TMM", "Editing moneynode " + node.getName());
-            node.save(dbHelper.getWritableDatabase());
+            node.save();
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
@@ -71,7 +65,7 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
         try {
             Intent data = new Intent();
             Log.d("TMM", "Adding moneynode " + node.getName());
-            node.save(dbHelper.getWritableDatabase());
+            node.save();
             data.putExtra(MoneyNode.KEY_MONEYNODE, node);
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();

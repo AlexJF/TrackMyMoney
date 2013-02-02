@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
 
@@ -25,17 +24,12 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
     private static final int ROW_VIEW_RESID = R.layout.list_row_category;
     private static final int ROW_VIEW_NAMETEXTID = R.id.category_name;
 
-    private DatabaseHelper dbHelper;
-
-    public CategoryAdapter(Context context, DatabaseHelper dbHelper) {
+    public CategoryAdapter(Context context) {
         super(context, ROW_VIEW_RESID, ROW_VIEW_NAMETEXTID);
-        this.dbHelper = dbHelper;
     }
 
-    public CategoryAdapter(Context context, DatabaseHelper dbHelper, 
-            List<Category> objects) {
+    public CategoryAdapter(Context context, List<Category> objects) {
         super(context, ROW_VIEW_RESID, ROW_VIEW_NAMETEXTID, objects);
-        this.dbHelper = dbHelper;
     }
 
     @Override
@@ -58,7 +52,7 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
 
         Category cat = getItem(position);
         try {
-            cat.load(dbHelper.getReadableDatabase());
+            cat.load();
 
             ImageView iconImageView = (ImageView) view.findViewById(R.id.category_icon);
             String iconName = cat.getIcon();

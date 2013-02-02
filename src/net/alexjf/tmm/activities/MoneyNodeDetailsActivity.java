@@ -37,8 +37,6 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_EDIT = 1;
 
-    private DatabaseHelper dbHelper;
-    private User currentUser;
     private MoneyNode currentMoneyNode;
     private List<ImmediateTransaction> immediateTransactions;
     private ImmediateTransactionAdapter adapter;
@@ -48,8 +46,6 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
     private ListView transactionsListView;
 
     public MoneyNodeDetailsActivity() {
-        dbHelper = null;
-        currentUser = null;
         currentMoneyNode = null;
         immediateTransactions = null;
 
@@ -63,13 +59,8 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
         setContentView(R.layout.activity_moneynode_details);
 
         Intent intent = getIntent();
-        currentUser = (User) intent.getParcelableExtra(
-                User.KEY_USER);
-        dbHelper = new DatabaseHelper(getApplicationContext(), 
-                currentUser);
         currentMoneyNode = (MoneyNode) intent.getParcelableExtra(
                 MoneyNode.KEY_MONEYNODE);
-        currentMoneyNode.setDb(dbHelper.getReadableDatabase());
 
         setTitle(currentMoneyNode.getName());
 
@@ -90,8 +81,7 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
         totalTransactionsTextView.setText(Integer.toString(immediateTransactions.size()));
 
         View emptyView = findViewById(R.id.transaction_list_empty);
-        adapter = new ImmediateTransactionAdapter(this, dbHelper, 
-                immediateTransactions);
+        adapter = new ImmediateTransactionAdapter(this, immediateTransactions);
 
         transactionsListView.setEmptyView(emptyView);
         transactionsListView.setAdapter(adapter);
@@ -108,7 +98,7 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        dbHelper.close();
+        DatabaseHelper.getInstance().close();
     }
 
     @Override
@@ -124,7 +114,6 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
             case R.id.menu_addTransaction:
                 Intent intent = new Intent(this, 
                     ImmedTransactionEditActivity.class);
-                intent.putExtra(User.KEY_USER, currentUser);
                 intent.putExtra(MoneyNode.KEY_MONEYNODE, currentMoneyNode);
                 startActivityForResult(intent, REQCODE_ADD);
                 return true;
@@ -157,7 +146,6 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
             case R.id.menu_edit:
                 Intent intent = new Intent(this, 
                     ImmedTransactionEditActivity.class);
-                intent.putExtra(User.KEY_USER, currentUser);
                 intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, transaction);
                 startActivityForResult(intent, REQCODE_EDIT);
                 return true;

@@ -5,25 +5,25 @@
 package net.alexjf.tmm.fragments;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.adapters.CategoryAdapter;
+import net.alexjf.tmm.activities.CategoryListActivity;
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.utils.DrawableResolver;
+import net.alexjf.tmm.utils.Utils;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,30 +31,32 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 public class ImmedTransactionEditorFragment extends Fragment 
-    implements OnDateSetListener {
+    implements OnDateSetListener, OnTimeSetListener {
     private static final String KEY_CURRENTTRANSACTION = "currentTransaction";
+    private static final String KEY_SELECTEDCATEGORY = "selectedCategory";
 
     private OnImmediateTransactionEditListener listener;
-    private DatabaseHelper dbHelper;
+    private Category selectedCategory;
 
     private ImmediateTransaction transaction;
     private MoneyNode currentMoneyNode;
 
+    private TimePickerFragment timePicker;
     private DatePickerFragment datePicker;
 
     private EditText descriptionText;
-    // TODO: I think a button + category list fragment would be better than a
-    // spinner here otherwise we have problems with the adapters
-    private Spinner categorySpinner;
+    private Button categoryButton;
     private Button executionDateButton;
+    private Button executionTimeButton;
     private EditText valueText;
     private TextView currencyTextView;
     private Button addButton;
-    private SimpleDateFormat dateFormat;
+    private DateFormat dateFormat;
+    private DateFormat timeFormat;
 
     public interface OnImmediateTransactionEditListener {
         public void onImmediateTransactionCreated(ImmediateTransaction node);
@@ -62,7 +64,8 @@ public class ImmedTransactionEditorFragment extends Fragment
     }
 
     public ImmedTransactionEditorFragment() {
-        dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy");
+        dateFormat = DateFormat.getDateInstance();
+        timeFormat = DateFormat.getTimeInstance();
     }
 
     @Override
@@ -72,13 +75,25 @@ public class ImmedTransactionEditorFragment extends Fragment
                 container, false);
 
         descriptionText = (EditText) v.findViewById(R.id.description_text);
-        categorySpinner = (Spinner) v.findViewById(R.id.category_spinner);
+        categoryButton = (Button) v.findViewById(R.id.category_button);
         executionDateButton = (Button) v.findViewById(R.id.executionDate_button);
+        executionTimeButton = (Button) v.findViewById(R.id.executionTime_button);
         valueText = (EditText) v.findViewById(R.id.value_text);
         currencyTextView = (TextView) v.findViewById(R.id.currency_label);
         addButton = (Button) v.findViewById(R.id.add_button);
 
+        timePicker = new TimePickerFragment(this);
         datePicker = new DatePickerFragment(this);
+
+        categoryButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), 
+                    CategoryListActivity.class);
+                intent.putExtra(CategoryListActivity.KEY_INTENTION, 
+                    CategoryListActivity.INTENTION_SELECT);
+                startActivityForResult(intent, 0);
+            }
+        });
 
         executionDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -87,7 +102,18 @@ public class ImmedTransactionEditorFragment extends Fragment
                             executionDateButton.getText().toString()));
                 } catch (ParseException e) {
                 }
-                datePicker.show(getFragmentManager(), "creationDate");
+                datePicker.show(getFragmentManager(), "executionDate");
+            }
+        });
+
+        executionTimeButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                try {
+                    timePicker.setTime(timeFormat.parse(
+                            executionTimeButton.getText().toString()));
+                } catch (ParseException e) {
+                }
+                timePicker.show(getFragmentManager(), "executionTime");
             }
         });
 
@@ -95,15 +121,20 @@ public class ImmedTransactionEditorFragment extends Fragment
             public void onClick(View view) {
                 String description = descriptionText.getText().toString().trim();
 
-                Category category = (Category) categorySpinner.getSelectedItem();
-
                 Date executionDate;
+                Date executionTime;
+                Date executionDateTime;
                 try {
                     executionDate = dateFormat.parse(
                         executionDateButton.getText().toString());
+                    executionTime = timeFormat.parse(
+                        executionTimeButton.getText().toString());
                 } catch (ParseException e) {
-                    executionDate = new Date();
+                    executionTime = executionDate = new Date();
                 }
+
+                executionDateTime = Utils.combineDateTime(executionDate, 
+                    executionTime);
 
                 BigDecimal value;
                 try {
@@ -115,12 +146,12 @@ public class ImmedTransactionEditorFragment extends Fragment
                 if (transaction == null) {
                     ImmediateTransaction newTransaction = 
                         new ImmediateTransaction(currentMoneyNode, value, 
-                                description, category, executionDate);
+                                description, selectedCategory, executionDate);
                     listener.onImmediateTransactionCreated(newTransaction);
                 } else {
                     transaction.setDescription(description);
-                    transaction.setCategory(category);
-                    transaction.setExecutionDate(executionDate);
+                    transaction.setCategory(selectedCategory);
+                    transaction.setExecutionDate(executionDateTime);
                     transaction.setValue(value);
                     listener.onImmediateTransactionEdited(transaction);
                 }
@@ -129,6 +160,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 
         if (savedInstanceState != null) {
             transaction = savedInstanceState.getParcelable(KEY_CURRENTTRANSACTION);
+            selectedCategory = savedInstanceState.getParcelable(KEY_SELECTEDCATEGORY);
         }
         
         updateTransactionFields();
@@ -141,9 +173,15 @@ public class ImmedTransactionEditorFragment extends Fragment
         executionDateButton.setText(dateFormat.format(calendar.getTime()));
     }
 
+    public void onTimeSet(TimePicker view, int hours, int minutes) {
+        GregorianCalendar calendar = new GregorianCalendar(0, 0, 0, hours, minutes);
+        executionTimeButton.setText(timeFormat.format(calendar.getTime()));
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(KEY_CURRENTTRANSACTION, transaction);
+        outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
         super.onSaveInstanceState(outState);
     }
 
@@ -158,12 +196,13 @@ public class ImmedTransactionEditorFragment extends Fragment
         }
     }
 
-    /**
-     * @param dbHelper the dbHelper to set
-     */
-    public void setDbHelper(DatabaseHelper dbHelper) {
-        this.dbHelper = dbHelper;
-        updateCategorySpinner();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            selectedCategory = (Category) data.getParcelableExtra(
+                    Category.KEY_CATEGORY);
+            updateCategoryFields();
+        }
     }
 
     /**
@@ -208,12 +247,15 @@ public class ImmedTransactionEditorFragment extends Fragment
         if (transaction == null) {
             descriptionText.setText("");
             executionDateButton.setText(dateFormat.format(new Date()));
+            executionTimeButton.setText(timeFormat.format(new Date()));
             valueText.setText("");
             addButton.setText("Add");
         // If we are editing a node, fill fields with current information
         } else {
             descriptionText.setText(transaction.getDescription());
             executionDateButton.setText(dateFormat.format(
+                        transaction.getExecutionDate()));
+            executionTimeButton.setText(timeFormat.format(
                         transaction.getExecutionDate()));
             valueText.setText(transaction.getValue().toString());
             addButton.setText("Edit");
@@ -222,25 +264,26 @@ public class ImmedTransactionEditorFragment extends Fragment
         if (currentMoneyNode != null) {
             currencyTextView.setText(currentMoneyNode.getCurrency());
         }
+
+        updateCategoryFields();
     }
 
-    private void updateCategorySpinner() {
-        if (dbHelper == null) {
-            return;
+    private void updateCategoryFields() {
+        if (selectedCategory == null && transaction != null) {
+            selectedCategory = transaction.getCategory();
         }
 
-        List<Category> availableCategories;
-
-        try {
-            availableCategories = dbHelper.getCategories();
-        } catch (Exception e) {
-            Log.e("TMM", "Error loading available categories", e);
-            availableCategories = new ArrayList<Category>();
+        if (selectedCategory == null) {
+            categoryButton.setText(R.string.category_nonselected);
+            categoryButton.setCompoundDrawablesWithIntrinsicBounds(
+                    0, 0, 0, 0);
+        } else {
+            categoryButton.setText(selectedCategory.getName());
+            int drawableId = DrawableResolver.getInstance().getDrawableId(
+                    selectedCategory.getIcon());
+            categoryButton.setCompoundDrawablesWithIntrinsicBounds(
+                    drawableId, 0, 0, 0);
         }
-
-        CategoryAdapter categoryAdapter = new CategoryAdapter(getActivity(), dbHelper,
-                availableCategories);
-        categorySpinner.setAdapter(categoryAdapter);
     }
 }
 

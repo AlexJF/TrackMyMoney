@@ -4,6 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
@@ -191,4 +192,15 @@ public class Category extends DatabaseObject {
                 return new Category[size];
             }
         };
+
+    public static class Comparator implements java.util.Comparator<Category> {
+        public int compare(Category lhs, Category rhs) {
+            try {
+                lhs.load(); rhs.load();
+            } catch (DatabaseException e) {
+                return 1;
+            }
+            return lhs.getName().compareTo(rhs.getName());
+        }
+    }
 }

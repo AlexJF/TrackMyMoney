@@ -4,8 +4,6 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
-import java.util.ArrayList;
-
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.SelectedAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
@@ -97,7 +95,7 @@ public class UserListActivity extends SherlockActivity {
             public void onClick(View view) {
                 User selectedUser = adapter.getItem(
                     adapter.getSelectedPosition());
-                DatabaseHelper dbHelper = new DatabaseHelper(
+                DatabaseHelper dbHelper = DatabaseHelper.initialize(
                     getApplicationContext(),
                     selectedUser);
                 String password = passwordText.getText().toString();
@@ -107,7 +105,6 @@ public class UserListActivity extends SherlockActivity {
 
                     Intent intent = new Intent(UserListActivity.this,
                         MoneyNodeListActivity.class);
-                    intent.putExtra(User.KEY_USER, selectedUser);
                     startActivity(intent);
                 } else {
                     userPasswordText.setText("");
@@ -137,7 +134,7 @@ public class UserListActivity extends SherlockActivity {
 
             // Add user and login to initiate the database
             User newUser = userList.addUser(username);
-            DatabaseHelper dbHelper = new DatabaseHelper(
+            DatabaseHelper dbHelper = DatabaseHelper.initialize(
                     getApplicationContext(), newUser);
             dbHelper.login(password);
             refreshUserList();

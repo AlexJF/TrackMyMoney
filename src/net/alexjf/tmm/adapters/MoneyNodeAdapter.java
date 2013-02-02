@@ -7,7 +7,6 @@ package net.alexjf.tmm.adapters;
 import java.util.List;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
@@ -24,15 +23,13 @@ import android.widget.TextView;
 public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
     private static final int ROW_VIEW_RESID = R.layout.list_row_moneynode;
 
-    private DatabaseHelper dbHelper;
     private int colorBalancePositive;
     private int colorBalanceNegative;
     private Integer colorBalanceDefault;
 
-    public MoneyNodeAdapter(Context context, DatabaseHelper dbHelper, 
+    public MoneyNodeAdapter(Context context,  
             List<MoneyNode> objects) {
         super(context, ROW_VIEW_RESID, objects);
-        this.dbHelper = dbHelper;
         colorBalanceDefault = null;
         colorBalancePositive = context.getResources().getColor(R.color.balance_positive);
         colorBalanceNegative = context.getResources().getColor(R.color.balance_negative);
@@ -49,7 +46,7 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
 
         MoneyNode node = getItem(position);
         try {
-            node.load(dbHelper.getReadableDatabase());
+            node.load();
 
             ImageView iconImageView = (ImageView) view.findViewById(R.id.moneynode_icon);
             String iconName = node.getIcon();

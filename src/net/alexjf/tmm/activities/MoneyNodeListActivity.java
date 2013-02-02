@@ -12,6 +12,7 @@ import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.domain.User;
+import net.alexjf.tmm.exceptions.DatabaseException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -34,13 +36,9 @@ public class MoneyNodeListActivity extends SherlockActivity {
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_EDIT = 1;
 
-    private DatabaseHelper dbHelper;
-    private User currentUser;
     private MoneyNodeAdapter adapter;
 
     public MoneyNodeListActivity() {
-        dbHelper = null;
-        currentUser = null;
         adapter = null;
     }
 
@@ -50,22 +48,18 @@ public class MoneyNodeListActivity extends SherlockActivity {
         setContentView(R.layout.activity_moneynode_list);
 
         Intent intent = getIntent();
-        currentUser = (User) intent.getParcelableExtra(
-                User.KEY_USER);
-        dbHelper = new DatabaseHelper(getApplicationContext(), 
-                currentUser);
 
         List<MoneyNode> moneyNodes;
 
         try {
-            moneyNodes = dbHelper.getMoneyNodes();
+            moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
         } catch (Exception e) {
             Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
                     "\n" + e.getStackTrace());
             moneyNodes = new LinkedList<MoneyNode>();
         }
 
-        adapter = new MoneyNodeAdapter(this, dbHelper, moneyNodes);
+        adapter = new MoneyNodeAdapter(this, moneyNodes);
 
         ListView moneyNodesListView = (ListView) findViewById(
                 R.id.moneynode_list);
@@ -80,7 +74,6 @@ public class MoneyNodeListActivity extends SherlockActivity {
                 MoneyNode selectedNode = adapter.getItem(position);
                 Intent intent = new Intent(MoneyNodeListActivity.this, 
                     MoneyNodeDetailsActivity.class);
-                intent.putExtra(User.KEY_USER, currentUser);
                 intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
                 startActivity(intent);
             }
@@ -92,7 +85,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        dbHelper.close();
+        DatabaseHelper.getInstance().close();
     }
 
     @Override
@@ -109,13 +102,11 @@ public class MoneyNodeListActivity extends SherlockActivity {
             case R.id.menu_add:
                 intent = new Intent(this, 
                     MoneyNodeEditActivity.class);
-                intent.putExtra(User.KEY_USER, currentUser);
                 startActivityForResult(intent, REQCODE_ADD);
                 return true;
             case R.id.menu_manage_categories:
                 intent = new Intent(this,
                     CategoryListActivity.class);
-                intent.putExtra(User.KEY_USER, currentUser);
                 startActivity(intent);
                 return true;
             default:
@@ -154,13 +145,18 @@ public class MoneyNodeListActivity extends SherlockActivity {
         MoneyNode node = adapter.getItem(info.position);
         switch (item.getItemId()) {
             case R.id.menu_remove:
-                dbHelper.deleteMoneyNode(node);
-                adapter.remove(node);
+                try {
+                    DatabaseHelper.getInstance().deleteMoneyNode(node);
+                    adapter.remove(node);
+                } catch (DatabaseException e) {
+                    Log.e("TMM", "Unable to delete money node", e);
+                    Toast.makeText(this, 
+                        "Error deleting money node", 3).show();
+                }
                 return true;
             case R.id.menu_edit:
                 Intent intent = new Intent(this, 
                     MoneyNodeEditActivity.class);
-                intent.putExtra(User.KEY_USER, currentUser);
                 intent.putExtra(MoneyNode.KEY_MONEYNODE, node);
                 startActivityForResult(intent, REQCODE_EDIT);
                 return true;

@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.domain.Transaction;
@@ -28,15 +27,14 @@ import android.widget.TextView;
 public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransaction> {
     private static final int ROW_VIEW_RESID = R.layout.list_row_immedtransaction;
 
-    private DatabaseHelper dbHelper;
     private Resources resources;
     private int colorValuePositive;
     private int colorValueNegative;
+    private Integer colorValueDefault;
 
-    public ImmediateTransactionAdapter(Context context, DatabaseHelper dbHelper, 
+    public ImmediateTransactionAdapter(Context context, 
             List<ImmediateTransaction> objects) {
         super(context, ROW_VIEW_RESID, objects);
-        this.dbHelper = dbHelper;
         resources = context.getResources();
         colorValuePositive = context.getResources().getColor(R.color.balance_positive);
         colorValueNegative = context.getResources().getColor(R.color.balance_negative);
@@ -53,11 +51,11 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
 
         Transaction transaction = getItem(position);
         try {
-            transaction.load(dbHelper.getReadableDatabase());
+            transaction.load();
 
             Category cat = transaction.getCategory();
             if (cat != null) {
-                cat.load(dbHelper.getReadableDatabase());
+                cat.load();
 
                 ImageView categoryIconImageView = (ImageView) view.findViewById(
                         R.id.transaction_caticon);
@@ -74,10 +72,13 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
             }
 
             MoneyNode node = transaction.getMoneyNode();
-            node.load(dbHelper.getReadableDatabase());
+            node.load();
 
             TextView valueTextView = (TextView) view.findViewById(
                     R.id.transaction_value);
+            if (colorValueDefault == null) {
+                colorValueDefault = valueTextView.getTextColors().getDefaultColor();
+            }
             valueTextView.setText(transaction.getValue().toString() + " " + 
                     node.getCurrency());
             int signum = transaction.getValue().signum();
@@ -87,7 +88,7 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
             } 
             // If value is neutral
             else if (signum == 0) {
-                valueTextView.setTextColor(valueTextView.getTextColors().getDefaultColor());
+                valueTextView.setTextColor(colorValueDefault);
             }
             // If value is negative
             else {

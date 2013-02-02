@@ -7,41 +7,47 @@ package net.alexjf.tmm.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.DatabaseUnknownUserException;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteException;
 import net.sqlcipher.database.SQLiteOpenHelper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
-    
-    private String password;
 
-    public DatabaseHelper(Context context, User user) {
+    private User currentUser;
+
+    private static DatabaseHelper instance = null;
+
+    public static DatabaseHelper initialize(Context context, User user) {
+        instance = new DatabaseHelper(context, user);
+        return getInstance();
+    }
+
+    public static DatabaseHelper getInstance() {
+        return instance;
+    }
+
+    private DatabaseHelper(Context context, User user) {
         super(context, user.getName() + ".db", null, DATABASE_VERSION);
-        this.password = user.getPassword();
+        currentUser = user;
     }
 
-    @Override
-    public SQLiteDatabase getReadableDatabase(String password) {
-        this.password = password;
-        return super.getReadableDatabase(password);
+    public SQLiteDatabase getReadableDatabase() 
+        throws DatabaseUnknownUserException {
+        userDefinedOrThrow();
+        return getReadableDatabase(currentUser.getPassword());
     }
 
-    @Override
-    public SQLiteDatabase getWritableDatabase(String password) {
-        this.password = password;
-        return super.getWritableDatabase(password);
-    }
-
-    public SQLiteDatabase getReadableDatabase() {
-        return getReadableDatabase(password);
-    }
-
-    public SQLiteDatabase getWritableDatabase() {
-        return getWritableDatabase(password);
+    public SQLiteDatabase getWritableDatabase()
+        throws DatabaseUnknownUserException {
+        userDefinedOrThrow();
+        return getWritableDatabase(currentUser.getPassword());
     }
 
     public boolean login(String password) {
@@ -106,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Category.onDatabaseUpgrade(db, oldVersion, newVersion);
     }
 
-    public List<MoneyNode> getMoneyNodes() throws Exception {
+    public List<MoneyNode> getMoneyNodes() throws DatabaseException {
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
@@ -126,7 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return moneyNodes;
     }
 
-    public void deleteMoneyNode(MoneyNode node) {
+    public void deleteMoneyNode(MoneyNode node) throws DatabaseException {
         if (node == null) {
             return;
         }
@@ -137,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[]{node.getId().toString()});
     }
 
-    public List<Category> getCategories() throws Exception {
+    public List<Category> getCategories() throws DatabaseException {
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(Category.TABLE_NAME, 
@@ -148,6 +154,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         while (cursor.moveToNext()) {
             Category category = Category.createFromId(cursor.getLong(0));
+
+            if (category == null) {
+                Log.d("TMM", "Found null category");
+                continue;
+            }
+
             category.setDb(db);
             categories.add(category);
         }
@@ -157,7 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categories;
     }
 
-    public void deleteCategory(Category category) {
+    public void deleteCategory(Category category) throws DatabaseException {
         if (category == null) {
             return;
         }
@@ -169,20 +181,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Sets the password for this instance.
-     *
-     * @param password The password.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
      * Deletes a database associated with a particular user
      *
      * @param User user whose database we want to delete.
      */
     static public void deleteDatabase(Context context, User user) {
         context.deleteDatabase(user.getName() + ".db");
+    }
+
+    private void userDefinedOrThrow() 
+        throws DatabaseUnknownUserException {
+        if (currentUser == null) {
+            throw new DatabaseUnknownUserException();
+        }
     }
 }

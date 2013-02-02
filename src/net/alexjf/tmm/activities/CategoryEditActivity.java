@@ -21,7 +21,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class CategoryEditActivity extends SherlockFragmentActivity 
     implements OnCategoryEditListener {
-    private DatabaseHelper dbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,10 +28,6 @@ public class CategoryEditActivity extends SherlockFragmentActivity
         setContentView(R.layout.activity_category_edit);
 
         Intent intent = getIntent();
-        User currentUser = (User) intent.getParcelableExtra(
-                User.KEY_USER);
-        dbHelper = new DatabaseHelper(getApplicationContext(), 
-                currentUser);
         Category category = (Category) intent.getParcelableExtra(
                 Category.KEY_CATEGORY);
 
@@ -50,14 +45,14 @@ public class CategoryEditActivity extends SherlockFragmentActivity
     @Override
     protected void onStop() {
         super.onStop();
-        dbHelper.close();
+        DatabaseHelper.getInstance().close();
     }
 
     public void onCategoryEdited(Category category) {
         try {
             Intent data = new Intent();
             Log.d("TMM", "Editing category " + category.getName());
-            category.save(dbHelper.getWritableDatabase());
+            category.save();
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
@@ -71,7 +66,7 @@ public class CategoryEditActivity extends SherlockFragmentActivity
         try {
             Intent data = new Intent();
             Log.d("TMM", "Adding category " + category.getName());
-            category.save(dbHelper.getWritableDatabase());
+            category.save();
             data.putExtra(Category.KEY_CATEGORY, category);
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();

@@ -5,6 +5,7 @@
 package net.alexjf.tmm.domain;
 
 import net.alexjf.tmm.exceptions.DatabaseNotReadyException;
+import net.alexjf.tmm.exceptions.DatabaseUnknownUserException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.exceptions.UnknownIdException;
@@ -93,7 +94,15 @@ public abstract class DatabaseObject implements Parcelable {
 
     protected void dbReadyOrThrow() throws DatabaseNotReadyException {
         if (db == null || !db.isOpen()) {
-            throw new DatabaseNotReadyException();
+            try {
+                db = DatabaseHelper.getInstance().getWritableDatabase();
+
+                if (!db.isOpen()) {
+                    throw new DatabaseNotReadyException();
+                }
+            } catch (DatabaseUnknownUserException e) {
+                throw new DatabaseNotReadyException(e);
+            }
         }
     }
 

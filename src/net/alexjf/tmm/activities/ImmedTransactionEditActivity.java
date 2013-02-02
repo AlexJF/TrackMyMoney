@@ -8,7 +8,6 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.OnImmediateTransactionEditListener;
@@ -22,7 +21,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class ImmedTransactionEditActivity extends SherlockFragmentActivity 
     implements OnImmediateTransactionEditListener {
-    private DatabaseHelper dbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,10 +28,6 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         setContentView(R.layout.activity_immedtransaction_edit);
 
         Intent intent = getIntent();
-        User currentUser = (User) intent.getParcelableExtra(
-                User.KEY_USER);
-        dbHelper = new DatabaseHelper(getApplicationContext(), 
-                currentUser);
         MoneyNode moneyNode = (MoneyNode) 
             intent.getParcelableExtra(MoneyNode.KEY_MONEYNODE);
         ImmediateTransaction transaction = (ImmediateTransaction) 
@@ -41,7 +35,6 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
 
         ImmedTransactionEditorFragment editor = (ImmedTransactionEditorFragment)
             getSupportFragmentManager().findFragmentById(R.id.immedtransaction_editor);
-        editor.setDbHelper(dbHelper);
         editor.setCurrentMoneyNode(moneyNode);
         editor.setTransaction(transaction);
 
@@ -55,14 +48,14 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
     @Override
     protected void onStop() {
         super.onStop();
-        dbHelper.close();
+        DatabaseHelper.getInstance().close();
     }
 
     public void onImmediateTransactionEdited(ImmediateTransaction trans) {
         try {
             Intent data = new Intent();
             Log.d("TMM", "Editing immediate transaction " + trans.getId());
-            trans.save(dbHelper.getWritableDatabase());
+            trans.save();
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
@@ -76,7 +69,7 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         try {
             Intent data = new Intent();
             Log.d("TMM", "Adding immediate transaction " + trans.getId());
-            trans.save(dbHelper.getWritableDatabase());
+            trans.save();
             data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();

@@ -50,5 +50,6 @@
     <string name="category">Category:</string>
     <string name="manage_categories">Manage Categories</string>
     <string name="category_empty">There are no categories.\nPlease add one via the menu.</string>
+    <string name="category_nonselected">No category selected</string>
 
 </resources>

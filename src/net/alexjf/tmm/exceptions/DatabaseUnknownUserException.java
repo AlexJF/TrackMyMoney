@@ -4,15 +4,11 @@
  ******************************************************************************/
 package net.alexjf.tmm.exceptions;
 
-public class DatabaseNotReadyException extends DatabaseException {
+public class DatabaseUnknownUserException extends DatabaseException {
     static final long serialVersionUID = 1;
 
-    public DatabaseNotReadyException() {
-        super("Database not ready: null or closed");
-    }
-
-    public DatabaseNotReadyException(DatabaseException e) {
-        super("Database not ready: " + e.getMessage(), e);
+    public DatabaseUnknownUserException() {
+        super("Database cannot be opened: no user defined");
     }
 }
 
