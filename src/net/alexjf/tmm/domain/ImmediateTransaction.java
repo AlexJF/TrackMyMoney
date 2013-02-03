@@ -134,8 +134,6 @@ public class ImmediateTransaction extends Transaction {
 
     @Override
     protected long internalSave() throws DbObjectSaveException {
-        boolean newTransaction = getId() == null;
-
         SQLiteDatabase db = getDb();
         try {
             db.beginTransaction();

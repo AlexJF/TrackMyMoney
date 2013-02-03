@@ -55,17 +55,20 @@ public class MoneyNode extends DatabaseObject {
     private static final String QUERY_BALANCE = 
         "SELECT TOTAL(" + Transaction.COL_VALUE + ") " + 
         " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + " USING (id) " +
+        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + 
+        "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
     private static final String QUERY_IMMEDIATETRANSACTIONS =
         "SELECT " + ImmediateTransaction.COL_ID + 
         " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + " USING (id) " +
+        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + 
+        "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
     private static final String QUERY_SCHEDULEDTRANSACTIONS =
         "SELECT " + ScheduledTransaction.COL_ID + 
         " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ScheduledTransaction.TABLE_NAME + " USING (id) " +
+        "  INNER JOIN " + ScheduledTransaction.TABLE_NAME + 
+        "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
 
     // Database maintenance
@@ -328,6 +331,21 @@ public class MoneyNode extends DatabaseObject {
 
     public List<ImmediateTransaction> getImmediateTransactions() 
         throws DatabaseException {
+        return getImmediateTransactions(null, null);
+    }
+
+    /**
+     * Retrieves a list of immediate transactions associated with this money
+     * node between the date interval specified.
+     *
+     * @param startDate Starting date of interval or null for no limit.
+     * @param endDate Ending date of interval or null for no limit.
+     *
+     * @return List of ImmediateTransactions executed inside this interval and
+     * associated with this money node.
+     */
+    public List<ImmediateTransaction> getImmediateTransactions(Date startDate, 
+            Date endDate) throws DatabaseException {
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();
@@ -335,7 +353,21 @@ public class MoneyNode extends DatabaseObject {
         List<ImmediateTransaction> immediateTransactions = 
             new LinkedList<ImmediateTransaction>();
 
-        Cursor cursor = db.rawQuery(QUERY_IMMEDIATETRANSACTIONS, 
+        String query = QUERY_IMMEDIATETRANSACTIONS;
+
+        if (startDate != null) {
+            query += " AND " + ImmediateTransaction.COL_EXECUTIONDATE +
+                " >= '" + startDate.getTime() + "'";
+        }
+
+        if (endDate != null) {
+            query += " AND " + ImmediateTransaction.COL_EXECUTIONDATE +
+                " <= '" + endDate.getTime() + "'";
+        }
+
+        Log.d("TMM", "ImmediateTransactin query: \n" + query);
+
+        Cursor cursor = db.rawQuery(query, 
                 new String[] {getId().toString()});
 
         while (cursor.moveToNext()) {

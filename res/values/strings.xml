@@ -26,6 +26,13 @@
     <string name="choose">Choose...</string>
     <string name="currency">Currency:</string>
     <string name="value">Value:</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="this_month">This month</string>
+    <string name="last_month">Last month</string>
+    <string name="this_year">This year</string>
+    <string name="all_time">All time</string>
+    <string name="custom">Custom</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -51,5 +58,8 @@
     <string name="manage_categories">Manage Categories</string>
     <string name="category_empty">There are no categories.\nPlease add one via the menu.</string>
     <string name="category_nonselected">No category selected</string>
+
+    <!-- DateIntervalBar Related -->
+    <string name="date_interval">Date Interval:</string>
 
 </resources>

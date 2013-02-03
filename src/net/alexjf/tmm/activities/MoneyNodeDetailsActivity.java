@@ -4,6 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,8 +13,9 @@ import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.fragments.DateIntervalBarFragment;
+import net.alexjf.tmm.fragments.DateIntervalBarFragment.OnDateIntervalChangedListener;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,18 +30,20 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class MoneyNodeDetailsActivity extends SherlockActivity {
+public class MoneyNodeDetailsActivity extends SherlockFragmentActivity 
+    implements OnDateIntervalChangedListener {
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_EDIT = 1;
 
     private MoneyNode currentMoneyNode;
-    private List<ImmediateTransaction> immediateTransactions;
     private ImmediateTransactionAdapter adapter;
+    private Date startDate;
+    private Date endDate;
 
     private TextView balanceTextView;
     private TextView totalTransactionsTextView;
@@ -47,8 +51,6 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
 
     public MoneyNodeDetailsActivity() {
         currentMoneyNode = null;
-        immediateTransactions = null;
-
         balanceTextView = null;
         transactionsListView = null;
     }
@@ -65,23 +67,15 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
         setTitle(currentMoneyNode.getName());
 
         balanceTextView = (TextView) findViewById(R.id.balance_value);
-        balanceTextView.setText(currentMoneyNode.getBalance().toString() + " " +
-                currentMoneyNode.getCurrency());
-
         transactionsListView = (ListView) findViewById(R.id.transaction_list);
-
-        try {
-            immediateTransactions = currentMoneyNode.getImmediateTransactions();
-        } catch (DatabaseException e) {
-            Log.e("TMM", "Unable to get immediate transactions", e);
-            immediateTransactions = new LinkedList<ImmediateTransaction>();
-        }
-
         totalTransactionsTextView = (TextView) findViewById(R.id.total_transactions_value);
-        totalTransactionsTextView.setText(Integer.toString(immediateTransactions.size()));
+        DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
+            getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);
+        startDate = dateBar.getStartDate();
+        endDate = dateBar.getEndDate();
 
         View emptyView = findViewById(R.id.transaction_list_empty);
-        adapter = new ImmediateTransactionAdapter(this, immediateTransactions);
+        adapter = new ImmediateTransactionAdapter(this);
 
         transactionsListView.setEmptyView(emptyView);
         transactionsListView.setAdapter(adapter);
@@ -93,6 +87,7 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
         });
 
         registerForContextMenu(transactionsListView);
+        updateDetailsPanel();
     }
 
     @Override
@@ -160,15 +155,48 @@ public class MoneyNodeDetailsActivity extends SherlockActivity {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQCODE_ADD:
-                    ImmediateTransaction trans = 
-                        (ImmediateTransaction) data.getParcelableExtra(
-                        ImmediateTransaction.KEY_TRANSACTION);
-                    adapter.add(trans);
+                    updateTransactionList();
                     break;
                 case REQCODE_EDIT:
-                    adapter.notifyDataSetChanged();
+                    updateTransactionList();
                     break;
             }
         }
+    }
+
+    public void onDateIntervalChanged(Date startDate, Date endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        if (startDate != null) {
+            Log.d("TMM", "Selected new date interval: " + startDate.toString() + "-" + endDate.toString());
+        } else {
+            Log.d("TMM", "Selected new date interval: all time");
+        }
+        updateTransactionList();
+    }
+
+    private void updateTransactionList() {
+        List<ImmediateTransaction> immediateTransactions;
+
+        try {
+            immediateTransactions = currentMoneyNode.getImmediateTransactions(
+                    startDate, endDate);
+        } catch (DatabaseException e) {
+            Log.e("TMM", "Unable to get immediate transactions", e);
+            immediateTransactions = new LinkedList<ImmediateTransaction>();
+        }
+
+        adapter.clear();
+        for (ImmediateTransaction transaction : immediateTransactions) {
+            adapter.add(transaction);
+        }
+
+        updateDetailsPanel();
+    }
+
+    private void updateDetailsPanel() {
+        balanceTextView.setText(currentMoneyNode.getBalance().toString() + " " +
+                currentMoneyNode.getCurrency());
+        totalTransactionsTextView.setText(Integer.toString(adapter.getCount()));
     }
 }

@@ -32,12 +32,21 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
     private int colorValueNegative;
     private Integer colorValueDefault;
 
+    public ImmediateTransactionAdapter(Context context) {
+        super(context, ROW_VIEW_RESID);
+        commonConstructorActions(context);
+    }
+
     public ImmediateTransactionAdapter(Context context, 
             List<ImmediateTransaction> objects) {
         super(context, ROW_VIEW_RESID, objects);
+        commonConstructorActions(context);
+    }
+
+    private void commonConstructorActions(Context context) {
         resources = context.getResources();
-        colorValuePositive = context.getResources().getColor(R.color.balance_positive);
-        colorValueNegative = context.getResources().getColor(R.color.balance_negative);
+        colorValuePositive = resources.getColor(R.color.balance_positive);
+        colorValueNegative = resources.getColor(R.color.balance_negative);
     }
 
     @Override
