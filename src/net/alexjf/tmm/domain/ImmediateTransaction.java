@@ -5,6 +5,7 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Date;
 
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
@@ -197,4 +198,20 @@ public class ImmediateTransaction extends Transaction {
         deltaValueFromPrevious = valueOnDatabase.subtract(value);
     }
 
+    public static class DateComparator implements Comparator<ImmediateTransaction> {
+        private boolean descending = false;
+
+        public DateComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        public int compare(ImmediateTransaction lhs, ImmediateTransaction rhs) {
+            int result = lhs.getExecutionDate().compareTo(rhs.getExecutionDate());
+            if (descending) {
+                result *= -1;
+            }
+
+            return result;
+        }
+    }
 }

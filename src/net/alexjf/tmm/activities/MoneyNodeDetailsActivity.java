@@ -4,8 +4,8 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.alexjf.tmm.R;
@@ -30,6 +30,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -44,15 +46,19 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private ImmediateTransactionAdapter adapter;
     private Date startDate;
     private Date endDate;
+    private BigDecimal income;
+    private BigDecimal expense;
+    private String currency;
 
     private TextView balanceTextView;
     private TextView totalTransactionsTextView;
+    private TextView incomeTextView;
+    private TextView expenseTextView;
     private ListView transactionsListView;
 
     public MoneyNodeDetailsActivity() {
-        currentMoneyNode = null;
-        balanceTextView = null;
-        transactionsListView = null;
+        income = BigDecimal.valueOf(0);
+        expense = BigDecimal.valueOf(0);
     }
 
     @Override
@@ -63,11 +69,30 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         Intent intent = getIntent();
         currentMoneyNode = (MoneyNode) intent.getParcelableExtra(
                 MoneyNode.KEY_MONEYNODE);
+        currency = currentMoneyNode.getCurrency();
 
         setTitle(currentMoneyNode.getName());
 
+        // TODO: Add referenced fragments (java and xml) and uncomment following
+        // for tabbed interface
+        /*
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        Tab tab = actionBar.newTab().setText(R.string.list);
+        tab.setTabListener(new TabListener<ImmedTransactionsListFragment>(this, 
+                    "transactionList", ImmedTransactionsListFragment.class));
+        actionBar.addTab(tab);
+
+        tab = actionBar.newTab().setText(R.string.stats);
+        tab.setTabListener(new TabListener<ImmedTransactionsStatsFragment>(this, 
+                    "transactionList", ImmedTransactionsListFragment.class));
+        actionBar.addTab(tab);*/
+
         balanceTextView = (TextView) findViewById(R.id.balance_value);
         transactionsListView = (ListView) findViewById(R.id.transaction_list);
+        incomeTextView = (TextView) findViewById(R.id.income_value);
+        expenseTextView = (TextView) findViewById(R.id.expense_value);
         totalTransactionsTextView = (TextView) findViewById(R.id.total_transactions_value);
         DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
             getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);
@@ -77,6 +102,8 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         View emptyView = findViewById(R.id.transaction_list_empty);
         adapter = new ImmediateTransactionAdapter(this);
 
+        // TODO: Move this to a fragment in order to correctly use action bar
+        // tabs
         transactionsListView.setEmptyView(emptyView);
         transactionsListView.setAdapter(adapter);
         transactionsListView.setOnItemClickListener(new OnItemClickListener() {
@@ -87,7 +114,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         });
 
         registerForContextMenu(transactionsListView);
-        updateDetailsPanel();
+        updateTransactionList(true);
     }
 
     @Override
@@ -155,6 +182,9 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQCODE_ADD:
+                    ImmediateTransaction transaction = (ImmediateTransaction) 
+                        data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
+                    adapter.add(transaction);
                     updateTransactionList();
                     break;
                 case REQCODE_EDIT:
@@ -167,36 +197,85 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     public void onDateIntervalChanged(Date startDate, Date endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
+
         if (startDate != null) {
             Log.d("TMM", "Selected new date interval: " + startDate.toString() + "-" + endDate.toString());
         } else {
             Log.d("TMM", "Selected new date interval: all time");
         }
-        updateTransactionList();
+
+        updateTransactionList(true);
     }
 
     private void updateTransactionList() {
-        List<ImmediateTransaction> immediateTransactions;
+        updateTransactionList(false);
+    }
 
-        try {
-            immediateTransactions = currentMoneyNode.getImmediateTransactions(
-                    startDate, endDate);
-        } catch (DatabaseException e) {
-            Log.e("TMM", "Unable to get immediate transactions", e);
-            immediateTransactions = new LinkedList<ImmediateTransaction>();
+    private void updateTransactionList(boolean refreshFromDatabase) {
+        List<ImmediateTransaction> immediateTransactions = null;
+
+        if (refreshFromDatabase) {
+            try {
+                immediateTransactions = currentMoneyNode.getImmediateTransactions(
+                        startDate, endDate);
+            } catch (DatabaseException e) {
+                Log.e("TMM", "Unable to get immediate transactions", e);
+            }
+        } 
+
+        updateTransactionList(immediateTransactions);
+    }
+
+    private void updateTransactionList(List<ImmediateTransaction> immediateTransactions) {
+        // If we are setting new content, clear existing and recalculate
+        // everything
+        if (immediateTransactions != null) {
+            adapter.clear();
+
+            income = BigDecimal.valueOf(0);
+            expense = BigDecimal.valueOf(0);
+            for (ImmediateTransaction transaction : immediateTransactions) {
+                try {
+                    transaction.load();
+                } catch (DatabaseException e) {
+                    Log.e("TMM", "Error loading transaction " + transaction.getId(), e);
+                    continue;
+                }
+                BigDecimal value = transaction.getValue();
+
+                if (value.signum() > 0) {
+                    income = income.add(value);
+                } else {
+                    expense = expense.add(value);
+                }
+
+                adapter.add(transaction);
+            }
+        } else {
+            adapter.notifyDataSetChanged();
         }
 
-        adapter.clear();
-        for (ImmediateTransaction transaction : immediateTransactions) {
-            adapter.add(transaction);
-        }
+        adapter.sort(new ImmediateTransaction.DateComparator(true));
 
         updateDetailsPanel();
     }
 
     private void updateDetailsPanel() {
-        balanceTextView.setText(currentMoneyNode.getBalance().toString() + " " +
-                currentMoneyNode.getCurrency());
+        BigDecimal balance = income.add(expense);
+
+        // If we are not limiting the start date or it is less than or equal to
+        // money node creationDate, add initialBalance
+        if (startDate == null || 
+            startDate.compareTo(currentMoneyNode.getCreationDate()) <= 0) {
+            BigDecimal initialBalance = currentMoneyNode.getInitialBalance();
+            balance = balance.add(initialBalance);
+            balanceTextView.setText(balance + " " + currency + 
+                    " (Init. bal: " + initialBalance + " " + currency + ")");
+        } else {
+            balanceTextView.setText(balance + " " + currency);
+        }
         totalTransactionsTextView.setText(Integer.toString(adapter.getCount()));
+        incomeTextView.setText(income + " " + currency);
+        expenseTextView.setText(expense + " " + currency);
     }
 }

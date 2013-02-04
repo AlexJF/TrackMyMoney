@@ -33,6 +33,8 @@
     <string name="this_year">This year</string>
     <string name="all_time">All time</string>
     <string name="custom">Custom</string>
+    <string name="list">List</string>
+    <string name="stats">Stats</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -45,6 +47,8 @@
     <string name="creationDate">Creation Date:</string>
     <string name="initialBalance">Initial Balance:</string>
     <string name="balance">Balance:</string>
+    <string name="income">Income:</string>
+    <string name="expense">Expense:</string>
     <string name="moneynode_empty">There are no money nodes.\nPlease add one via the menu.</string>
 
     <!-- Transaction Related -->

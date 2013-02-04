@@ -210,7 +210,7 @@ public class DateIntervalBarFragment extends Fragment
 
     private void updateDates(boolean changed) {
         String startDateString = dateFormat.format(startDate.getTime());
-        String endDateString = dateFormat.format(startDate.getTime());
+        String endDateString = dateFormat.format(endDate.getTime());
 
         startDateButton.setText(startDateString);
         endDateButton.setText(endDateString);

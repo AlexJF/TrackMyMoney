@@ -4,6 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm.adapters;
 
+import java.text.DateFormat;
 import java.util.List;
 
 import net.alexjf.tmm.R;
@@ -31,6 +32,7 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
     private int colorValuePositive;
     private int colorValueNegative;
     private Integer colorValueDefault;
+    private DateFormat dateFormat;
 
     public ImmediateTransactionAdapter(Context context) {
         super(context, ROW_VIEW_RESID);
@@ -47,6 +49,7 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
         resources = context.getResources();
         colorValuePositive = resources.getColor(R.color.balance_positive);
         colorValueNegative = resources.getColor(R.color.balance_negative);
+        dateFormat = DateFormat.getDateTimeInstance();
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
             view = vi.inflate(ROW_VIEW_RESID, null);
         }
 
-        Transaction transaction = getItem(position);
+        ImmediateTransaction transaction = getItem(position);
         try {
             transaction.load();
 
@@ -79,6 +82,11 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
                         R.id.transaction_cat);
                 categoryTextView.setText(cat.getName());
             }
+
+            TextView execDateTextView = (TextView) 
+                view.findViewById(R.id.transaction_execDate);
+            execDateTextView.setText(dateFormat.format(
+                        transaction.getExecutionDate()));
 
             MoneyNode node = transaction.getMoneyNode();
             node.load();
