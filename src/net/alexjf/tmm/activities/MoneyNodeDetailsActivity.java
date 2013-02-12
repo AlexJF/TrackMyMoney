@@ -10,40 +10,36 @@ import java.util.List;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
+import net.alexjf.tmm.adapters.TabsAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.DateIntervalBarFragment;
 import net.alexjf.tmm.fragments.DateIntervalBarFragment.OnDateIntervalChangedListener;
+import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
+import net.alexjf.tmm.fragments.ImmedTransactionListFragment;
+import net.alexjf.tmm.fragments.ImmedTransactionListFragment.OnImmedTransactionActionListener;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 public class MoneyNodeDetailsActivity extends SherlockFragmentActivity 
-    implements OnDateIntervalChangedListener {
+    implements OnDateIntervalChangedListener, OnImmedTransactionActionListener {
     private static final int REQCODE_ADD = 0;
-    private static final int REQCODE_EDIT = 1;
 
     private MoneyNode currentMoneyNode;
-    private ImmediateTransactionAdapter adapter;
+    private ImmediateTransactionAdapter immedTransAdapter;
     private Date startDate;
     private Date endDate;
     private BigDecimal income;
@@ -54,7 +50,9 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private TextView totalTransactionsTextView;
     private TextView incomeTextView;
     private TextView expenseTextView;
-    private ListView transactionsListView;
+    private ViewPager viewPager;
+
+    private ImmedTransactionListFragment transactionList;
 
     public MoneyNodeDetailsActivity() {
         income = BigDecimal.valueOf(0);
@@ -73,47 +71,35 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         setTitle(currentMoneyNode.getName());
 
-        // TODO: Add referenced fragments (java and xml) and uncomment following
-        // for tabbed interface
-        /*
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
-        Tab tab = actionBar.newTab().setText(R.string.list);
-        tab.setTabListener(new TabListener<ImmedTransactionsListFragment>(this, 
-                    "transactionList", ImmedTransactionsListFragment.class));
-        actionBar.addTab(tab);
+        balanceTextView = (TextView) findViewById(R.id.balance_value);
+        incomeTextView = (TextView) findViewById(R.id.income_value);
+        expenseTextView = (TextView) findViewById(R.id.expense_value);
+        totalTransactionsTextView = (TextView) 
+            findViewById(R.id.total_transactions_value);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
 
-        tab = actionBar.newTab().setText(R.string.stats);
+        immedTransAdapter = new ImmediateTransactionAdapter(this);
+        transactionList = new ImmedTransactionListFragment();
+        transactionList.setListAdapter(immedTransAdapter);
+
+        TabsAdapter tabsAdapter = new TabsAdapter(this, viewPager);
+        tabsAdapter.addTab(actionBar.newTab().setText(R.string.list),
+                transactionList);
+
+        /*tab = actionBar.newTab().setText(R.string.stats);
         tab.setTabListener(new TabListener<ImmedTransactionsStatsFragment>(this, 
                     "transactionList", ImmedTransactionsListFragment.class));
         actionBar.addTab(tab);*/
 
-        balanceTextView = (TextView) findViewById(R.id.balance_value);
-        transactionsListView = (ListView) findViewById(R.id.transaction_list);
-        incomeTextView = (TextView) findViewById(R.id.income_value);
-        expenseTextView = (TextView) findViewById(R.id.expense_value);
-        totalTransactionsTextView = (TextView) findViewById(R.id.total_transactions_value);
         DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
             getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);
         startDate = dateBar.getStartDate();
         endDate = dateBar.getEndDate();
 
-        View emptyView = findViewById(R.id.transaction_list_empty);
-        adapter = new ImmediateTransactionAdapter(this);
-
-        // TODO: Move this to a fragment in order to correctly use action bar
-        // tabs
-        transactionsListView.setEmptyView(emptyView);
-        transactionsListView.setAdapter(adapter);
-        transactionsListView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, 
-                int position, long id) {
-                Log.d("TTM", "Item selected at position " + position);
-            }
-        });
-
-        registerForContextMenu(transactionsListView);
         updateTransactionList(true);
     }
 
@@ -145,38 +131,6 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        android.view.MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_immedtransaction_list, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        ImmediateTransaction transaction = adapter.getItem(info.position);
-        switch (item.getItemId()) {
-            case R.id.menu_remove:
-                try {
-                    transaction.getMoneyNode().removeImmediateTransaction(transaction);
-                    adapter.remove(transaction);
-                } catch (DatabaseException e) {
-                    Log.e("TMM", "Unable to remove immediate transaction", e);
-                }
-                return true;
-            case R.id.menu_edit:
-                Intent intent = new Intent(this, 
-                    ImmedTransactionEditActivity.class);
-                intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, transaction);
-                startActivityForResult(intent, REQCODE_EDIT);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -184,14 +138,28 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 case REQCODE_ADD:
                     ImmediateTransaction transaction = (ImmediateTransaction) 
                         data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
-                    adapter.add(transaction);
-                    updateTransactionList();
-                    break;
-                case REQCODE_EDIT:
+                    immedTransAdapter.add(transaction);
+
+                    try {
+                        transaction.load();
+                        BigDecimal value = transaction.getValue();
+                        switch(value.signum()) {
+                            case 1:
+                                income = income.add(value);
+                                break;
+                            case -1:
+                                expense = expense.add(value);
+                                break;
+                        }
+                    } catch (DatabaseException e) {
+                        Log.e("TMM", "Error loading transaction after adding.", e);
+                    }
+
                     updateTransactionList();
                     break;
             }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void onDateIntervalChanged(Date startDate, Date endDate) {
@@ -230,7 +198,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         // If we are setting new content, clear existing and recalculate
         // everything
         if (immediateTransactions != null) {
-            adapter.clear();
+            immedTransAdapter.clear();
 
             income = BigDecimal.valueOf(0);
             expense = BigDecimal.valueOf(0);
@@ -249,13 +217,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                     expense = expense.add(value);
                 }
 
-                adapter.add(transaction);
+                immedTransAdapter.add(transaction);
             }
         } else {
-            adapter.notifyDataSetChanged();
+            immedTransAdapter.notifyDataSetChanged();
         }
 
-        adapter.sort(new ImmediateTransaction.DateComparator(true));
+        immedTransAdapter.sort(new ImmediateTransaction.DateComparator(true));
 
         updateDetailsPanel();
     }
@@ -274,8 +242,77 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         } else {
             balanceTextView.setText(balance + " " + currency);
         }
-        totalTransactionsTextView.setText(Integer.toString(adapter.getCount()));
+
+        totalTransactionsTextView.setText(Integer.toString(immedTransAdapter.getCount()));
         incomeTextView.setText(income + " " + currency);
         expenseTextView.setText(expense + " " + currency);
+    }
+
+    @Override
+    public void onImmedTransactionRemoved(ImmediateTransaction transaction) {
+        BigDecimal value = transaction.getValue();
+        switch (value.signum()) {
+            case 1:
+                income = income.subtract(value);
+                break;
+            case -1:
+                expense = expense.subtract(value);
+                break;
+        }
+        updateDetailsPanel();
+    }
+
+    @Override
+    public void onImmedTransactionEdited(ImmediateTransaction transaction,
+            ImmedTransactionEditOldInfo oldInfo) {
+        BigDecimal originalValue = oldInfo.getValue();
+        BigDecimal newValue = transaction.getValue();
+        BigDecimal delta = newValue.subtract(originalValue);
+        BigDecimal incomeDelta = BigDecimal.valueOf(0);
+        BigDecimal expenseDelta = BigDecimal.valueOf(0);
+
+        // If values didn't change, quit
+        if (delta.signum() == 0) {
+            return;
+        }
+
+        // If the 2 values share the same signal, we only need to modify either
+        // the income or expense
+        if (originalValue.signum() == newValue.signum()) {
+            switch (originalValue.signum()) {
+                // Case bigger than 0
+                case 1:
+                    incomeDelta = incomeDelta.add(delta);
+                    break;
+                // Case smaller than 0
+                case -1:
+                    expenseDelta = expenseDelta.add(delta);
+                    break;
+            }
+        } 
+        // Else we need to modify both income and expense
+        else {
+            switch (originalValue.signum()) {
+                // Case bigger than 0
+                case 1:
+                    incomeDelta = incomeDelta.subtract(originalValue);
+                    expenseDelta = expenseDelta.add(newValue);
+                    break;
+
+                // Case smaller than 0
+                case -1:
+                    expenseDelta = expenseDelta.subtract(originalValue);
+                    incomeDelta = incomeDelta.add(newValue);
+                    break;
+            }
+        }
+
+        income = income.add(incomeDelta);
+        expense = expense.add(expenseDelta);
+        updateDetailsPanel();
+    }
+
+    @Override
+    public void onImmedTransactionSelected(ImmediateTransaction transaction) {
     }
 }

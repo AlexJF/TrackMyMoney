@@ -181,6 +181,10 @@ public class Category extends DatabaseObject {
         return getName();
     }
 
+    public Category clone() throws CloneNotSupportedException {
+        return (Category) super.clone();
+    }
+
     public static final Parcelable.Creator<Category> CREATOR =
         new Parcelable.Creator<Category>() {
             public Category createFromParcel(Parcel in) {

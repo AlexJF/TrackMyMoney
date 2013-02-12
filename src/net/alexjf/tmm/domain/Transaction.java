@@ -211,4 +211,8 @@ public abstract class Transaction extends DatabaseObject {
     public Category getCategory() {
         return this.category;
     }
+
+    public Transaction clone() throws CloneNotSupportedException {
+        return (Transaction) super.clone();
+    }
 }

@@ -189,6 +189,10 @@ public class ScheduledTransaction extends Transaction {
         return this.recurrence;
     }
 
+    public ScheduledTransaction clone() throws CloneNotSupportedException {
+        return (ScheduledTransaction) super.clone();
+    }
+
     public static final Parcelable.Creator<ScheduledTransaction> CREATOR =
         new Parcelable.Creator<ScheduledTransaction>() {
             public ScheduledTransaction createFromParcel(Parcel in) {

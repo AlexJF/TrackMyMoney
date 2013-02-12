@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
 
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
@@ -198,6 +199,10 @@ public class ImmediateTransaction extends Transaction {
         deltaValueFromPrevious = valueOnDatabase.subtract(value);
     }
 
+    public ImmediateTransaction clone() throws CloneNotSupportedException {
+        return (ImmediateTransaction) super.clone();
+    }
+
     public static class DateComparator implements Comparator<ImmediateTransaction> {
         private boolean descending = false;
 
@@ -206,6 +211,11 @@ public class ImmediateTransaction extends Transaction {
         }
 
         public int compare(ImmediateTransaction lhs, ImmediateTransaction rhs) {
+            try {
+                lhs.load(); rhs.load();
+            } catch (DatabaseException e) {
+                return 1;
+            }
             int result = lhs.getExecutionDate().compareTo(rhs.getExecutionDate());
             if (descending) {
                 result *= -1;

@@ -23,7 +23,10 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,11 +60,6 @@ public class ImmedTransactionEditorFragment extends Fragment
     private Button addButton;
     private DateFormat dateFormat;
     private DateFormat timeFormat;
-
-    public interface OnImmediateTransactionEditListener {
-        public void onImmediateTransactionCreated(ImmediateTransaction node);
-        public void onImmediateTransactionEdited(ImmediateTransaction node);
-    }
 
     public ImmedTransactionEditorFragment() {
         dateFormat = DateFormat.getDateInstance();
@@ -146,14 +144,17 @@ public class ImmedTransactionEditorFragment extends Fragment
                 if (transaction == null) {
                     ImmediateTransaction newTransaction = 
                         new ImmediateTransaction(currentMoneyNode, value, 
-                                description, selectedCategory, executionDate);
+                                description, selectedCategory, executionDateTime);
                     listener.onImmediateTransactionCreated(newTransaction);
                 } else {
+                    ImmedTransactionEditOldInfo oldInfo = 
+                        new ImmedTransactionEditOldInfo(transaction);
                     transaction.setDescription(description);
                     transaction.setCategory(selectedCategory);
                     transaction.setExecutionDate(executionDateTime);
                     transaction.setValue(value);
-                    listener.onImmediateTransactionEdited(transaction);
+                    listener.onImmediateTransactionEdited(transaction, 
+                            oldInfo);
                 }
             }
         });
@@ -284,6 +285,84 @@ public class ImmedTransactionEditorFragment extends Fragment
             categoryButton.setCompoundDrawablesWithIntrinsicBounds(
                     drawableId, 0, 0, 0);
         }
+    }
+
+    public static class ImmedTransactionEditOldInfo implements Parcelable {
+        public static final String KEY_OLDINFO = "oldImmedTransactionInfo";
+        private static final DateFormat dateFormat = DateFormat.getDateTimeInstance();
+
+        private String description;
+        private Category category;
+        private Date executionDate;
+        private BigDecimal value;
+
+        public ImmedTransactionEditOldInfo(ImmediateTransaction trans) {
+            this(trans.getDescription(), trans.getCategory(),
+                    trans.getExecutionDate(), trans.getValue());
+        }
+
+        public ImmedTransactionEditOldInfo(String description,
+                Category category, Date executionDate, BigDecimal value) {
+            this.description = description;
+            this.category = category;
+            this.executionDate = executionDate;
+            this.value = value;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public Category getCategory() {
+            return category;
+        }
+
+        public Date getExecutionDate() {
+            return executionDate;
+        }
+
+        public BigDecimal getValue() {
+            return value;
+        }
+
+        public void writeToParcel(Parcel out, int flags) {
+            out.writeString(description);
+            out.writeParcelable(category, flags);
+            out.writeString(dateFormat.format(executionDate));
+            out.writeString(value.toString());
+        }
+
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Parcelable.Creator<ImmedTransactionEditOldInfo> CREATOR =
+            new Parcelable.Creator<ImmedTransactionEditOldInfo>() {
+                public ImmedTransactionEditOldInfo createFromParcel(Parcel in) {
+                    String description = in.readString();
+                    Category category = (Category) in.readParcelable(
+                            Category.class.getClassLoader());
+                    Date date = null;
+                    try {
+                        date = dateFormat.parse(in.readString());
+                    } catch (ParseException e) {
+                        Log.d("TMM", e.getMessage(), e);
+                    }
+                    BigDecimal value = new BigDecimal(in.readString());
+                    return new ImmedTransactionEditOldInfo(description, 
+                            category, date, value);
+                }
+     
+                public ImmedTransactionEditOldInfo[] newArray(int size) {
+                    return new ImmedTransactionEditOldInfo[size];
+                }
+            };
+    }
+
+    public interface OnImmediateTransactionEditListener {
+        public void onImmediateTransactionCreated(ImmediateTransaction transaction);
+        public void onImmediateTransactionEdited(ImmediateTransaction transaction, 
+                ImmedTransactionEditOldInfo oldInfo);
     }
 }
 

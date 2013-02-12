@@ -10,6 +10,7 @@ import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment;
+import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.OnImmediateTransactionEditListener;
 
 import android.content.Intent;
@@ -51,11 +52,14 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         DatabaseHelper.getInstance().close();
     }
 
-    public void onImmediateTransactionEdited(ImmediateTransaction trans) {
+    public void onImmediateTransactionEdited(ImmediateTransaction trans, 
+            ImmedTransactionEditOldInfo oldInfo) {
         try {
             Intent data = new Intent();
             Log.d("TMM", "Editing immediate transaction " + trans.getId());
             trans.save();
+            data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
+            data.putExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO, oldInfo);
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
