@@ -10,7 +10,8 @@ import java.util.List;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
-import net.alexjf.tmm.adapters.TabsAdapter;
+import net.alexjf.tmm.adapters.TabAdapter;
+import net.alexjf.tmm.adapters.TabAdapter.OnTabFragmentCreateListener;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
@@ -20,10 +21,13 @@ import net.alexjf.tmm.fragments.DateIntervalBarFragment.OnDateIntervalChangedLis
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
 import net.alexjf.tmm.fragments.ImmedTransactionListFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionListFragment.OnImmedTransactionActionListener;
+import net.alexjf.tmm.fragments.ImmedTransactionStatsFragment;
+import net.alexjf.tmm.interfaces.IWithAdapter;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.TextView;
@@ -52,8 +56,6 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private TextView expenseTextView;
     private ViewPager viewPager;
 
-    private ImmedTransactionListFragment transactionList;
-
     public MoneyNodeDetailsActivity() {
         income = BigDecimal.valueOf(0);
         expense = BigDecimal.valueOf(0);
@@ -73,7 +75,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
 
         balanceTextView = (TextView) findViewById(R.id.balance_value);
         incomeTextView = (TextView) findViewById(R.id.income_value);
@@ -83,17 +85,20 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
         immedTransAdapter = new ImmediateTransactionAdapter(this);
-        transactionList = new ImmedTransactionListFragment();
-        transactionList.setListAdapter(immedTransAdapter);
 
-        TabsAdapter tabsAdapter = new TabsAdapter(this, viewPager);
-        tabsAdapter.addTab(actionBar.newTab().setText(R.string.list),
-                transactionList);
+        final TabAdapter tabAdapter = new TabAdapter(this, viewPager);
+        tabAdapter.addTab(actionBar.newTab().setText(R.string.list),
+                ImmedTransactionListFragment.class, null);
+        tabAdapter.addTab(actionBar.newTab().setText(R.string.stats),
+                ImmedTransactionStatsFragment.class, null);
 
-        /*tab = actionBar.newTab().setText(R.string.stats);
-        tab.setTabListener(new TabListener<ImmedTransactionsStatsFragment>(this, 
-                    "transactionList", ImmedTransactionsListFragment.class));
-        actionBar.addTab(tab);*/
+        tabAdapter.setOnTabFragmentCreateListener(new OnTabFragmentCreateListener() {
+			public void onTabFragmentCreated(Fragment fragment, int position) {
+                IWithAdapter fragmentWithAdapter = 
+                    (IWithAdapter) fragment;
+                fragmentWithAdapter.setAdapter(immedTransAdapter);
+			}
+		});
 
         DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
             getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);

@@ -10,6 +10,7 @@ import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
+import net.alexjf.tmm.interfaces.IWithAdapter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,9 +23,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 
-public class ImmedTransactionListFragment extends ListFragment {
+public class ImmedTransactionListFragment extends ListFragment 
+    implements IWithAdapter {
     private static final int REQCODE_EDIT = 0;
 
     private OnImmedTransactionActionListener listener;
@@ -118,5 +121,15 @@ public class ImmedTransactionListFragment extends ListFragment {
         ImmediateTransaction selectedTransaction = (ImmediateTransaction) 
             getListAdapter().getItem(position);
         listener.onImmedTransactionSelected(selectedTransaction);
+    }
+
+    @Override
+    public BaseAdapter getAdapter() {
+        return (BaseAdapter) getListAdapter();
+    }
+
+    @Override
+    public void setAdapter(BaseAdapter adapter) {
+        setListAdapter(adapter);
     }
 }

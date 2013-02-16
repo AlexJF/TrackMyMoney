@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true" />
     <TextView android:id="@+id/income_label"
-            android:text="@string/income"
+            android:text="@string/income_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/balance_label"
@@ -43,7 +43,7 @@
             android:layout_below="@id/balance_value"
             android:layout_toRightOf="@id/income_label" />
     <TextView android:id="@+id/expense_label"
-            android:text="@string/expense"
+            android:text="@string/expense_label"
             android:gravity="right|center_vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

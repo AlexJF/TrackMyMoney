@@ -46,12 +46,16 @@
     <!-- Money Node Related -->
     <string name="creationDate">Creation Date:</string>
     <string name="initialBalance">Initial Balance:</string>
-    <string name="balance">Balance:</string>
-    <string name="income">Income:</string>
-    <string name="expense">Expense:</string>
+    <string name="balance">Balance</string>
+    <string name="balance_label">Balance:</string>
+    <string name="income">Income</string>
+    <string name="income_label">Income:</string>
+    <string name="expense">Expense</string>
+    <string name="expense_label">Expense:</string>
     <string name="moneynode_empty">There are no money nodes.\nPlease add one via the menu.</string>
 
     <!-- Transaction Related -->
+    <string name="transaction_type_label">Transaction type:</string>
     <string name="total_transactions">Total transactions:</string>
     <string name="transaction_empty">There are no transactions.\nPlease add one via the menu.</string>
     <string name="addTransaction">Add new transaction</string>

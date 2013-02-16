@@ -1,0 +1,28 @@
+<!--
+  Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
+  License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView android:id="@+id/transaction_type_label"
+            android:text="@string/transaction_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center_vertical"
+            android:layout_alignTop="@+id/transaction_type_spinner"
+            android:layout_alignBottom="@id/transaction_type_spinner" />
+    <Spinner android:id="@id/transaction_type_spinner"
+            android:entries="@array/transaction_types"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/transaction_type_label"
+            android:layout_alignParentRight="true" />
+    <LinearLayout android:id="@+id/stats"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@id/transaction_type_label"
+            android:layout_alignParentBottom="true" />
+</RelativeLayout>

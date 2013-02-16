@@ -169,11 +169,13 @@ public class ImmedTransactionEditorFragment extends Fragment
         return v;
     }
 
+    @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
         GregorianCalendar calendar = new GregorianCalendar(year, month, day);
         executionDateButton.setText(dateFormat.format(calendar.getTime()));
     }
 
+    @Override
     public void onTimeSet(TimePicker view, int hours, int minutes) {
         GregorianCalendar calendar = new GregorianCalendar(0, 0, 0, hours, minutes);
         executionTimeButton.setText(timeFormat.format(calendar.getTime()));

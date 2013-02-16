@@ -1,0 +1,10 @@
+<!--
+  Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
+  License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<resources>
+    <string-array name="transaction_types">
+        <item>@string/income</item>
+        <item>@string/expense</item>
+    </string-array>
+</resources>
