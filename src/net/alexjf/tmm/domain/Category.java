@@ -181,10 +181,6 @@ public class Category extends DatabaseObject {
         return getName();
     }
 
-    public Category clone() throws CloneNotSupportedException {
-        return (Category) super.clone();
-    }
-
     public static final Parcelable.Creator<Category> CREATOR =
         new Parcelable.Creator<Category>() {
             public Category createFromParcel(Parcel in) {
@@ -196,6 +192,26 @@ public class Category extends DatabaseObject {
                 return new Category[size];
             }
         };
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (o instanceof Category) {
+            Category cat = (Category) o;
+
+            return this.getId().equals(cat.getId());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 
     public static class Comparator implements java.util.Comparator<Category> {
         public int compare(Category lhs, Category rhs) {

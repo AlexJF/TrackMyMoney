@@ -8,4 +8,15 @@
 
     <color name="balance_positive">#00FF00</color>
     <color name="balance_negative">#FF0000</color>
+
+    <color name="pie1">#0099CC</color>
+    <color name="pie2">#9933CC</color>
+    <color name="pie3">#669900</color>
+    <color name="pie4">#FF8800</color>
+    <color name="pie5">#CC0000</color>
+    <color name="pie6">#33B5E5</color>
+    <color name="pie7">#AA66CC</color>
+    <color name="pie8">#99CC00</color>
+    <color name="pie9">#FFBB33</color>
+    <color name="pie10">#FF4444</color>
 </resources>

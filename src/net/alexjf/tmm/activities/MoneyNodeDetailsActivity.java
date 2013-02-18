@@ -86,11 +86,14 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         immedTransAdapter = new ImmediateTransactionAdapter(this);
 
+        Bundle args = new Bundle();
+        args.putString(MoneyNode.KEY_CURRENCY, currency);
+
         final TabAdapter tabAdapter = new TabAdapter(this, viewPager);
         tabAdapter.addTab(actionBar.newTab().setText(R.string.list),
-                ImmedTransactionListFragment.class, null);
+                ImmedTransactionListFragment.class, args);
         tabAdapter.addTab(actionBar.newTab().setText(R.string.stats),
-                ImmedTransactionStatsFragment.class, null);
+                ImmedTransactionStatsFragment.class, args);
 
         tabAdapter.setOnTabFragmentCreateListener(new OnTabFragmentCreateListener() {
 			public void onTabFragmentCreated(Fragment fragment, int position) {

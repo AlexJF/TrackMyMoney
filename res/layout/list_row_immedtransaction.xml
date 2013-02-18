@@ -11,7 +11,7 @@
         android:paddingTop="15dp" >
     <ImageView android:id="@+id/transaction_caticon"
             android:gravity="center"
-            android:layout_width="wrap_content"
+            android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:padding="3dp" />

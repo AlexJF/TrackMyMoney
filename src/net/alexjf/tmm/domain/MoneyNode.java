@@ -27,6 +27,7 @@ import android.util.Log;
 public class MoneyNode extends DatabaseObject {
     // Intent keys
     public static final String KEY_MONEYNODE = "curMoneyNode";
+    public static final String KEY_CURRENCY = "currency";
 
     // Database tables
     public static final String TABLE_NAME = "MoneyNodes";
