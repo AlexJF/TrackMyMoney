@@ -13,6 +13,7 @@ unauthorized entities.
 Dependencies:
     - SQLCipher (https://github.com/sqlcipher/android-database-sqlcipher)
     - ActionBarSherlock (https://github.com/JakeWharton/ActionBarSherlock)
+    - Achartengine (http://www.achartengine.org)
 
 Icons:
     - Category and money node icons: "Icons by Glyphish" (http://glyphish.com)
