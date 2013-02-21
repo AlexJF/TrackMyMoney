@@ -83,12 +83,9 @@ public class UserListActivity extends SherlockActivity {
                     new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
                                                   LayoutParams.WRAP_CONTENT));
                 userPasswordText.setText("");
-                adapter.setSelectedPosition(position);
+                selectUser(position);
             }
         });
-
-        final EditText passwordText = (EditText) 
-            findViewById(R.id.userpassword_text);
 
         Button loginButton = (Button) findViewById(R.id.userpassword_login);
         loginButton.setOnClickListener(new OnClickListener() {
@@ -98,7 +95,7 @@ public class UserListActivity extends SherlockActivity {
                 DatabaseHelper dbHelper = DatabaseHelper.initialize(
                     getApplicationContext(),
                     selectedUser);
-                String password = passwordText.getText().toString();
+                String password = userPasswordText.getText().toString();
                 if (dbHelper.login(password)) {
                     userPasswordText.setText("");
                     selectedUser.setPassword(password);
@@ -116,12 +113,7 @@ public class UserListActivity extends SherlockActivity {
 
         if (savedInstanceState != null) {
             int selectedPosition = savedInstanceState.getInt(KEY_CURUSERINDEX);
-            if (selectedPosition >= 0) {
-                adapter.setSelectedPosition(selectedPosition);
-                userPasswordLayout.setLayoutParams(
-                    new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
-                                                  LayoutParams.WRAP_CONTENT));
-            }
+            selectUser(selectedPosition);
         }
 
         registerForContextMenu(userListView);
@@ -141,7 +133,7 @@ public class UserListActivity extends SherlockActivity {
                     getApplicationContext(), newUser);
             dbHelper.login(password);
             refreshUserList();
-            adapter.setSelectedPosition(-1);
+            selectUser(-1);
         }
     }
 
@@ -180,5 +172,16 @@ public class UserListActivity extends SherlockActivity {
             adapter.add(user);
         }
         adapter.sort(new User.Comparator());
+    }
+
+    private void selectUser(int position) {
+        adapter.setSelectedPosition(position);
+
+        if (position >= 0) {
+            userPasswordLayout.setVisibility(View.VISIBLE);
+            userPasswordText.requestFocus();
+        } else {
+            userPasswordLayout.setVisibility(View.GONE);
+        }
     }
 }

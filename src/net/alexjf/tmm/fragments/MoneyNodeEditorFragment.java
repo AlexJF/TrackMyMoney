@@ -11,15 +11,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import net.alexjf.tmm.R;
+import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
+import net.alexjf.tmm.views.SelectorButton;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,7 +33,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 
 public class MoneyNodeEditorFragment extends Fragment 
@@ -49,8 +53,7 @@ public class MoneyNodeEditorFragment extends Fragment
 
     private EditText nameText;
     private EditText descriptionText;
-    private ImageView iconImageView;
-    private Button iconImageButton;
+    private SelectorButton iconSelectorButton;
     private Button creationDateButton;
     private EditText initialBalanceText;
     private Spinner currencySpinner;
@@ -73,8 +76,7 @@ public class MoneyNodeEditorFragment extends Fragment
 
         nameText = (EditText) v.findViewById(R.id.name_text);
         descriptionText = (EditText) v.findViewById(R.id.description_text);
-        iconImageView = (ImageView) v.findViewById(R.id.icon_image);
-        iconImageButton = (Button) v.findViewById(R.id.icon_button);
+        iconSelectorButton = (SelectorButton) v.findViewById(R.id.icon_selector);
         creationDateButton = (Button) v.findViewById(R.id.creationDate_button);
         initialBalanceText = (EditText) v.findViewById(R.id.initialBalance_text);
         currencySpinner = (Spinner) v.findViewById(R.id.currency_spinner);
@@ -107,7 +109,7 @@ public class MoneyNodeEditorFragment extends Fragment
             }
         });
 
-        iconImageButton.setOnClickListener(new OnClickListener() {
+        iconSelectorButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
                 drawablePicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
             }
@@ -115,6 +117,10 @@ public class MoneyNodeEditorFragment extends Fragment
 
         addButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
+                if (!validateInputFields()) {
+                    return;
+                }
+
                 String name = nameText.getText().toString().trim();
                 String description = descriptionText.getText().toString().trim();
                 Date creationDate;
@@ -161,7 +167,7 @@ public class MoneyNodeEditorFragment extends Fragment
         if (savedInstanceState != null) {
             selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
             int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconImageView.setImageResource(iconId);
+            iconSelectorButton.setDrawableId(iconId);
         }
 
         return v;
@@ -173,8 +179,9 @@ public class MoneyNodeEditorFragment extends Fragment
     }
 
     public void onDrawablePicked(int drawableId, String drawableName) {
-        iconImageView.setImageResource(drawableId);
+        iconSelectorButton.setDrawableId(drawableId);
         selectedDrawableName = drawableName;
+        iconSelectorButton.setError(false);
     }
 
     @Override
@@ -219,7 +226,7 @@ public class MoneyNodeEditorFragment extends Fragment
         if (node == null) {
             nameText.setText("");
             descriptionText.setText("");
-            iconImageView.setImageResource(0);
+            iconSelectorButton.setDrawableId(0);
             creationDateButton.setText(dateFormat.format(new Date()));
             initialBalanceText.setText("");
             currencySpinner.setSelection(0);
@@ -230,7 +237,7 @@ public class MoneyNodeEditorFragment extends Fragment
             descriptionText.setText(node.getDescription());
             selectedDrawableName = node.getIcon();
             int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconImageView.setImageResource(iconId);
+            iconSelectorButton.setDrawableId(iconId);
             creationDateButton.setText(dateFormat.format(node.getCreationDate()));
             initialBalanceText.setText(node.getInitialBalance().toString());
             @SuppressWarnings("unchecked")
@@ -239,6 +246,44 @@ public class MoneyNodeEditorFragment extends Fragment
             currencySpinner.setSelection(positionInSpinner);
             addButton.setText("Edit");
         }
+    }
+
+    private boolean validateInputFields() {
+        boolean error = false;
+
+        Drawable errorDrawable = 
+            getResources().getDrawable(R.drawable.indicator_input_error);
+        errorDrawable.setBounds(0, 0, 
+                errorDrawable.getIntrinsicWidth(), 
+                errorDrawable.getIntrinsicHeight());
+        String name = nameText.getText().toString();
+
+        // TODO move error strings to resources
+        String nameError = null;
+        if (TextUtils.isEmpty(name)) {
+            nameError = "Name cannot be empty.";
+        }
+        else {
+            try {
+                if (DatabaseHelper.getInstance().hasMoneyNodeWithName(name)) {
+                    nameError = "A money node with that name already exists.";
+                }
+            } catch (DatabaseException e) {
+                nameError = "Unable to determine if node already exists.";
+            }
+        }
+
+        if (nameError != null) {
+            nameText.setError(nameError, errorDrawable);
+            error = true;
+        }
+
+        if (TextUtils.isEmpty(selectedDrawableName)) {
+            iconSelectorButton.setError(true);
+            error = true;
+        }
+
+        return !error;
     }
 }
 

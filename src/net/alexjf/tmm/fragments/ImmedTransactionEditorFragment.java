@@ -17,16 +17,19 @@ import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
+import net.alexjf.tmm.views.SelectorButton;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +58,7 @@ public class ImmedTransactionEditorFragment extends Fragment
     private DatePickerFragment datePicker;
 
     private EditText descriptionText;
-    private Button categoryButton;
+    private SelectorButton categoryButton;
     private Button executionDateButton;
     private Button executionTimeButton;
     private EditText valueText;
@@ -76,7 +79,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                 container, false);
 
         descriptionText = (EditText) v.findViewById(R.id.description_text);
-        categoryButton = (Button) v.findViewById(R.id.category_button);
+        categoryButton = (SelectorButton) v.findViewById(R.id.category_button);
         executionDateButton = (Button) v.findViewById(R.id.executionDate_button);
         executionTimeButton = (Button) v.findViewById(R.id.executionTime_button);
         valueText = (EditText) v.findViewById(R.id.value_text);
@@ -133,6 +136,10 @@ public class ImmedTransactionEditorFragment extends Fragment
 
         addButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
+                if (!validateInputFields()) {
+                    return;
+                }
+
                 String description = descriptionText.getText().toString().trim();
 
                 Date executionDate;
@@ -294,15 +301,40 @@ public class ImmedTransactionEditorFragment extends Fragment
 
         if (selectedCategory == null) {
             categoryButton.setText(R.string.category_nonselected);
-            categoryButton.setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, 0, 0);
+            categoryButton.setDrawableId(0);
         } else {
             categoryButton.setText(selectedCategory.getName());
             int drawableId = DrawableResolver.getInstance().getDrawableId(
                     selectedCategory.getIcon());
-            categoryButton.setCompoundDrawablesWithIntrinsicBounds(
-                    drawableId, 0, 0, 0);
+            categoryButton.setDrawableId(drawableId);
+            categoryButton.setError(false);
         }
+    }
+
+    private boolean validateInputFields() {
+        boolean error = false;
+
+        Drawable errorDrawable = 
+            getResources().getDrawable(R.drawable.indicator_input_error);
+        errorDrawable.setBounds(0, 0, 
+                errorDrawable.getIntrinsicWidth(), 
+                errorDrawable.getIntrinsicHeight());
+        String value = valueText.getText().toString();
+
+        if (TextUtils.isEmpty(value)) {
+            // TODO: Move string into resources
+            valueText.setError(
+                    "You have to specify a value for the transaction", 
+                    errorDrawable);
+            error = true;
+        }
+
+        if (selectedCategory == null) {
+            categoryButton.setError(true);
+            error = true;
+        }
+
+        return !error;
     }
 
     public static class ImmedTransactionEditOldInfo implements Parcelable {

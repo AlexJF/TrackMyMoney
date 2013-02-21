@@ -6,20 +6,23 @@ package net.alexjf.tmm.fragments;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
+import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
+import net.alexjf.tmm.views.SelectorButton;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 public class CategoryEditorFragment extends Fragment 
     implements OnDrawablePickedListener {
@@ -36,8 +39,7 @@ public class CategoryEditorFragment extends Fragment
     private DrawablePickerFragment drawablePicker;
 
     private EditText nameText;
-    private ImageView iconImageView;
-    private Button iconImageButton;
+    private SelectorButton iconImageButton;
     private Button addButton;
 
     public interface OnCategoryEditListener {
@@ -51,8 +53,7 @@ public class CategoryEditorFragment extends Fragment
         View v = inflater.inflate(R.layout.fragment_category_editor, container, false);
 
         nameText = (EditText) v.findViewById(R.id.name_text);
-        iconImageView = (ImageView) v.findViewById(R.id.icon_image);
-        iconImageButton = (Button) v.findViewById(R.id.icon_button);
+        iconImageButton = (SelectorButton) v.findViewById(R.id.icon_button);
         addButton = (Button) v.findViewById(R.id.add_button);
 
         drawablePicker = (DrawablePickerFragment) 
@@ -60,9 +61,6 @@ public class CategoryEditorFragment extends Fragment
 
         if (drawablePicker == null) {
             drawablePicker = new DrawablePickerFragment();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.add(android.R.id.content, drawablePicker, TAG_DRAWABLEPICKER);
-            ft.commit();
         }
 
         drawablePicker.setListener(this);
@@ -76,6 +74,10 @@ public class CategoryEditorFragment extends Fragment
 
         addButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
+                if (!validateInputFields()) {
+                    return;
+                }
+
                 String name = nameText.getText().toString().trim();
 
                 if (category == null) {
@@ -99,14 +101,15 @@ public class CategoryEditorFragment extends Fragment
         if (savedInstanceState != null) {
             selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
             int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconImageView.setImageResource(iconId);
+            iconImageButton.setDrawableId(iconId);
         }
 
         return v;
     }
 
     public void onDrawablePicked(int drawableId, String drawableName) {
-        iconImageView.setImageResource(drawableId);
+        iconImageButton.setDrawableId(drawableId);
+        iconImageButton.setError(false);
         selectedDrawableName = drawableName;
     }
 
@@ -151,16 +154,54 @@ public class CategoryEditorFragment extends Fragment
         // If we are adding a new category, reset all fields
         if (category == null) {
             nameText.setText("");
-            iconImageView.setImageResource(0);
+            iconImageButton.setDrawableId(0);
             addButton.setText("Add");
         // If we are editing a category, fill fields with current information
         } else {
             nameText.setText(category.getName());
             selectedDrawableName = category.getIcon();
             int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconImageView.setImageResource(iconId);
+            iconImageButton.setDrawableId(iconId);
             addButton.setText("Edit");
         }
+    }
+
+    private boolean validateInputFields() {
+        boolean error = false;
+
+        Drawable errorDrawable = 
+            getResources().getDrawable(R.drawable.indicator_input_error);
+        errorDrawable.setBounds(0, 0, 
+                errorDrawable.getIntrinsicWidth(), 
+                errorDrawable.getIntrinsicHeight());
+        String name = nameText.getText().toString();
+
+        // TODO move error strings to resources
+        String nameError = null;
+        if (TextUtils.isEmpty(name)) {
+            nameError = "Name cannot be empty.";
+        }
+        else {
+            try {
+                if (DatabaseHelper.getInstance().hasCategoryWithName(name)) {
+                    nameError = "A category with that name already exists.";
+                }
+            } catch (DatabaseException e) {
+                nameError = "Unable to determine if category already exists.";
+            }
+        }
+
+        if (nameError != null) {
+            nameText.setError(nameError, errorDrawable);
+            error = true;
+        }
+
+        if (TextUtils.isEmpty(selectedDrawableName)) {
+            iconImageButton.setError(true);
+            error = true;
+        }
+
+        return !error;
     }
 }
 

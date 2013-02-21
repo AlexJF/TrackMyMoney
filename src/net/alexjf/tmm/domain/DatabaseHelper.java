@@ -132,6 +132,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return moneyNodes;
     }
 
+    public boolean hasMoneyNodeWithName(String name) throws DatabaseException {
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
+                new String[] {MoneyNode.COL_ID}, 
+                MoneyNode.COL_NAME + " = ?",
+                new String[] {name},
+                null, null, null, null);
+
+        boolean exists = cursor.getCount() == 1;
+
+        cursor.close();
+
+        return exists;
+    }
+
     public void deleteMoneyNode(MoneyNode node) throws DatabaseException {
         if (node == null) {
             return;
@@ -167,6 +183,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return categories;
+    }
+
+    public boolean hasCategoryWithName(String name) throws DatabaseException {
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(Category.TABLE_NAME, 
+                new String[] {Category.COL_ID}, 
+                Category.COL_NAME + " = ?",
+                new String[] {name},
+                null, null, null, null);
+
+        boolean exists = cursor.getCount() == 1;
+
+        cursor.close();
+
+        return exists;
     }
 
     public void deleteCategory(Category category) throws DatabaseException {

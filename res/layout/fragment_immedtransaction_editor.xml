@@ -30,10 +30,11 @@
             android:layout_alignTop="@+id/category_button"
             android:layout_alignBottom="@id/category_button"
             android:gravity="center_vertical" />
-    <Button android:id="@id/category_button"
-            android:gravity="center"
-            android:layout_width="wrap_content"
+    <net.alexjf.tmm.views.SelectorButton
+            android:id="@id/category_button"
+            android:text="@string/choose"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:layout_toRightOf="@id/category_label"
             android:layout_below="@id/description_text" />
     <TextView android:id="@+id/executionDate_label"
