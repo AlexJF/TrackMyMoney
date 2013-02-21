@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +42,8 @@ public class ImmedTransactionEditorFragment extends Fragment
     implements OnDateSetListener, OnTimeSetListener {
     private static final String KEY_CURRENTTRANSACTION = "currentTransaction";
     private static final String KEY_SELECTEDCATEGORY = "selectedCategory";
+    private static final String TAG_DATEPICKER = "datePicker";
+    private static final String TAG_TIMEPICKER = "timePicker";
 
     private OnImmediateTransactionEditListener listener;
     private Category selectedCategory;
@@ -80,8 +83,21 @@ public class ImmedTransactionEditorFragment extends Fragment
         currencyTextView = (TextView) v.findViewById(R.id.currency_label);
         addButton = (Button) v.findViewById(R.id.add_button);
 
-        timePicker = new TimePickerFragment(this);
-        datePicker = new DatePickerFragment(this);
+        FragmentManager fm = getFragmentManager();
+
+        timePicker = (TimePickerFragment) fm.findFragmentByTag(TAG_TIMEPICKER);
+        datePicker = (DatePickerFragment) fm.findFragmentByTag(TAG_DATEPICKER);
+
+        if (timePicker == null) {
+            timePicker = new TimePickerFragment();
+        }
+
+        if (datePicker == null) {
+            datePicker = new DatePickerFragment();
+        }
+
+        timePicker.setListener(this);
+        datePicker.setListener(this);
 
         categoryButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -100,7 +116,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                             executionDateButton.getText().toString()));
                 } catch (ParseException e) {
                 }
-                datePicker.show(getFragmentManager(), "executionDate");
+                datePicker.show(getFragmentManager(), TAG_DATEPICKER);
             }
         });
 
@@ -111,7 +127,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                             executionTimeButton.getText().toString()));
                 } catch (ParseException e) {
                 }
-                timePicker.show(getFragmentManager(), "executionTime");
+                timePicker.show(getFragmentManager(), TAG_TIMEPICKER);
             }
         });
 

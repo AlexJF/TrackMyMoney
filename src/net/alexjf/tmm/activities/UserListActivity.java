@@ -115,10 +115,13 @@ public class UserListActivity extends SherlockActivity {
         });
 
         if (savedInstanceState != null) {
-            adapter.setSelectedPosition(savedInstanceState.getInt(KEY_CURUSERINDEX));
-            userPasswordLayout.setLayoutParams(
-                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
-                                              LayoutParams.WRAP_CONTENT));
+            int selectedPosition = savedInstanceState.getInt(KEY_CURUSERINDEX);
+            if (selectedPosition >= 0) {
+                adapter.setSelectedPosition(selectedPosition);
+                userPasswordLayout.setLayoutParams(
+                    new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
+                                                  LayoutParams.WRAP_CONTENT));
+            }
         }
 
         registerForContextMenu(userListView);

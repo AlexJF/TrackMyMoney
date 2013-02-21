@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,9 @@ public class MoneyNodeEditorFragment extends Fragment
     implements OnDateSetListener, OnDrawablePickedListener {
     private static final String KEY_CURRENTNODE = "currentNode";
     private static final String KEY_SELECTEDICON = "selectedIcon";
+
+    private static final String TAG_DATEPICKER = "datePicker";
+    private static final String TAG_DRAWABLEPICKER = "drawablePicker";
 
     private OnMoneyNodeEditListener listener;
 
@@ -76,8 +80,22 @@ public class MoneyNodeEditorFragment extends Fragment
         currencySpinner = (Spinner) v.findViewById(R.id.currency_spinner);
         addButton = (Button) v.findViewById(R.id.add_button);
 
-        datePicker = new DatePickerFragment(this);
-        drawablePicker = new DrawablePickerFragment(this, "glyphish_");
+        FragmentManager fm = getFragmentManager();
+        datePicker = (DatePickerFragment) fm.findFragmentByTag(TAG_DATEPICKER);
+        drawablePicker = (DrawablePickerFragment) 
+            fm.findFragmentByTag(TAG_DRAWABLEPICKER);
+
+        if (datePicker == null) {
+            datePicker = new DatePickerFragment();
+        }
+
+        if (drawablePicker == null) {
+            drawablePicker = new DrawablePickerFragment();
+            drawablePicker.setFilter("glyphish_");
+        }
+
+        datePicker.setListener(this);
+        drawablePicker.setListener(this);
 
         creationDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -85,13 +103,13 @@ public class MoneyNodeEditorFragment extends Fragment
                     datePicker.setDate(dateFormat.parse(creationDateButton.getText().toString()));
                 } catch (ParseException e) {
                 }
-                datePicker.show(getFragmentManager(), "creationDate");
+                datePicker.show(getFragmentManager(), TAG_DATEPICKER);
             }
         });
 
         iconImageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                drawablePicker.show(getFragmentManager(), "icon");
+                drawablePicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
             }
         });
 

@@ -30,6 +30,14 @@ public class TabAdapter extends FragmentPagerAdapter implements
     private OnTabChangeListener onTabChangeListener;
     private OnTabFragmentCreateListener onTabFragmentCreateListener;
 
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        tabs.get(position).fragment = fragment;
+        onTabFragmentCreateListener.onTabFragmentCreated(fragment, position);
+        return fragment;
+    }
+
     public interface OnTabChangeListener {
         public void onTabChanged(int position);
     }
@@ -78,8 +86,7 @@ public class TabAdapter extends FragmentPagerAdapter implements
         TabInfo info = tabs.get(position);
         Fragment fragment = Fragment.instantiate(activity, info.clss.getName(), 
                 info.args);
-        onTabFragmentCreateListener.onTabFragmentCreated(fragment, position);
-        return info.fragment = fragment;
+        return fragment;
     }
 
     @Override
@@ -129,6 +136,5 @@ public class TabAdapter extends FragmentPagerAdapter implements
             onTabChangeListener.onTabChanged(position);
         }
     }
-
 }
 

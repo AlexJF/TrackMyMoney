@@ -4,36 +4,29 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
 
 import android.app.Activity;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 
 public class CategoryEditorFragment extends Fragment 
     implements OnDrawablePickedListener {
     private static final String KEY_CURRENTCATEGORY = "currentCategory";
     private static final String KEY_SELECTEDICON = "selectedIcon";
+    
+    private static final String TAG_DRAWABLEPICKER = "drawablePicker";
 
     private OnCategoryEditListener listener;
 
@@ -62,7 +55,18 @@ public class CategoryEditorFragment extends Fragment
         iconImageButton = (Button) v.findViewById(R.id.icon_button);
         addButton = (Button) v.findViewById(R.id.add_button);
 
-        drawablePicker = new DrawablePickerFragment(this, "glyphish_");
+        drawablePicker = (DrawablePickerFragment) 
+            getFragmentManager().findFragmentByTag(TAG_DRAWABLEPICKER);
+
+        if (drawablePicker == null) {
+            drawablePicker = new DrawablePickerFragment();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.add(android.R.id.content, drawablePicker, TAG_DRAWABLEPICKER);
+            ft.commit();
+        }
+
+        drawablePicker.setListener(this);
+        drawablePicker.setFilter("glyphish_");
 
         iconImageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {

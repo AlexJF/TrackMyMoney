@@ -4,6 +4,8 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -12,18 +14,30 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 
 public class TimePickerFragment extends DialogFragment {
+    private static String KEY_CURRENTTIME = "currentTime";
+
     private OnTimeSetListener listener;
     private Calendar time;
+    private DateFormat timeFormat;
 
-    public TimePickerFragment(OnTimeSetListener listener) {
-        this.listener = listener;
-        this.time = Calendar.getInstance();
+    public TimePickerFragment() {
+        time = Calendar.getInstance();
+        timeFormat = DateFormat.getTimeInstance();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            String savedTime = savedInstanceState.getString(KEY_CURRENTTIME);
+            try {
+                time.setTime(timeFormat.parse(savedTime));
+            } catch (ParseException e) {
+                Log.e("TMM", "Unable to parse saved time", e);
+            }
+        }
         // Use the current time as the default time in the picker
         int hours = getHours();
         int minutes = getMinutes();
@@ -31,6 +45,19 @@ public class TimePickerFragment extends DialogFragment {
 
         // Create a new instance of TimePickerDialog and return it
         return new TimePickerDialog(getActivity(), listener, hours, minutes, true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_CURRENTTIME, timeFormat.format(time.getTime()));
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * @param listener the listener to set
+     */
+    public void setListener(OnTimeSetListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -89,4 +116,5 @@ public class TimePickerFragment extends DialogFragment {
     public void setMinutes(int minute) {
         time.set(Calendar.MINUTE, minute);
     }
+
 }

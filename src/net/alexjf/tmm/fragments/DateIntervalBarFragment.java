@@ -28,6 +28,12 @@ import android.widget.Spinner;
 
 public class DateIntervalBarFragment extends Fragment 
     implements OnDateSetListener {
+    private static String KEY_CURRENTSTARTDATE = "startDate";
+    private static String KEY_CURRENTENDDATE = "endDate";
+    private static String KEY_SPINNERSELECTION = "spinnerSelection";
+    private static String KEY_STARTDATEEDIT = "startTimeEdit";
+
+    private static String TAG_DATEPICKER = "datePicker";
 
     private static enum SPINNER_POS {
         TODAY, YESTERDAY, THISMONTH, LASTMONTH,
@@ -65,10 +71,10 @@ public class DateIntervalBarFragment extends Fragment
     }
 
     public DateIntervalBarFragment() {
-        startDate = Calendar.getInstance();
-        endDate = Calendar.getInstance();
         dateFormat = DateFormat.getDateInstance();
         allTime = false;
+        startDate = Calendar.getInstance();
+        endDate = Calendar.getInstance();
     }
 
     @Override
@@ -81,7 +87,34 @@ public class DateIntervalBarFragment extends Fragment
         endDateButton = (Button) v.findViewById(R.id.end_button);
         customSelector = v.findViewById(R.id.custom_selector);
 
-        datePicker = new DatePickerFragment(this);
+        if (savedInstanceState != null) {
+            try {
+                startDate.setTime(dateFormat.parse(
+                    savedInstanceState.getString(KEY_CURRENTSTARTDATE)));
+            } catch (ParseException e) {
+                Log.e("TMM", "Error parsing saved start date", e);
+            }
+            try {
+                endDate.setTime(dateFormat.parse(
+                    savedInstanceState.getString(KEY_CURRENTENDDATE)));
+            } catch (ParseException e) {
+                Log.e("TMM", "Error parsing saved end date", e);
+            }
+
+            dateIntervalSpinner.setSelection(savedInstanceState.getInt(
+                        KEY_SPINNERSELECTION));
+            startDateBeingEdited = 
+                savedInstanceState.getByte(KEY_STARTDATEEDIT) == 1;
+        }
+
+        datePicker = (DatePickerFragment) 
+            getFragmentManager().findFragmentByTag(TAG_DATEPICKER);
+
+        if (datePicker == null) {
+            datePicker = new DatePickerFragment();
+        }
+
+        datePicker.setListener(this);
 
         dateIntervalSpinner.setOnItemSelectedListener(
                 new OnItemSelectedListener() {
@@ -94,7 +127,6 @@ public class DateIntervalBarFragment extends Fragment
                             } 
                             else if (SPINNER_POS_VALUES[position] == SPINNER_POS.ALLTIME) {
                                 allTime = true;
-                                updateDates(true);
                             }
                             else {
                                 allTime = false;
@@ -126,9 +158,8 @@ public class DateIntervalBarFragment extends Fragment
                                     default:
                                         break;
                                 }
-
-                                updateDates(true);
                             }
+                            updateDates(true);
                         } catch (IndexOutOfBoundsException e) {
                             Log.e("TMM", "Date interval selection out of bounds",
                                     e);
@@ -147,7 +178,7 @@ public class DateIntervalBarFragment extends Fragment
                 } catch (ParseException e) {
                 }
                 startDateBeingEdited = true;
-                datePicker.show(getFragmentManager(), "startDate");
+                datePicker.show(getFragmentManager(), TAG_DATEPICKER);
             }
         });
 
@@ -159,7 +190,7 @@ public class DateIntervalBarFragment extends Fragment
                 } catch (ParseException e) {
                 }
                 startDateBeingEdited = false;
-                datePicker.show(getFragmentManager(), "endDate");
+                datePicker.show(getFragmentManager(), TAG_DATEPICKER);
             }
         });
 
@@ -188,6 +219,23 @@ public class DateIntervalBarFragment extends Fragment
             throw new ClassCastException(activity.toString() + 
                     " must implement OnDateIntervalChangedListener");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_CURRENTSTARTDATE, 
+                dateFormat.format(startDate.getTime()));
+        outState.putString(KEY_CURRENTENDDATE, 
+                dateFormat.format(endDate.getTime()));
+        outState.putInt(KEY_SPINNERSELECTION,
+                dateIntervalSpinner.getSelectedItemPosition());
+        outState.putByte(KEY_STARTDATEEDIT,
+                (byte) (startDateBeingEdited ? 1 : 0));
+        super.onSaveInstanceState(outState);
+    }
+
+    public boolean isAllTime() {
+        return allTime;
     }
 
     public Date getStartDate() {

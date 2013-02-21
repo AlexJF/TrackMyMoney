@@ -57,13 +57,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private ViewPager viewPager;
 
     public MoneyNodeDetailsActivity() {
-        income = BigDecimal.valueOf(0);
-        expense = BigDecimal.valueOf(0);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        income = BigDecimal.valueOf(0);
+        expense = BigDecimal.valueOf(0);
         setContentView(R.layout.activity_moneynode_details);
 
         Intent intent = getIntent();
@@ -97,6 +97,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         tabAdapter.setOnTabFragmentCreateListener(new OnTabFragmentCreateListener() {
 			public void onTabFragmentCreated(Fragment fragment, int position) {
+                Log.d("TMM", "Tab fragment created");
                 IWithAdapter fragmentWithAdapter = 
                     (IWithAdapter) fragment;
                 fragmentWithAdapter.setAdapter(immedTransAdapter);
@@ -105,8 +106,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
             getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);
-        startDate = dateBar.getStartDate();
-        endDate = dateBar.getEndDate();
+        if (!dateBar.isAllTime()) {
+            startDate = dateBar.getStartDate();
+            endDate = dateBar.getEndDate();
+        } else {
+            startDate = null;
+            endDate = null;
+        }
 
         updateTransactionList(true);
     }

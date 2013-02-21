@@ -4,6 +4,8 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -12,18 +14,31 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 
 public class DatePickerFragment extends DialogFragment {
+    private static String KEY_CURRENTDATE = "currentDate";
+
     private OnDateSetListener listener;
     private Calendar date;
+    private DateFormat dateFormat;
 
-    public DatePickerFragment(OnDateSetListener listener) {
-        this.listener = listener;
-        this.date = Calendar.getInstance();
+    public DatePickerFragment() {
+        date = Calendar.getInstance();
+        dateFormat = DateFormat.getDateInstance();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            try {
+                String savedDate = savedInstanceState.getString(KEY_CURRENTDATE);
+                date.setTime(dateFormat.parse(savedDate));
+            } catch (ParseException e) {
+                Log.e("TMM", "Error parsing saved date", e);
+            }
+        }
+
         // Use the current date as the default date in the picker
         int year = date.get(Calendar.YEAR);
         int month = date.get(Calendar.MONTH);
@@ -32,6 +47,19 @@ public class DatePickerFragment extends DialogFragment {
 
         // Create a new instance of DatePickerDialog and return it
         return new DatePickerDialog(getActivity(), listener, year, month, day);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_CURRENTDATE, dateFormat.format(date.getTime()));
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * @param listener the listener to set
+     */
+    public void setListener(OnDateSetListener listener) {
+        this.listener = listener;
     }
 
     /**

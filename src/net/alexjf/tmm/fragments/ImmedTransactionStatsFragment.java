@@ -28,6 +28,7 @@ import org.achartengine.model.CategorySeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 
+import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -45,6 +46,8 @@ import android.widget.Spinner;
 
 public class ImmedTransactionStatsFragment extends Fragment 
     implements IWithAdapter {
+    private final static String KEY_SPINNERSELECTION = "spinnerSelection";
+
     private static int[] colors = null;
 
     private ImmediateTransactionAdapter adapter;
@@ -55,6 +58,7 @@ public class ImmedTransactionStatsFragment extends Fragment
     private GraphicalView chartView;
     private DefaultRenderer renderer = new DefaultRenderer();
     private ListView percentagesListView;
+    private Spinner transactionTypeSpinner;
 
     private static Filter<ImmediateTransaction> incomeFilter = 
         new Filter<ImmediateTransaction>(new Filter.Condition<ImmediateTransaction>() {
@@ -106,7 +110,7 @@ public class ImmedTransactionStatsFragment extends Fragment
 
         View v = inflater.inflate(R.layout.fragment_immedtransaction_stats, 
                 container, false);
-        Spinner transactionTypeSpinner = (Spinner) 
+        transactionTypeSpinner = (Spinner) 
             v.findViewById(R.id.transaction_type_spinner);
         transactionTypeSpinner.setOnItemSelectedListener(
                 new OnItemSelectedListener() {
@@ -129,6 +133,12 @@ public class ImmedTransactionStatsFragment extends Fragment
         });
 
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.stats);
+
+        Configuration config = getResources().getConfiguration();
+        if (config.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            layout.setOrientation(LinearLayout.HORIZONTAL);
+        }
+
         renderer.setZoomEnabled(false);
         renderer.setZoomButtonsVisible(false);
         renderer.setStartAngle(90);
@@ -140,7 +150,7 @@ public class ImmedTransactionStatsFragment extends Fragment
         chartView = ChartFactory.getPieChartView(
                 this.getActivity(), dataSet, renderer);
         layout.addView(chartView, new LayoutParams(LayoutParams.MATCH_PARENT,
-          0, 1));
+          LayoutParams.MATCH_PARENT, 1));
 
         percentagesListView = new ListView(this.getActivity());
 
@@ -155,7 +165,13 @@ public class ImmedTransactionStatsFragment extends Fragment
                 currency);
         percentagesListView.setAdapter(catPercentageAdapter);
         layout.addView(percentagesListView, new LayoutParams(
-            LayoutParams.MATCH_PARENT, 0, 1));
+            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
+
+        if (savedInstanceState != null) {
+            int selectedSpinnerPosition = 
+                savedInstanceState.getInt(KEY_SPINNERSELECTION);
+            transactionTypeSpinner.setSelection(selectedSpinnerPosition);
+        }
 
         updateCurrentTransactionSet();
         return v;
@@ -249,6 +265,13 @@ public class ImmedTransactionStatsFragment extends Fragment
 
         this.adapter.registerDataSetObserver(observer);
         updateCurrentTransactionSet();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(KEY_SPINNERSELECTION, 
+                transactionTypeSpinner.getSelectedItemPosition());
+        super.onSaveInstanceState(outState);
     }
 
     /**
