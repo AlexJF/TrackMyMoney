@@ -41,6 +41,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class MoneyNodeDetailsActivity extends SherlockFragmentActivity 
     implements OnDateIntervalChangedListener, OnImmedTransactionActionListener {
     private static final int REQCODE_ADD = 0;
+    private static final int REQCODE_PREFS = 1;
 
     private MoneyNode currentMoneyNode;
     private ImmediateTransactionAdapter immedTransAdapter;
@@ -96,13 +97,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 ImmedTransactionStatsFragment.class, args);
 
         tabAdapter.setOnTabFragmentCreateListener(new OnTabFragmentCreateListener() {
-			public void onTabFragmentCreated(Fragment fragment, int position) {
+            public void onTabFragmentCreated(Fragment fragment, int position) {
                 Log.d("TMM", "Tab fragment created");
                 IWithAdapter fragmentWithAdapter = 
                     (IWithAdapter) fragment;
                 fragmentWithAdapter.setAdapter(immedTransAdapter);
-			}
-		});
+            }
+        });
 
         DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
             getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);
@@ -114,7 +115,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
             endDate = null;
         }
 
-        updateTransactionList(true);
+        updateData();
     }
 
     @Override
@@ -138,6 +139,11 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                     ImmedTransactionEditActivity.class);
                 intent.putExtra(MoneyNode.KEY_MONEYNODE, currentMoneyNode);
                 startActivityForResult(intent, REQCODE_ADD);
+                return true;
+            case R.id.menu_preferences:
+                intent = new Intent(this,
+                    PreferencesActivity.class);
+                startActivityForResult(intent, REQCODE_PREFS);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -169,7 +175,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                         Log.e("TMM", "Error loading transaction after adding.", e);
                     }
 
-                    updateTransactionList();
+                    break;
+                case REQCODE_PREFS:
+                    if (data.getBooleanExtra(
+                                PreferencesActivity.KEY_FORCEDATAREFRESH,
+                                false)) {
+                        updateData();
+                    }
                     break;
             }
         }
@@ -186,32 +198,15 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
             Log.d("TMM", "Selected new date interval: all time");
         }
 
-        updateTransactionList(true);
+        updateData();
+        updateGui();
     }
 
-    private void updateTransactionList() {
-        updateTransactionList(false);
-    }
-
-    private void updateTransactionList(boolean refreshFromDatabase) {
+    private void updateData() {
         List<ImmediateTransaction> immediateTransactions = null;
-
-        if (refreshFromDatabase) {
-            try {
-                immediateTransactions = currentMoneyNode.getImmediateTransactions(
-                        startDate, endDate);
-            } catch (DatabaseException e) {
-                Log.e("TMM", "Unable to get immediate transactions", e);
-            }
-        } 
-
-        updateTransactionList(immediateTransactions);
-    }
-
-    private void updateTransactionList(List<ImmediateTransaction> immediateTransactions) {
-        // If we are setting new content, clear existing and recalculate
-        // everything
-        if (immediateTransactions != null) {
+        try {
+            immediateTransactions = currentMoneyNode.getImmediateTransactions(
+                    startDate, endDate);
             immedTransAdapter.clear();
 
             income = BigDecimal.valueOf(0);
@@ -233,12 +228,14 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
                 immedTransAdapter.add(transaction);
             }
-        } else {
-            immedTransAdapter.notifyDataSetChanged();
+        } catch (DatabaseException e) {
+            Log.e("TMM", "Unable to get immediate transactions", e);
         }
+    }
 
+    private void updateGui() {
+        immedTransAdapter.notifyDataSetChanged();
         immedTransAdapter.sort(new ImmediateTransaction.DateComparator(true));
-
         updateDetailsPanel();
     }
 
@@ -273,7 +270,6 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 expense = expense.subtract(value);
                 break;
         }
-        updateDetailsPanel();
     }
 
     @Override
@@ -323,10 +319,15 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         income = income.add(incomeDelta);
         expense = expense.add(expenseDelta);
-        updateDetailsPanel();
     }
 
     @Override
     public void onImmedTransactionSelected(ImmediateTransaction transaction) {
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateGui();
     }
 }

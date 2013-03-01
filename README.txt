@@ -14,6 +14,8 @@ Dependencies:
     - SQLCipher (https://github.com/sqlcipher/android-database-sqlcipher)
     - ActionBarSherlock (https://github.com/JakeWharton/ActionBarSherlock)
     - Achartengine (http://www.achartengine.org)
+    - OpenCSV (http://opencsv.sourceforge.net/)
+    - aFileChooser (https://github.com/iPaulPro/aFileChooser)
 
 Icons:
     - Category and money node icons: "Icons by Glyphish" (http://glyphish.com)

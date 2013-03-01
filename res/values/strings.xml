@@ -15,6 +15,7 @@
     <string name="title_activity_category_list">Categories</string>
     <string name="title_activity_category_add">Add Category</string>
     <string name="title_activity_category_edit">Edit Category</string>
+    <string name="title_activity_filechooser">Choose a file</string>
 
     <!-- General -->
     <string name="add">Add</string>
@@ -35,6 +36,8 @@
     <string name="custom">Custom</string>
     <string name="list">List</string>
     <string name="stats">Stats</string>
+    <string name="file_path">File path:</string>
+    <string name="import_text">Import</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -70,4 +73,16 @@
     <!-- DateIntervalBar Related -->
     <string name="date_interval">Date Interval:</string>
 
+    <!-- Preferences -->
+    <string name="pref_import_export_data">Import/Export Data</string>
+    <string name="pref_import_data">Import</string>
+    <string name="pref_import_data_summary">Import data from a CSV file</string>
+    <string name="pref_export_data">Export</string>
+    <string name="pref_export_data_summary">Export data to a CSV file</string>
+
+    <!-- Menu -->
+    <string name="menu_preferences">Preferences</string>
+
+    <!-- Import -->
+    <string name="import_replace">Replace existing matching data</string>
 </resources>

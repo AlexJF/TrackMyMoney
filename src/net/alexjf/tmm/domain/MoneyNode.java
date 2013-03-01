@@ -106,6 +106,10 @@ public class MoneyNode extends DatabaseObject {
      * @return MoneyNode instance with specified id.
      */
     public static MoneyNode createFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+
         MoneyNode node = cache.get(id);
 
         if (node == null) {
@@ -328,6 +332,45 @@ public class MoneyNode extends DatabaseObject {
         }
 
         return balance;
+    }
+
+    public ImmediateTransaction getImmediateTransaction(Date executionDate, 
+            BigDecimal value, String description, Category category)
+        throws DatabaseException {
+        dbReadyOrThrow();
+
+        SQLiteDatabase db = getDb();
+        Long id = null;
+
+        StringBuilder queryBuilder = 
+            new StringBuilder(QUERY_IMMEDIATETRANSACTIONS);
+        queryBuilder.append(" AND ");
+        queryBuilder.append(ImmediateTransaction.COL_EXECUTIONDATE);
+        queryBuilder.append(" = ? AND ");
+        queryBuilder.append(ImmediateTransaction.COL_VALUE);
+        queryBuilder.append(" = ? AND ");
+        queryBuilder.append(ImmediateTransaction.COL_DESCRIPTION);
+        queryBuilder.append(" = ? AND ");
+        queryBuilder.append(ImmediateTransaction.COL_CATEGORYID);
+        queryBuilder.append(" = ?");
+
+        Cursor cursor = db.rawQuery(queryBuilder.toString(), 
+                new String[] {
+                    getId().toString(),
+                    Long.toString(executionDate.getTime()),
+                    value.toString(),
+                    description,
+                    category.getId().toString()
+                });
+
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            id = cursor.getLong(0);
+        }
+
+        cursor.close();
+
+        return ImmediateTransaction.createFromId(id);
     }
 
     public List<ImmediateTransaction> getImmediateTransactions() 

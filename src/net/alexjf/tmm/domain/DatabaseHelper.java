@@ -132,8 +132,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return moneyNodes;
     }
 
-    public boolean hasMoneyNodeWithName(String name) throws DatabaseException {
+    public MoneyNode getMoneyNodeWithName(String name) throws DatabaseException {
         SQLiteDatabase db = getReadableDatabase();
+        Long id = null;
 
         Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
                 new String[] {MoneyNode.COL_ID}, 
@@ -141,11 +142,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[] {name},
                 null, null, null, null);
 
-        boolean exists = cursor.getCount() == 1;
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            id = cursor.getLong(0);
+        }
 
         cursor.close();
 
-        return exists;
+        return MoneyNode.createFromId(id);
+    }
+
+    public boolean hasMoneyNodeWithName(String name) throws DatabaseException {
+        return getMoneyNodeWithName(name) != null;
     }
 
     public void deleteMoneyNode(MoneyNode node) throws DatabaseException {
@@ -185,7 +193,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categories;
     }
 
-    public boolean hasCategoryWithName(String name) throws DatabaseException {
+    public Category getCategoryWithName(String name) throws DatabaseException {
+        Long id = null;
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(Category.TABLE_NAME, 
@@ -194,11 +203,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 new String[] {name},
                 null, null, null, null);
 
-        boolean exists = cursor.getCount() == 1;
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            id = cursor.getLong(0);
+        }
 
         cursor.close();
 
-        return exists;
+        return Category.createFromId(id);
+    }
+
+    public boolean hasCategoryWithName(String name) throws DatabaseException {
+        return getCategoryWithName(name) != null;
     }
 
     public void deleteCategory(Category category) throws DatabaseException {

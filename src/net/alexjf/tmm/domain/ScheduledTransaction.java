@@ -70,6 +70,10 @@ public class ScheduledTransaction extends Transaction {
      * @return ScheduledTransaction instance with specified id.
      */
     public static ScheduledTransaction createFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+
         ScheduledTransaction trans = cache.get(id);
 
         if (trans == null) {

@@ -4,6 +4,8 @@
     android:installLocation="preferExternal"
     android:versionName="1.0" >
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="14" />
@@ -46,6 +48,22 @@
         </activity>
         <activity
             android:name=".activities.CategoryEditActivity">
+        </activity>
+        <activity
+            android:name=".activities.PreferencesActivity">
+        </activity>
+        <activity
+            android:name="com.ipaulpro.afilechooser.FileChooserActivity"
+            android:icon="@drawable/ic_chooser"
+            android:label="@string/title_activity_filechooser" >
+            <intent-filter>
+                <action android:name="android.intent.action.GET_CONTENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.OPENABLE" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
         </activity>
     </application>
 

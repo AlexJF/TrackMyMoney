@@ -71,6 +71,10 @@ public class Category extends DatabaseObject {
      * @return Category instance with specified id.
      */
     public static Category createFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+
         Category cat = cache.get(id);
 
         if (cat == null) {

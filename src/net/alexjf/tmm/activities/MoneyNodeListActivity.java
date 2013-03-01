@@ -11,7 +11,6 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.exceptions.DatabaseException;
 
 import android.app.Activity;
@@ -35,6 +34,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class MoneyNodeListActivity extends SherlockActivity {
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_EDIT = 1;
+    private static final int REQCODE_PREF = 2;
 
     private MoneyNodeAdapter adapter;
 
@@ -47,19 +47,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moneynode_list);
 
-        Intent intent = getIntent();
-
-        List<MoneyNode> moneyNodes;
-
-        try {
-            moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
-        } catch (Exception e) {
-            Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
-                    "\n" + e.getStackTrace());
-            moneyNodes = new LinkedList<MoneyNode>();
-        }
-
-        adapter = new MoneyNodeAdapter(this, moneyNodes);
+        adapter = new MoneyNodeAdapter(this);
 
         ListView moneyNodesListView = (ListView) findViewById(
                 R.id.moneynode_list);
@@ -80,6 +68,28 @@ public class MoneyNodeListActivity extends SherlockActivity {
         });
 
         registerForContextMenu(moneyNodesListView);
+        updateData();
+    }
+
+    private void updateData() {
+        List<MoneyNode> moneyNodes;
+        adapter.clear();
+
+        try {
+            moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
+        } catch (Exception e) {
+            Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
+                    "\n" + e.getStackTrace());
+            moneyNodes = new LinkedList<MoneyNode>();
+        }
+
+        for (MoneyNode node : moneyNodes) {
+            adapter.add(node);
+        }
+    }
+
+    private void updateGui() {
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -109,6 +119,11 @@ public class MoneyNodeListActivity extends SherlockActivity {
                     CategoryListActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.menu_preferences:
+                intent = new Intent(this,
+                    PreferencesActivity.class);
+                startActivityForResult(intent, REQCODE_PREF);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -125,7 +140,13 @@ public class MoneyNodeListActivity extends SherlockActivity {
                     adapter.add(node);
                     break;
                 case REQCODE_EDIT:
-                    adapter.notifyDataSetChanged();
+                    break;
+                case REQCODE_PREF:
+                    if (data.getBooleanExtra(
+                                PreferencesActivity.KEY_FORCEDATAREFRESH,
+                                false)) {
+                        updateData();
+                    }
                     break;
             }
         }
@@ -163,5 +184,11 @@ public class MoneyNodeListActivity extends SherlockActivity {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateGui();
     }
 }

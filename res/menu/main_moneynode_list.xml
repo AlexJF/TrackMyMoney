@@ -11,6 +11,10 @@
     <item android:id="@+id/menu_manage_categories"
         android:title="@string/manage_categories"
         android:icon="@*android:drawable/ic_menu_friendslist"
-        android:orderInCategory="101"
+        android:orderInCategory="101" />
+    <item android:id="@+id/menu_preferences"
+        android:title="@string/menu_preferences"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="102"
         android:showAsAction="never" />
 </menu>

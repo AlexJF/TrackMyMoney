@@ -27,12 +27,21 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
     private int colorBalanceNegative;
     private Integer colorBalanceDefault;
 
+    public MoneyNodeAdapter(Context context) {
+        super(context, ROW_VIEW_RESID);
+        initialize();
+    }
+
     public MoneyNodeAdapter(Context context,  
             List<MoneyNode> objects) {
         super(context, ROW_VIEW_RESID, objects);
+        initialize();
+    }
+
+    protected void initialize() {
         colorBalanceDefault = null;
-        colorBalancePositive = context.getResources().getColor(R.color.balance_positive);
-        colorBalanceNegative = context.getResources().getColor(R.color.balance_negative);
+        colorBalancePositive = getContext().getResources().getColor(R.color.balance_positive);
+        colorBalanceNegative = getContext().getResources().getColor(R.color.balance_negative);
     }
 
     @Override

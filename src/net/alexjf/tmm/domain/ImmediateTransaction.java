@@ -76,6 +76,10 @@ public class ImmediateTransaction extends Transaction {
      * @return ImmediateTransaction instance with specified id.
      */
     public static ImmediateTransaction createFromId(Long id) {
+        if (id == null) {
+            return null;
+        }
+
         ImmediateTransaction trans = cache.get(id);
 
         if (trans == null) {
@@ -110,7 +114,7 @@ public class ImmediateTransaction extends Transaction {
             String description, Category category, Date executionDate) {
         super(moneyNode, value, description, category);
         this.executionDate = executionDate;
-        deltaValueFromPrevious = BigDecimal.valueOf(0);
+        deltaValueFromPrevious = value;
         valueOnDatabase = BigDecimal.valueOf(0);
     }
 
