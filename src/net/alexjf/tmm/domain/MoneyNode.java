@@ -182,8 +182,10 @@ public class MoneyNode extends DatabaseObject {
 
     @Override
     protected long internalSave() throws DbObjectSaveException {
+        Long id = getId();
+
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_ID, getId());
+        contentValues.put(COL_ID, id);
         contentValues.put(COL_NAME, name);
         contentValues.put(COL_DESCRIPTION, description);
         contentValues.put(COL_ICON, icon);
@@ -191,8 +193,15 @@ public class MoneyNode extends DatabaseObject {
         contentValues.put(COL_CREATIONDATE, creationDate.getTime());
         contentValues.put(COL_INITIALBALANCE, initialBalance.toString());
 
-        long result = getDb().insertWithOnConflict(TABLE_NAME, null, 
-                contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        long result;
+
+        if (id != null) {
+            result = getDb().update(TABLE_NAME, contentValues, 
+                    COL_ID + " = ?", new String[] {id.toString()});
+            result = (result == 0 ? -1 : id);
+        } else {
+            result = getDb().insert(TABLE_NAME, null, contentValues);
+        }
 
         if (result >= 0) {
             cache.put(result, this);

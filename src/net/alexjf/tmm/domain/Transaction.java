@@ -118,17 +118,25 @@ public abstract class Transaction extends DatabaseObject {
 
     @Override
     protected long internalSave() throws DbObjectSaveException {
+        Long id = getId();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_ID, getId());
+        contentValues.put(COL_ID, id);
         contentValues.put(COL_MONEYNODEID, moneyNode.getId());
         contentValues.put(COL_VALUE, value.toString());
         contentValues.put(COL_DESCRIPTION, description);
         contentValues.put(COL_CATEGORYID, category.getId());
 
-        long result = getDb().insertWithOnConflict(TABLE_NAME, null, 
-                contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        long result;
 
-        if (result > 0) {
+        if (id != null) {
+            result = getDb().update(TABLE_NAME, contentValues, 
+                     COL_ID + " = ?", new String[] {id.toString()});
+            result = (result == 0 ? -1 : id);
+        } else {
+            result = getDb().insert(TABLE_NAME, null, contentValues);
+        }
+
+        if (result >= 0) {
             return result;
         } else {
             throw new DbObjectSaveException("Couldn't save transaction " + 

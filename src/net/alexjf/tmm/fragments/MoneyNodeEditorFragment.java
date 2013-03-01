@@ -154,7 +154,6 @@ public class MoneyNodeEditorFragment extends Fragment
                     node.setCurrency(currency);
                     listener.onMoneyNodeEdited(node);
                 }
-
             }
         });
 
@@ -265,7 +264,9 @@ public class MoneyNodeEditorFragment extends Fragment
         }
         else {
             try {
-                if (DatabaseHelper.getInstance().hasMoneyNodeWithName(name)) {
+                // If we are adding a new node and name already exists
+                if (node == null && 
+                    DatabaseHelper.getInstance().hasMoneyNodeWithName(name)) {
                     nameError = "A money node with that name already exists.";
                 }
             } catch (DatabaseException e) {

@@ -183,7 +183,9 @@ public class CategoryEditorFragment extends Fragment
         }
         else {
             try {
-                if (DatabaseHelper.getInstance().hasCategoryWithName(name)) {
+                // If we are adding a new category and the name already exists
+                if (category == null && 
+                    DatabaseHelper.getInstance().hasCategoryWithName(name)) {
                     nameError = "A category with that name already exists.";
                 }
             } catch (DatabaseException e) {

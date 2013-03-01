@@ -134,18 +134,27 @@ public class ScheduledTransaction extends Transaction {
         SQLiteDatabase db = getDb();
         try {
             db.beginTransaction();
-            setId(super.internalSave());
+
+            Long existingId = getId();
+            Long id = super.internalSave();
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put(COL_ID, getId());
+            contentValues.put(COL_ID, id);
             contentValues.put(COL_SCHEDULEDDATE, scheduledDate.getTime());
 
-            long result = db.insertWithOnConflict(TABLE_NAME, null, 
-                    contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+            long result;
+
+            if (existingId != null) {
+                result = getDb().update(TABLE_NAME, contentValues, 
+                         COL_ID + " = ?", new String[] {id.toString()});
+                result = (result == 0 ? -1 : id);
+            } else {
+                result = getDb().insert(TABLE_NAME, null, contentValues);
+            }
 
             if (result > 0) {
                 db.setTransactionSuccessful();
-                return getId();
+                return id;
             } else {
                 throw new DbObjectSaveException("Couldn't save scheduled " +
                         "transaction data associated with id " + getId());

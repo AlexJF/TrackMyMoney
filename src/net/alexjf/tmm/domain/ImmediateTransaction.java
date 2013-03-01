@@ -143,20 +143,28 @@ public class ImmediateTransaction extends Transaction {
         SQLiteDatabase db = getDb();
         try {
             db.beginTransaction();
-            setId(super.internalSave());
+            Long existingId = getId();
+            Long id = super.internalSave();
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put(COL_ID, getId());
+            contentValues.put(COL_ID, id);
             contentValues.put(COL_EXECUTIONDATE, executionDate.getTime());
 
-            long result = db.insertWithOnConflict(TABLE_NAME, null, 
-                    contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+            long result;
 
-            if (result > 0) {
+            if (existingId != null) {
+                result = getDb().update(TABLE_NAME, contentValues, 
+                         COL_ID + " = ?", new String[] {id.toString()});
+                result = (result == 0 ? -1 : id);
+            } else {
+                result = getDb().insert(TABLE_NAME, null, contentValues);
+            }
+
+            if (result >= 0) {
                 db.setTransactionSuccessful();
                 getMoneyNode().notifyBalanceChange(deltaValueFromPrevious);
                 deltaValueFromPrevious = BigDecimal.valueOf(0);
-                return getId();
+                return id;
             } else {
                 throw new DbObjectSaveException("Couldn't save immediate " +
                         "transaction data associated with id " + getId());
