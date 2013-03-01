@@ -11,7 +11,6 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.CategoryAdapter;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.DatabaseHelper;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.exceptions.DatabaseException;
 
 import android.app.Activity;
@@ -60,17 +59,7 @@ public class CategoryListActivity extends SherlockActivity {
             intention = INTENTION_MANAGE;
         }
 
-        List<Category> categories;
-
-        try {
-            categories = DatabaseHelper.getInstance().getCategories();
-        } catch (Exception e) {
-            Log.e("TMM", "Failed to get categories: " + e.getMessage() + 
-                    "\n" + e.getStackTrace());
-            categories = new ArrayList<Category>();
-        }
-
-        adapter = new CategoryAdapter(this, categories);
+        adapter = new CategoryAdapter(this);
 
         ListView categoriesListView = (ListView) findViewById(
                 R.id.category_list);
@@ -98,8 +87,29 @@ public class CategoryListActivity extends SherlockActivity {
             }
         });
 
-        adapter.sort(new Category.Comparator());
         registerForContextMenu(categoriesListView);
+        updateData();
+    }
+
+    private void updateData() {
+        List<Category> categories;
+
+        try {
+            categories = DatabaseHelper.getInstance().getCategories();
+        } catch (Exception e) {
+            Log.e("TMM", "Failed to get categories: " + e.getMessage() + 
+                    "\n" + e.getStackTrace());
+            categories = new ArrayList<Category>();
+        }
+
+        adapter.clear();
+        for (Category cat : categories) {
+            adapter.add(cat);
+        }
+    }
+
+    private void updateGui() {
+        adapter.sort(new Category.Comparator());
     }
 
     @Override
@@ -137,11 +147,8 @@ public class CategoryListActivity extends SherlockActivity {
                     Category category = (Category) data.getParcelableExtra(
                         Category.KEY_CATEGORY);
                     adapter.add(category);
-                    adapter.sort(new Category.Comparator());
                     break;
                 case REQCODE_EDIT:
-                    adapter.notifyDataSetChanged();
-                    adapter.sort(new Category.Comparator());
                     break;
             }
         }
@@ -179,5 +186,11 @@ public class CategoryListActivity extends SherlockActivity {
             default:
                 return super.onContextItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateGui();
     }
 }
