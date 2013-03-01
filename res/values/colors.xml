@@ -3,8 +3,8 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <color name="user_bg_normal">#000000</color>
-    <color name="user_bg_selected">#212121</color>
+    <color name="user_bg_normal">#00000000</color>
+    <color name="user_bg_selected">#313131</color>
 
     <color name="balance_positive">#00FF00</color>
     <color name="balance_negative">#FF0000</color>
