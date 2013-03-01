@@ -134,8 +134,8 @@ public class DateIntervalBarFragment extends Fragment
                                 resetDates();
                                 switch (SPINNER_POS_VALUES[position]) {
                                     case YESTERDAY:
-                                        startDate.roll(Calendar.DAY_OF_MONTH, -1);
-                                        endDate.roll(Calendar.DAY_OF_MONTH, -1);
+                                        startDate.add(Calendar.DAY_OF_MONTH, -1);
+                                        endDate.add(Calendar.DAY_OF_MONTH, -1);
                                         break;
                                     case THISMONTH:
                                         startDate.set(Calendar.DAY_OF_MONTH, 1);
@@ -143,8 +143,8 @@ public class DateIntervalBarFragment extends Fragment
                                             endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
                                         break;
                                     case LASTMONTH:
-                                        startDate.roll(Calendar.MONTH, -1);
-                                        endDate.roll(Calendar.MONTH, -1);
+                                        startDate.add(Calendar.MONTH, -1);
+                                        endDate.add(Calendar.MONTH, -1);
                                         startDate.set(Calendar.DAY_OF_MONTH, 1);
                                         endDate.set(Calendar.DAY_OF_MONTH, 
                                             endDate.getActualMaximum(Calendar.DAY_OF_MONTH));

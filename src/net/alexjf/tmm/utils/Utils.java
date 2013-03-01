@@ -39,6 +39,34 @@ public class Utils {
     }
 
     /**
+     * Checks if provided date is between the date period specified by
+     * [dateStart, dateEnd].
+     *
+     * @param date The date to check.
+     * @param dateStart The starting date of the period.
+     * @param dateEnd The ending date of the period.
+     *
+     * @return True if date is in [dateStart, dateEnd], false otherwise.
+     */
+    public static boolean dateBetween(Date date, Date dateStart, Date dateEnd) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.setTime(dateStart);
+        Calendar calendarEnd = Calendar.getInstance();
+        calendarEnd.setTime(dateEnd);
+        return dateBetween(calendar, calendarStart, calendarEnd);
+    }
+
+    /**
+     * {@link #dateBetween(Date, Date, Date)
+     */
+    public static boolean dateBetween(Calendar date, Calendar dateStart, 
+            Calendar dateEnd) {
+        return dateStart.before(date) && dateEnd.after(date);
+    }
+
+    /**
      * Copies the content of the provided adapter to the provided list.
      *
      * @param adapter The adapter to copy the content from.

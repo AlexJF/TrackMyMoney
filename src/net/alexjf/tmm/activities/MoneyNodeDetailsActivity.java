@@ -23,6 +23,7 @@ import net.alexjf.tmm.fragments.ImmedTransactionListFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionListFragment.OnImmedTransactionActionListener;
 import net.alexjf.tmm.fragments.ImmedTransactionStatsFragment;
 import net.alexjf.tmm.interfaces.IWithAdapter;
+import net.alexjf.tmm.utils.Utils;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -280,6 +281,15 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         BigDecimal delta = newValue.subtract(originalValue);
         BigDecimal incomeDelta = BigDecimal.valueOf(0);
         BigDecimal expenseDelta = BigDecimal.valueOf(0);
+
+        // If immediate transaction is no longer on the period being considered,
+        // remove it
+        if (!Utils.dateBetween(transaction.getExecutionDate(), 
+                    startDate, endDate)) {
+            immedTransAdapter.remove(transaction);
+            onImmedTransactionRemoved(transaction);
+            return;
+        }
 
         // If values didn't change, quit
         if (delta.signum() == 0) {
