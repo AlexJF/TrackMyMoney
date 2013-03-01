@@ -72,11 +72,11 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 MoneyNode.KEY_MONEYNODE);
         currency = currentMoneyNode.getCurrency();
 
-        setTitle(currentMoneyNode.getName());
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayOptions(1, ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setDisplayUseLogoEnabled(true);
+
+        setTitle(currentMoneyNode.getName());
 
         balanceTextView = (TextView) findViewById(R.id.balance_value);
         incomeTextView = (TextView) findViewById(R.id.income_value);

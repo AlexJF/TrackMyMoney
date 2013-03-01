@@ -140,6 +140,7 @@ public class ImmedTransactionStatsFragment extends Fragment
         }
 
         renderer.setZoomEnabled(false);
+        renderer.setLabelsTextSize(16);
         renderer.setZoomButtonsVisible(false);
         renderer.setStartAngle(90);
         renderer.setInScroll(true);
