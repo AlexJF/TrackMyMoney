@@ -24,7 +24,9 @@ public class DrawableAdapter extends ArrayAdapter<Integer> {
         // only inflate the view if it's null
         if (view == null) {
             v = new ImageView(parent.getContext());
-            v.setLayoutParams(new GridView.LayoutParams(40, 40));
+            float scale = getContext().getResources().getDisplayMetrics().density;
+            int pixelsIn40Dp = (int) (40 * scale + 0.5f);
+            v.setLayoutParams(new GridView.LayoutParams(pixelsIn40Dp, pixelsIn40Dp));
             v.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
             v = (ImageView) view;

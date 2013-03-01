@@ -250,7 +250,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
             BigDecimal initialBalance = currentMoneyNode.getInitialBalance();
             balance = balance.add(initialBalance);
             balanceTextView.setText(balance + " " + currency + 
-                    " (Init. bal: " + initialBalance + " " + currency + ")");
+                    "\n(Init. bal: " + initialBalance + " " + currency + ")");
         } else {
             balanceTextView.setText(balance + " " + currency);
         }

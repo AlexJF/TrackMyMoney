@@ -34,6 +34,7 @@ public class DrawablePickerFragment extends DialogFragment {
 
     public DrawablePickerFragment() {
         this.filter = null;
+        setStyle(STYLE_NO_TITLE, 0);
     }
 
     @Override
