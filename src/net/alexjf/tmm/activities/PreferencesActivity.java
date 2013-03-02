@@ -74,38 +74,37 @@ public class PreferencesActivity extends PreferenceActivity {
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
             Preference preference) {
         if (preference.getKey().equals("pref_key_export_data")) {
-            AsyncTaskWithProgressDialog<Void, Void, Throwable> asyncTask = 
-                new AsyncTaskWithProgressDialog<Void, Void, Throwable> 
+            AsyncTaskWithProgressDialog<Void, Void, Void> asyncTask = 
+                new AsyncTaskWithProgressDialog<Void, Void, Void> 
                 (this, "Exporting...") {
                     @Override
-                    protected Throwable doInBackground(Void... args) {
+                    protected Void doInBackground(Void... args) {
+                        CSVImportExport exporter = new CSVImportExport();
+                        DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.cvs'");
+                        File extDir = Environment.getExternalStorageDirectory();
+                        File tmmDir = new File(extDir, "TMM");
+                        File exportPath = new File(tmmDir, dateFormat.format(new Date()));
+
                         try {
-                            CSVImportExport exporter = new CSVImportExport();
-                            DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.cvs'");
-                            File extDir = Environment.getExternalStorageDirectory();
-                            File tmmDir = new File(extDir, "TMM");
-                            tmmDir.mkdirs();
-                            File exportPath = new File(tmmDir, dateFormat.format(new Date()));
+                            exportPath.mkdirs();
                             exporter.exportData(exportPath.getPath());
-                            return null;
                         } catch (Exception e) {
-                            return e;
+                            setThrowable(e);
                         }
-                    };
 
-                    @Override
-                    protected void onPostExecute(Throwable e) {
-                        super.onPostExecute(e);
+                        return null;
+                    }
 
-                        if (e == null) {
-                            Toast.makeText(getContext(), 
-                                "Export successful!", 3).show();
-                        } else {
-                            Toast.makeText(getContext(), 
-                                "Import error! (" + e.getMessage() + ")", 3).show();
-                            Log.e("TMM", e.getMessage(), e);
-                        }
-                    };
+                    protected void onPostExecuteSuccess(Void v) {
+                        Toast.makeText(getContext(), 
+                            "Export successful!", 3).show();
+                    }
+
+                    protected void onPostExecuteFail(Throwable e) {
+                        Toast.makeText(getContext(), 
+                            "Import error! (" + e.getMessage() + ")", 3).show();
+                        Log.e("TMM", e.getMessage(), e);
+                    }
                 };
 
             asyncTask.execute();

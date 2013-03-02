@@ -74,36 +74,34 @@ public class ImportDataPreference extends DialogPreference
             return;
         }
 
-        AsyncTaskWithProgressDialog<String, Void, Throwable> asyncTask = 
-            new AsyncTaskWithProgressDialog<String, Void, Throwable> 
+        AsyncTaskWithProgressDialog<String, Void, Void> asyncTask = 
+            new AsyncTaskWithProgressDialog<String, Void, Void> 
             (getContext(), "Importing...") {
                 @Override
-                protected Throwable doInBackground(String... args) {
+                protected Void doInBackground(String... args) {
                     CSVImportExport importer = new CSVImportExport();
                     String path = args[0];
+
                     boolean replace = Boolean.parseBoolean(args[1]);
                     try {
                         importer.importData(path, replace);
-                        return null;
                     } catch (Exception e) {
-                        return e;
+                        setThrowable(e);
                     }
-                };
 
-                @Override
-                protected void onPostExecute(Throwable e) {
-                    super.onPostExecute(e);
+                    return null;
+                }
 
-                    if (e == null) {
-                        Toast.makeText(getContext(), 
-                            "Import successful!", 3).show();
-                        activity.setForceDataRefresh(true);
-                    } else {
-                        Toast.makeText(getContext(), 
-                            "Import error! (" + e.getMessage() + ")", 3).show();
-                        Log.e("TMM", e.getMessage(), e);
-                    }
-                };
+                protected void onPostExecuteSuccess(Void v) {
+                    Toast.makeText(getContext(), 
+                        "Export successful!", 3).show();
+                }
+
+                protected void onPostExecuteFail(Throwable e) {
+                    Toast.makeText(getContext(), 
+                        "Import error! (" + e.getMessage() + ")", 3).show();
+                    Log.e("TMM", e.getMessage(), e);
+                }
             };
 
         asyncTask.execute(locationEditText.getText().toString(), 

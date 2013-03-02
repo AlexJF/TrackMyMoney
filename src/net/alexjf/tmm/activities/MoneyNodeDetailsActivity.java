@@ -5,6 +5,8 @@
 package net.alexjf.tmm.activities;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +25,7 @@ import net.alexjf.tmm.fragments.ImmedTransactionListFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionListFragment.OnImmedTransactionActionListener;
 import net.alexjf.tmm.fragments.ImmedTransactionStatsFragment;
 import net.alexjf.tmm.interfaces.IWithAdapter;
+import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.Utils;
 
 import android.app.Activity;
@@ -32,6 +35,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -41,6 +45,9 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class MoneyNodeDetailsActivity extends SherlockFragmentActivity 
     implements OnDateIntervalChangedListener, OnImmedTransactionActionListener {
+    private static String KEY_CURRENTSTARTDATE = "startDate";
+    private static String KEY_CURRENTENDDATE = "endDate";
+
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_PREFS = 1;
 
@@ -51,6 +58,8 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private BigDecimal income;
     private BigDecimal expense;
     private String currency;
+
+    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
 
     private TextView balanceTextView;
     private TextView totalTransactionsTextView;
@@ -108,15 +117,45 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         DateIntervalBarFragment dateBar = (DateIntervalBarFragment) 
             getSupportFragmentManager().findFragmentById(R.id.dateinterval_bar);
-        if (!dateBar.isAllTime()) {
-            startDate = dateBar.getStartDate();
-            endDate = dateBar.getEndDate();
-        } else {
+
+        if (savedInstanceState != null) {
             startDate = null;
             endDate = null;
+            try {
+                String startDateString = savedInstanceState.getString(KEY_CURRENTSTARTDATE);
+                if (startDateString != null) {
+                    startDate = dateTimeFormat.parse(startDateString);
+                }
+            } catch (ParseException e) {
+                Log.e("TMM", "Error parsing saved start date", e);
+            }
+            try {
+                String endDateString = savedInstanceState.getString(KEY_CURRENTENDDATE);
+                if (endDateString != null) {
+                    endDate = dateTimeFormat.parse(endDateString);
+                }
+            } catch (ParseException e) {
+                Log.e("TMM", "Error parsing saved end date", e);
+            }
+        } else {
+            startDate = dateBar.getStartDate();
+            endDate = dateBar.getEndDate();
         }
 
         updateData();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (startDate != null) {
+            outState.putString(KEY_CURRENTSTARTDATE, 
+                    dateTimeFormat.format(startDate));
+        } 
+        if (endDate != null) {
+            outState.putString(KEY_CURRENTENDDATE, 
+                    dateTimeFormat.format(endDate));
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -159,21 +198,23 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 case REQCODE_ADD:
                     ImmediateTransaction transaction = (ImmediateTransaction) 
                     data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
+
+                    try {
+                        transaction.load();
+                    } catch (DatabaseException e) {
+                        Log.e("TMM", "Error loading transaction after adding.", e);
+                    }
+
                     if (Utils.dateBetween(transaction.getExecutionDate(), startDate, endDate)) {
                         immedTransAdapter.add(transaction);
-                        try {
-                            transaction.load();
-                            BigDecimal value = transaction.getValue();
-                            switch(value.signum()) {
-                                case 1:
-                                    income = income.add(value);
-                                    break;
-                                case -1:
-                                    expense = expense.add(value);
-                                    break;
-                            }
-                        } catch (DatabaseException e) {
-                            Log.e("TMM", "Error loading transaction after adding.", e);
+                        BigDecimal value = transaction.getValue();
+                        switch(value.signum()) {
+                            case 1:
+                                income = income.add(value);
+                                break;
+                            case -1:
+                                expense = expense.add(value);
+                                break;
                         }
                     }
 
@@ -205,34 +246,56 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     }
 
     private void updateData() {
-        List<ImmediateTransaction> immediateTransactions = null;
-        try {
-            immediateTransactions = currentMoneyNode.getImmediateTransactions(
-                    startDate, endDate);
-            immedTransAdapter.clear();
+        AsyncTaskWithProgressDialog<Date, Void, List<ImmediateTransaction>> asyncTask = 
+            new AsyncTaskWithProgressDialog<Date, Void, List<ImmediateTransaction>> 
+            (this, "Loading...") {
+                @Override
+                protected List<ImmediateTransaction> doInBackground(Date... args) {
+                    try {
+                        return currentMoneyNode.getImmediateTransactions(
+                                args[0], args[1]);
+                    } catch (DatabaseException e) {
+                        setThrowable(e);
+                        return null;
+                    }
+                };
 
-            income = BigDecimal.valueOf(0);
-            expense = BigDecimal.valueOf(0);
-            for (ImmediateTransaction transaction : immediateTransactions) {
-                try {
-                    transaction.load();
-                } catch (DatabaseException e) {
-                    Log.e("TMM", "Error loading transaction " + transaction.getId(), e);
-                    continue;
+                @Override
+                protected void onPostExecuteSuccess(List<ImmediateTransaction> immediateTransactions) {
+                    immedTransAdapter.setNotifyOnChange(false);
+                    immedTransAdapter.clear();
+
+                    income = BigDecimal.valueOf(0);
+                    expense = BigDecimal.valueOf(0);
+                    for (ImmediateTransaction transaction : immediateTransactions) {
+                        try {
+                            transaction.load();
+                        } catch (DatabaseException e) {
+                            Log.e("TMM", "Error loading transaction " + transaction.getId(), e);
+                            continue;
+                        }
+                        BigDecimal value = transaction.getValue();
+
+                        if (value.signum() > 0) {
+                            income = income.add(value);
+                        } else {
+                            expense = expense.add(value);
+                        }
+
+                        immedTransAdapter.add(transaction);
+                    }
+
+                    updateGui();
+                };
+
+                protected void onPostExecuteFail(Throwable e) {
+                    Toast.makeText(getContext(), 
+                        "Import error! (" + e.getMessage() + ")", 3).show();
+                    Log.e("TMM", e.getMessage(), e);
                 }
-                BigDecimal value = transaction.getValue();
+            };
 
-                if (value.signum() > 0) {
-                    income = income.add(value);
-                } else {
-                    expense = expense.add(value);
-                }
-
-                immedTransAdapter.add(transaction);
-            }
-        } catch (DatabaseException e) {
-            Log.e("TMM", "Unable to get immediate transactions", e);
-        }
+        asyncTask.execute(startDate, endDate);
     }
 
     private void updateGui() {

@@ -46,7 +46,8 @@ public class DateIntervalBarFragment extends Fragment
 
     private Calendar startDate;
     private Calendar endDate;
-    private DateFormat dateFormat;
+    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
+    private static DateFormat dateFormat = DateFormat.getDateInstance();
     private boolean startDateBeingEdited;
     private boolean allTime;
 
@@ -71,10 +72,10 @@ public class DateIntervalBarFragment extends Fragment
     }
 
     public DateIntervalBarFragment() {
-        dateFormat = DateFormat.getDateInstance();
         allTime = false;
         startDate = Calendar.getInstance();
         endDate = Calendar.getInstance();
+        resetDates();
     }
 
     @Override
@@ -89,20 +90,20 @@ public class DateIntervalBarFragment extends Fragment
 
         if (savedInstanceState != null) {
             try {
-                startDate.setTime(dateFormat.parse(
+                startDate.setTime(dateTimeFormat.parse(
                     savedInstanceState.getString(KEY_CURRENTSTARTDATE)));
             } catch (ParseException e) {
                 Log.e("TMM", "Error parsing saved start date", e);
             }
             try {
-                endDate.setTime(dateFormat.parse(
+                endDate.setTime(dateTimeFormat.parse(
                     savedInstanceState.getString(KEY_CURRENTENDDATE)));
             } catch (ParseException e) {
                 Log.e("TMM", "Error parsing saved end date", e);
             }
 
             dateIntervalSpinner.setSelection(savedInstanceState.getInt(
-                        KEY_SPINNERSELECTION));
+                        KEY_SPINNERSELECTION), false);
             startDateBeingEdited = 
                 savedInstanceState.getByte(KEY_STARTDATEEDIT) == 1;
         }
@@ -117,58 +118,60 @@ public class DateIntervalBarFragment extends Fragment
         datePicker.setListener(this);
 
         dateIntervalSpinner.setOnItemSelectedListener(
-                new OnItemSelectedListener() {
-                    public void onItemSelected(AdapterView<?> parent, View view, 
-                        int position, long id) {
-                        try {
-                            if (SPINNER_POS_VALUES[position] == SPINNER_POS.CUSTOM) {
-                                allTime = false;
-                                customSelector.setVisibility(View.VISIBLE);
-                            } 
-                            else if (SPINNER_POS_VALUES[position] == SPINNER_POS.ALLTIME) {
-                                allTime = true;
-                            }
-                            else {
-                                allTime = false;
-                                customSelector.setVisibility(View.GONE);
-                                resetDates();
-                                switch (SPINNER_POS_VALUES[position]) {
-                                    case YESTERDAY:
-                                        startDate.add(Calendar.DAY_OF_MONTH, -1);
-                                        endDate.add(Calendar.DAY_OF_MONTH, -1);
-                                        break;
-                                    case THISMONTH:
-                                        startDate.set(Calendar.DAY_OF_MONTH, 1);
-                                        endDate.set(Calendar.DAY_OF_MONTH, 
-                                            endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                                        break;
-                                    case LASTMONTH:
-                                        startDate.add(Calendar.MONTH, -1);
-                                        endDate.add(Calendar.MONTH, -1);
-                                        startDate.set(Calendar.DAY_OF_MONTH, 1);
-                                        endDate.set(Calendar.DAY_OF_MONTH, 
-                                            endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                                        break;
-                                    case THISYEAR:
-                                        startDate.set(Calendar.DAY_OF_YEAR, 1);
-                                        endDate.set(Calendar.DAY_OF_YEAR, 
-                                            endDate.getActualMaximum(Calendar.DAY_OF_YEAR));
-                                        break;
-                                    case TODAY:
-                                    default:
-                                        break;
-                                }
-                            }
-                            updateDates(true);
-                        } catch (IndexOutOfBoundsException e) {
-                            Log.e("TMM", "Date interval selection out of bounds",
-                                    e);
-                        }
-                    };
+            new OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, 
+                    int position, long id) {
 
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    };
-                });
+                    try {
+                        if (SPINNER_POS_VALUES[position] == SPINNER_POS.CUSTOM) {
+                            allTime = false;
+                            customSelector.setVisibility(View.VISIBLE);
+                        } 
+                        else if (SPINNER_POS_VALUES[position] == SPINNER_POS.ALLTIME) {
+                            allTime = true;
+                            customSelector.setVisibility(View.GONE);
+                        }
+                        else {
+                            allTime = false;
+                            customSelector.setVisibility(View.GONE);
+                            resetDates();
+                            switch (SPINNER_POS_VALUES[position]) {
+                                case YESTERDAY:
+                                    startDate.add(Calendar.DAY_OF_MONTH, -1);
+                                    endDate.add(Calendar.DAY_OF_MONTH, -1);
+                                    break;
+                                case THISMONTH:
+                                    startDate.set(Calendar.DAY_OF_MONTH, 1);
+                                    endDate.set(Calendar.DAY_OF_MONTH, 
+                                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                                    break;
+                                case LASTMONTH:
+                                    startDate.add(Calendar.MONTH, -1);
+                                    endDate.add(Calendar.MONTH, -1);
+                                    startDate.set(Calendar.DAY_OF_MONTH, 1);
+                                    endDate.set(Calendar.DAY_OF_MONTH, 
+                                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                                    break;
+                                case THISYEAR:
+                                    startDate.set(Calendar.DAY_OF_YEAR, 1);
+                                    endDate.set(Calendar.DAY_OF_YEAR, 
+                                        endDate.getActualMaximum(Calendar.DAY_OF_YEAR));
+                                    break;
+                                case TODAY:
+                                default:
+                                    break;
+                            }
+                        }
+                        updateDates(true);
+                    } catch (IndexOutOfBoundsException e) {
+                        Log.e("TMM", "Date interval selection out of bounds",
+                                e);
+                    }
+                };
+
+                public void onNothingSelected(AdapterView<?> parent) {
+                };
+            });
 
         startDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -224,9 +227,9 @@ public class DateIntervalBarFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_CURRENTSTARTDATE, 
-                dateFormat.format(startDate.getTime()));
+                dateTimeFormat.format(startDate.getTime()));
         outState.putString(KEY_CURRENTENDDATE, 
-                dateFormat.format(endDate.getTime()));
+                dateTimeFormat.format(endDate.getTime()));
         outState.putInt(KEY_SPINNERSELECTION,
                 dateIntervalSpinner.getSelectedItemPosition());
         outState.putByte(KEY_STARTDATEEDIT,
