@@ -1,7 +1,5 @@
-TrackMyMoney
-====================
-
-Note: Not functional yet
+TrackMyMoney (v1.0.0beta)
+=========================
 
 TrackMyMoney is an Android application that allows you to manage expenses and
 revenues on one or more "money nodes" (wallet, bank account, etc...).
