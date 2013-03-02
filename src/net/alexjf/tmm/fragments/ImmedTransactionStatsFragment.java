@@ -140,20 +140,21 @@ public class ImmedTransactionStatsFragment extends Fragment
         }
 
         renderer.setZoomEnabled(false);
-        renderer.setLabelsTextSize(16);
+        renderer.setLabelsTextSize(Utils.displayPixelsToPixels(getActivity(), 12));
         renderer.setZoomButtonsVisible(false);
         renderer.setStartAngle(90);
         renderer.setInScroll(true);
         renderer.setPanEnabled(false);
-        renderer.setScale(1.2f);
+        renderer.setScale(0.8f);
         renderer.setShowLabels(true);
         renderer.setShowLegend(false);
         chartView = ChartFactory.getPieChartView(
                 this.getActivity(), dataSet, renderer);
-        layout.addView(chartView, new LayoutParams(LayoutParams.MATCH_PARENT,
-          LayoutParams.MATCH_PARENT, 1));
+        chartView.setLayoutParams(new ListView.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            Utils.displayPixelsToPixels(getActivity(), 250)));
 
-        percentagesListView = new ListView(this.getActivity());
+        percentagesListView = new ListView(getActivity());
 
         String currency = null;
 
@@ -162,8 +163,9 @@ public class ImmedTransactionStatsFragment extends Fragment
             currency = bundle.getString(MoneyNode.KEY_CURRENCY);
         }
 
-        catPercentageAdapter = new CategoryPercentageAdapter(this.getActivity(), 
+        catPercentageAdapter = new CategoryPercentageAdapter(getActivity(), 
                 currency);
+        percentagesListView.addHeaderView(chartView);
         percentagesListView.setAdapter(catPercentageAdapter);
         layout.addView(percentagesListView, new LayoutParams(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));

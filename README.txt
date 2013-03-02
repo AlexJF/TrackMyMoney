@@ -1,4 +1,4 @@
-TrackMyMoney (v1.0.0beta)
+Track My Money (v1.0.0beta)
 =========================
 
 TrackMyMoney is an Android application that allows you to manage expenses and
@@ -17,3 +17,6 @@ Dependencies:
 
 Icons:
     - Category and money node icons: "Icons by Glyphish" (http://glyphish.com)
+
+
+[![Track My Money on the Google Play Store](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=net.alexjf.tmm)

@@ -6,6 +6,8 @@ package net.alexjf.tmm.adapters;
 
 import java.util.List;
 
+import net.alexjf.tmm.utils.Utils;
+
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +26,7 @@ public class DrawableAdapter extends ArrayAdapter<Integer> {
         // only inflate the view if it's null
         if (view == null) {
             v = new ImageView(parent.getContext());
-            float scale = getContext().getResources().getDisplayMetrics().density;
-            int pixelsIn40Dp = (int) (40 * scale + 0.5f);
+            int pixelsIn40Dp = Utils.displayPixelsToPixels(getContext(), 40);
             v.setLayoutParams(new GridView.LayoutParams(pixelsIn40Dp, pixelsIn40Dp));
             v.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {

@@ -6,7 +6,7 @@
 
     <!-- Application -->
     <string name="app_name_label">Application Name</string>
-    <string name="app_name_value">TrackMyMoney</string>
+    <string name="app_name_value">Track My Money</string>
     <string name="app_version_label">Version</string>
     <string name="app_version_value">1.0.0beta</string>
     <string name="app_author_label">Author</string>

@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import android.content.Context;
 import android.widget.Adapter;
 
 /**
@@ -65,6 +66,22 @@ public class Utils {
             Calendar dateEnd) {
         return dateStart.before(date) && dateEnd.after(date);
     }
+
+    /**
+     * Converts dp units into pixel units.
+     *
+     * Allows setting sizes programatically in java using dp.
+     *
+     * @param context The context where we are calculating the size.
+     * @param displayPixels The value of the size in dp.
+     *
+     * @return The value of the size in px.
+     */
+    public static int displayPixelsToPixels(Context context, int displayPixels) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (displayPixels * scale + 0.5f);
+    }
+
 
     /**
      * Copies the content of the provided adapter to the provided list.
