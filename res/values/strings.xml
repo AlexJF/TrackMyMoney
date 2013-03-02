@@ -19,6 +19,7 @@
     <string name="menu_settings">Settings</string>
     <string name="title_activity_user_list">Track My Money</string>
     <string name="title_activity_user_add">Add User</string>
+    <string name="title_activity_user_edit">Edit User</string>
     <string name="title_activity_moneynode_list">Money Nodes</string>
     <string name="title_activity_moneynode_add">Add Money Node</string>
     <string name="title_activity_moneynode_edit">Edit Money Node</string>
@@ -54,6 +55,9 @@
     <string name="addUser">Add new user</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>
+    <string name="password_confirm">Confirm Password:</string>
+    <string name="password_new">New Password:</string>
+    <string name="password_old">Old Password:</string>
     <string name="error_loginFailed">Login failed for user \'%s\'</string>
 
     <!-- Money Node Related -->

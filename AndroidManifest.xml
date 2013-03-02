@@ -26,8 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.UserAddActivity"
-            android:label="@string/title_activity_user_add" >
+            android:name=".activities.UserEditActivity">
         </activity>
         <activity
             android:name=".activities.MoneyNodeListActivity"

@@ -275,7 +275,7 @@ public class ImmedTransactionEditorFragment extends Fragment
             executionDateButton.setText(dateFormat.format(new Date()));
             executionTimeButton.setText(timeFormat.format(new Date()));
             valueText.setText("");
-            addButton.setText("Add");
+            addButton.setText(R.string.add);
         // If we are editing a node, fill fields with current information
         } else {
             descriptionText.setText(transaction.getDescription());
@@ -284,7 +284,7 @@ public class ImmedTransactionEditorFragment extends Fragment
             executionTimeButton.setText(timeFormat.format(
                         transaction.getExecutionDate()));
             valueText.setText(transaction.getValue().toString());
-            addButton.setText("Edit");
+            addButton.setText(R.string.edit);
         }
 
         if (currentMoneyNode != null) {

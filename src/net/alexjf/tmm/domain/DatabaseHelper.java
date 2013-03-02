@@ -67,6 +67,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean changePassword(String newPassword) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getWritableDatabase();
+            db.rawQuery("PRAGMA rekey = '" + newPassword + "'", null);
+            return true;
+        } catch (SQLiteException e) {
+            Log.e("TMM", e.getMessage(), e);
+            return false;
+        } catch (DatabaseUnknownUserException e) {
+            Log.e("TMM", e.getMessage(), e);
+            return false;
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+        }
+    }
+
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);

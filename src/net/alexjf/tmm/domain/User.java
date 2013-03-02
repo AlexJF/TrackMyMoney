@@ -35,6 +35,13 @@ public class User implements Parcelable {
     }
 
     /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the password for this instance.
      *
      * @param password The password.

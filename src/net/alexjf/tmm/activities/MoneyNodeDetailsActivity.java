@@ -245,6 +245,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         updateGui();
     }
 
+    // TODO: Use lazy loading instead of getting all transactions in the period
     private void updateData() {
         AsyncTaskWithProgressDialog<Date, Void, List<ImmediateTransaction>> asyncTask = 
             new AsyncTaskWithProgressDialog<Date, Void, List<ImmediateTransaction>> 

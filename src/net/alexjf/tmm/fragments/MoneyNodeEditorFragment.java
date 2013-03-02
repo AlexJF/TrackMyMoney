@@ -229,7 +229,7 @@ public class MoneyNodeEditorFragment extends Fragment
             creationDateButton.setText(dateFormat.format(new Date()));
             initialBalanceText.setText("");
             currencySpinner.setSelection(0);
-            addButton.setText("Add");
+            addButton.setText(R.string.add);
         // If we are editing a node, fill fields with current information
         } else {
             nameText.setText(node.getName());
@@ -243,7 +243,7 @@ public class MoneyNodeEditorFragment extends Fragment
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
             int positionInSpinner = adapter.getPosition(node.getCurrency());
             currencySpinner.setSelection(positionInSpinner);
-            addButton.setText("Edit");
+            addButton.setText(R.string.edit);
         }
     }
 

@@ -37,13 +37,14 @@ import com.actionbarsherlock.app.SherlockActivity;
 public class UserListActivity extends SherlockActivity {
     private static final String KEY_CURUSERINDEX = "curUserIdx";
 
-    private UserList userList;
+    private static final int REQCODE_ADD = 0;
+    private static final int REQCODE_EDIT = 1;
+
     private SelectedAdapter<User> adapter;
     private View userPasswordLayout;
     private EditText userPasswordText;
 
     public UserListActivity() {
-        userList = null;
         adapter = null;
         userPasswordLayout = null;
         userPasswordText = null;
@@ -54,8 +55,6 @@ public class UserListActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
 
-        userList = new UserList(getApplicationContext());
-
         adapter = new SelectedAdapter<User>(this, 
                 R.layout.list_row_user, R.id.user_label, 
                 R.color.user_bg_normal, R.color.user_bg_selected);
@@ -65,8 +64,8 @@ public class UserListActivity extends SherlockActivity {
         footer.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(UserListActivity.this, 
-                    UserAddActivity.class);
-                startActivityForResult(intent, 0);
+                    UserEditActivity.class);
+                startActivityForResult(intent, REQCODE_ADD);
             };
         });
 
@@ -136,16 +135,13 @@ public class UserListActivity extends SherlockActivity {
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            String username = data.getStringExtra(UserAddActivity.KEY_USERNAME);
-            String password = data.getStringExtra(UserAddActivity.KEY_PASSWORD);
-
-            // Add user and login to initiate the database
-            User newUser = userList.addUser(username);
-            DatabaseHelper dbHelper = DatabaseHelper.initialize(
-                    getApplicationContext(), newUser);
-            dbHelper.login(password);
-            refreshUserList();
-            selectUser(-1);
+            switch (requestCode) {
+                case REQCODE_ADD:
+                    refreshUserList();
+                    selectUser(-1);
+                    break;
+                default:
+            }
         }
     }
 
@@ -169,16 +165,23 @@ public class UserListActivity extends SherlockActivity {
         User user = adapter.getItem(info.position);
         switch (item.getItemId()) {
             case R.id.menu_remove:
+                UserList userList = new UserList(this);
                 userList.removeUser(user);
                 refreshUserList();
                 return true;
-            // TODO: Allow user to change passwords
+            case R.id.menu_edit:
+                Intent intent = new Intent(UserListActivity.this, 
+                    UserEditActivity.class);
+                intent.putExtra(User.KEY_USER, user);
+                startActivityForResult(intent, REQCODE_EDIT);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
     }
 
     private void refreshUserList() {
+        UserList userList = new UserList(this);
         adapter.clear();
         for (User user : userList.getUsers()) {
             adapter.add(user);
