@@ -38,6 +38,7 @@ public class PreferencesActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {    
         super.onCreate(savedInstanceState);       
         result = new Intent();
+        setResult(RESULT_OK, result);
         addPreferencesFromResource(R.xml.preferences);       
     }
 

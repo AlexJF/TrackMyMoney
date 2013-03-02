@@ -3,4 +3,7 @@
     <declare-styleable name="SelectorButton">
         <attr name="android:text"/>
     </declare-styleable>
+    <declare-styleable name="URLPreference">
+        <attr name="url" format="string" />
+    </declare-styleable>
 </resources>

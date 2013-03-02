@@ -7,7 +7,6 @@ package net.alexjf.tmm.preferences;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.PreferencesActivity;
 import net.alexjf.tmm.activities.PreferencesActivity.OnFileChosenListener;
-import net.alexjf.tmm.exceptions.ImportException;
 import net.alexjf.tmm.importexport.CSVImportExport;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 
@@ -36,16 +35,16 @@ public class ImportDataPreference extends DialogPreference
 
     public ImportDataPreference(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
-        setPositiveButtonText(R.string.import_text);
+        initialize();
     }
 
     public ImportDataPreference(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        initialize();
     }
 
-    public ImportDataPreference(Context context) {
-        this(context, null, 0);
+    protected void initialize() {
+        setPositiveButtonText(R.string.import_text);
     }
 
     @Override

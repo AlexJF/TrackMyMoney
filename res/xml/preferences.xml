@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen 
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tmm="http://schemas.android.com/apk/res/net.alexjf.tmm">
     <PreferenceCategory 
         android:title="@string/pref_import_export_data">
         <net.alexjf.tmm.preferences.ImportDataPreference
@@ -12,5 +14,37 @@
             android:title="@string/pref_export_data"
             android:summary="@string/pref_export_data_summary"
             android:persistent="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_misc">
+        <PreferenceScreen
+            android:key="pref_key_about"
+            android:title="@string/pref_about">
+            <Preference
+                android:key="pref_key_about_appname"
+                android:title="@string/app_name_label"
+                android:summary="@string/app_name_value"
+                android:persistent="false" />
+            <Preference
+                android:key="pref_key_about_appversion"
+                android:title="@string/app_version_label"
+                android:summary="@string/app_version_value"
+                android:persistent="false" />
+            <Preference
+                android:key="pref_key_about_appauthor"
+                android:title="@string/app_author_label"
+                android:summary="@string/app_author_value"
+                android:persistent="false" />
+            <Preference
+                android:key="pref_key_about_appcopyright"
+                android:title="@string/app_copyright"
+                android:persistent="false" />
+            <net.alexjf.tmm.preferences.URLPreference
+                android:key="pref_key_about_appweb"
+                android:title="@string/app_website_label"
+                android:summary="@string/app_website_value"
+                tmm:url="@string/app_website_value"
+                android:persistent="false" />
+        </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

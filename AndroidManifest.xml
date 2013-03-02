@@ -2,7 +2,7 @@
     package="net.alexjf.tmm"
     android:versionCode="1"
     android:installLocation="preferExternal"
-    android:versionName="1.0" >
+    android:versionName="@string/app_version_value" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -13,7 +13,7 @@
     <application
         android:name="TrackMyMoneyApplication"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:label="@string/app_name_value"
         android:theme="@style/Theme.Sherlock" >
         <activity
             android:name=".activities.UserListActivity"
