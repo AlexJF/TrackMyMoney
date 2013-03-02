@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,8 +39,8 @@ public class CSVImportExport implements ImportExport {
     private static final int ELEM_IMMEDTRANSACTION = 2;
 
     private static Map<String, Integer> elementTypeMapping;
-    private static DateFormat dateFormat = DateFormat.getDateInstance();
-    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
+    private static DateFormat dateFormat = new SimpleDateFormat("d MMM yyyy");
+    private static DateFormat dateTimeFormat = new SimpleDateFormat("d MMM yyyy HH:mm:ss");
 
     static {
         elementTypeMapping = new HashMap<String, Integer>();
