@@ -158,22 +158,23 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
             switch (requestCode) {
                 case REQCODE_ADD:
                     ImmediateTransaction transaction = (ImmediateTransaction) 
-                        data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
-                    immedTransAdapter.add(transaction);
-
-                    try {
-                        transaction.load();
-                        BigDecimal value = transaction.getValue();
-                        switch(value.signum()) {
-                            case 1:
-                                income = income.add(value);
-                                break;
-                            case -1:
-                                expense = expense.add(value);
-                                break;
+                    data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
+                    if (Utils.dateBetween(transaction.getExecutionDate(), startDate, endDate)) {
+                        immedTransAdapter.add(transaction);
+                        try {
+                            transaction.load();
+                            BigDecimal value = transaction.getValue();
+                            switch(value.signum()) {
+                                case 1:
+                                    income = income.add(value);
+                                    break;
+                                case -1:
+                                    expense = expense.add(value);
+                                    break;
+                            }
+                        } catch (DatabaseException e) {
+                            Log.e("TMM", "Error loading transaction after adding.", e);
                         }
-                    } catch (DatabaseException e) {
-                        Log.e("TMM", "Error loading transaction after adding.", e);
                     }
 
                     break;
