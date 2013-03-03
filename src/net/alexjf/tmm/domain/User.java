@@ -4,6 +4,8 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
+import net.alexjf.tmm.utils.Utils;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -19,6 +21,11 @@ public class User implements Parcelable {
 
     User(String name) {
         this.name = name;
+    }
+
+    User(String name, String password) {
+        this(name);
+        setPassword(password);
     }
 
     User(Parcel in) {
@@ -47,11 +54,15 @@ public class User implements Parcelable {
      * @param password The password.
      */
     public void setPassword(String password) {
-        this.password = password;
+        this.password = Utils.sha1(password);
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.password = passwordHash;
     }
 
     /**
-     * Gets the password for this instance.
+     * Gets the sha-1 hash of the password for this instance.
      *
      * @return The password.
      */

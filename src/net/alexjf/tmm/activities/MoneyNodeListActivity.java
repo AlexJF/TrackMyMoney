@@ -11,6 +11,7 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.domain.UserList;
 import net.alexjf.tmm.exceptions.DatabaseException;
 
 import android.app.Activity;
@@ -114,6 +115,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
                     MoneyNodeEditActivity.class);
                 startActivityForResult(intent, REQCODE_ADD);
                 return true;
+            // TODO: All below could be merged with moneynodedetails activity
             case R.id.menu_manage_categories:
                 intent = new Intent(this,
                     CategoryListActivity.class);
@@ -123,6 +125,14 @@ public class MoneyNodeListActivity extends SherlockActivity {
                 intent = new Intent(this,
                     PreferencesActivity.class);
                 startActivityForResult(intent, REQCODE_PREF);
+                return true;
+            case R.id.menu_logout:
+                intent = new Intent(this,
+                    UserListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                UserList.setRememberedLogin(this, null);
+                startActivity(intent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

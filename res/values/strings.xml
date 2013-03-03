@@ -52,6 +52,7 @@
 
     <!-- User Related -->
     <string name="login">Login</string>
+    <string name="login_remember">Remember this login</string>
     <string name="addUser">Add new user</string>
     <string name="username">Username:</string>
     <string name="password">Password:</string>
@@ -98,6 +99,7 @@
 
     <!-- Menu -->
     <string name="menu_preferences">Preferences</string>
+    <string name="menu_logout">Logout</string>
 
     <!-- Import -->
     <string name="import_replace">Replace existing matching data</string>

@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -43,6 +44,7 @@ public class UserListActivity extends SherlockActivity {
     private SelectedAdapter<User> adapter;
     private View userPasswordLayout;
     private EditText userPasswordText;
+    private CheckBox rememberLoginCheck;
 
     public UserListActivity() {
         adapter = null;
@@ -81,6 +83,8 @@ public class UserListActivity extends SherlockActivity {
                 }
             }
         });
+        
+        rememberLoginCheck = (CheckBox) findViewById(R.id.remember_login);
 
         ListView userListView = (ListView) findViewById(R.id.user_list);
 
@@ -103,22 +107,13 @@ public class UserListActivity extends SherlockActivity {
             public void onClick(View view) {
                 User selectedUser = adapter.getItem(
                     adapter.getSelectedPosition());
-                DatabaseHelper dbHelper = DatabaseHelper.initialize(
-                    getApplicationContext(),
-                    selectedUser);
-                String password = userPasswordText.getText().toString();
-                if (dbHelper.login(password)) {
-                    userPasswordText.setText("");
-                    selectedUser.setPassword(password);
 
-                    Intent intent = new Intent(UserListActivity.this,
-                        MoneyNodeListActivity.class);
-                    startActivity(intent);
-                } else {
-                    userPasswordText.setText("");
-                    Toast.makeText(UserListActivity.this, 
-                        "Login Failure!", 3).show();
-                }
+                String password = userPasswordText.getText().toString();
+                selectedUser.setPassword(password);
+                userPasswordText.setText("");
+
+
+                navigateToMoneyNodeList(selectedUser, false);
             };
         });
 
@@ -129,8 +124,14 @@ public class UserListActivity extends SherlockActivity {
 
         registerForContextMenu(userListView);
         refreshUserList();
+
+        User rememberedUser = UserList.getRememberedLogin(this);
+
+        if (rememberedUser != null) {
+            navigateToMoneyNodeList(rememberedUser, true);
+        }
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
@@ -204,4 +205,29 @@ public class UserListActivity extends SherlockActivity {
     protected void onResume() {
         super.onResume();
     }
+
+    private void navigateToMoneyNodeList(User user, boolean finish) {
+        DatabaseHelper dbHelper = DatabaseHelper.initialize(
+            getApplicationContext(), user);
+        if (dbHelper.login()) {
+            if (rememberLoginCheck.isChecked()) {
+                UserList.setRememberedLogin(UserListActivity.this, 
+                    user);
+                finish = true;
+            }
+
+            Intent intent = new Intent(UserListActivity.this,
+                MoneyNodeListActivity.class);
+            startActivity(intent);
+
+            if (finish) {
+                finish();
+            }
+        } else {
+            userPasswordText.setText("");
+            Toast.makeText(UserListActivity.this, 
+                "Login Failure!", 3).show();
+        }
+    }
+    
 }

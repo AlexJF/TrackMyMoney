@@ -4,11 +4,13 @@
  ******************************************************************************/
 package net.alexjf.tmm.utils;
 
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Adapter;
 
 /**
@@ -112,5 +114,24 @@ public class Utils {
         for (int i = 0; i < numElements; i++) {
             list.add((T) adapter.getItem(i));
         }
+    }
+
+    public static String sha1(String message) {
+        String hash = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance( "SHA-1" );
+            byte[] bytes = message.getBytes("UTF-8");
+            digest.update(bytes, 0, bytes.length);
+            bytes = digest.digest();
+            StringBuilder sb = new StringBuilder();
+            for( byte b : bytes )
+            {
+                sb.append( String.format("%02X", b) );
+            }
+            hash = sb.toString();
+        } catch(Exception e ) {
+            Log.e("TMM", e.getMessage(), e);
+        }
+        return hash;
     }
 }

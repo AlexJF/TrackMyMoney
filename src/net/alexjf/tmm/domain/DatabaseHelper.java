@@ -50,15 +50,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return getWritableDatabase(currentUser.getPassword());
     }
 
-    public boolean login(String password) {
+    public boolean login() {
         SQLiteDatabase db = null;
 
         try {
-            db = getReadableDatabase(password);
+            db = getReadableDatabase();
             db.query("sqlite_master", new String[] { "count(*)" }, null, null, 
                     null, null, null, null);
             return true;
         } catch (SQLiteException e) {
+            return false;
+        } catch (DatabaseUnknownUserException e) {
+            Log.e("TMM", e.getMessage(), e);
             return false;
         } finally {
             if (db != null) {

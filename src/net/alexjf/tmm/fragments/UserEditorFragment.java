@@ -97,9 +97,10 @@ public class UserEditorFragment extends Fragment {
 
                 if (user == null) {
                     User newUser = userList.addUser(username);
+                    newUser.setPassword(password);
                     DatabaseHelper dbHelper = DatabaseHelper.initialize(
                             getActivity(), newUser);
-                    dbHelper.login(password);
+                    dbHelper.login();
                     dbHelper.close();
                     listener.onUserCreated(newUser);
                 } else {
@@ -191,10 +192,12 @@ public class UserEditorFragment extends Fragment {
         // If we are editing a user...
         if (user != null) {
             DatabaseHelper dbHelper = DatabaseHelper.initialize(getActivity(), user);
-            if (!dbHelper.login(oldPasswordText.getText().toString())) {
+            user.setPassword(oldPasswordText.getText().toString());
+            if (!dbHelper.login()) {
                 oldPasswordText.setError("Wrong password", errorDrawable);
                 error = true;
             }
+            user.setPassword("");
             dbHelper.close();
         }
 

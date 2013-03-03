@@ -18,8 +18,33 @@ import android.content.SharedPreferences;
 public class UserList {
     public final static String USERDATA_PREFERENCES_NAME = "userData";
     public final static String USERDATA_USERNAMES_KEY = "userNames";
+    public final static String USERDATA_REMEMBEREDLOGIN = "rememberedLogin";
+
     private Context context;
     private Map<String, User> users;
+
+    public static User getRememberedLogin(Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        String[] rememberedLogin = preferences.getString(USERDATA_REMEMBEREDLOGIN, "").split(":");
+        if (rememberedLogin.length != 2) {
+            return null;
+        } else {
+            User user = new User(rememberedLogin[0]);
+            user.setPasswordHash(rememberedLogin[1]);
+            return user;
+        }
+    }
+
+    public static void setRememberedLogin(Context context, User user) {
+        SharedPreferences.Editor editor = getPreferences(context).edit();
+        
+        if (user != null) {
+            editor.putString(USERDATA_REMEMBEREDLOGIN, user.getName() + ":" + user.getPassword());
+        } else {
+            editor.remove(USERDATA_REMEMBEREDLOGIN);
+        }
+        editor.commit();
+    }
 
     public UserList(Context context) {
         this.context = context;
@@ -76,6 +101,10 @@ public class UserList {
     }
 
     protected SharedPreferences getPreferences() {
-        return this.context.getSharedPreferences(USERDATA_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        return getPreferences(context);
+    }
+
+    protected static SharedPreferences getPreferences(Context context) {
+        return context.getSharedPreferences(USERDATA_PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 }
