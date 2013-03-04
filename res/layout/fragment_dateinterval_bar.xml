@@ -33,7 +33,6 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_below="@id/name_text"
                 android:layout_marginRight="5dp"
                 android:freezesText="true" />
         <Button android:id="@+id/end_button"

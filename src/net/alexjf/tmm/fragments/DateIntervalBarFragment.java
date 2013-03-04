@@ -189,6 +189,7 @@ public class DateIntervalBarFragment extends Fragment
         super.onDestroyView();
     };
 
+    @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar calendar;
 

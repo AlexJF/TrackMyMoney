@@ -49,6 +49,7 @@
     <string name="stats">Stats</string>
     <string name="file_path">File path:</string>
     <string name="import_text">Import</string>
+    <string name="export_text">Export</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -106,4 +107,9 @@
 
     <!-- Import -->
     <string name="import_replace">Replace existing matching data</string>
+
+    <!-- Export -->
+    <string name="export_share_check">Send to... after export</string>
+    <string name="export_dateinterval_check">Limit date interval</string>
+    <string name="export_share_title">Send to...</string>
 </resources>

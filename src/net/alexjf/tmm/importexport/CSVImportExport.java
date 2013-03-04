@@ -30,7 +30,7 @@ import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class CSVImportExport implements ImportExport {
+public class CSVImportExport extends ImportExport {
     private static final String ELEM_MONEYNODE_LABEL = "MoneyNodes";
     private static final String ELEM_CATEGORY_LABEL = "Categories";
     private static final String ELEM_IMMEDTRANSACTION_LABEL = "Immediate Transactions";
@@ -109,7 +109,7 @@ public class CSVImportExport implements ImportExport {
     }
 
     @Override
-    public void exportData(String location) 
+    public void exportData(String location, Date startDate, Date endDate) 
         throws ExportException {
         CSVWriter writer = null;
         try {
@@ -137,7 +137,7 @@ public class CSVImportExport implements ImportExport {
                         break;
                     case ELEM_IMMEDTRANSACTION:
                         writeImmediateTransactions(writer, moneyNodes, 
-                                categories);
+                                categories, startDate, endDate);
                         break;
                 }
             }
@@ -242,7 +242,7 @@ public class CSVImportExport implements ImportExport {
 
     protected void writeImmediateTransactions(CSVWriter writer, 
             List<MoneyNode> moneyNodes,
-            List<Category> categories) 
+            List<Category> categories, Date startDate, Date endDate) 
         throws DatabaseException {
         writer.writeNext(new String[] {
             "Money Node",
@@ -254,7 +254,8 @@ public class CSVImportExport implements ImportExport {
 
         int nodeIdx = 0;
         for (MoneyNode node : moneyNodes) {
-            for (ImmediateTransaction trans : node.getImmediateTransactions()) {
+            for (ImmediateTransaction trans : 
+                    node.getImmediateTransactions(startDate, endDate)) {
                 trans.load();
                 writer.writeNext(new String[] {
                     Integer.toString(nodeIdx),

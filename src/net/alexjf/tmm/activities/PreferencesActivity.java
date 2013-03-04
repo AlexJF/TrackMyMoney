@@ -4,43 +4,71 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.importexport.CSVImportExport;
-import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
-import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
 import net.alexjf.tmm.utils.PreferenceManager;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceScreen;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
-public class PreferencesActivity extends PreferenceActivity 
-        implements AsyncTaskResultListener {
+public class PreferencesActivity extends PreferenceActivity {
     public static final String KEY_FORCEDATAREFRESH = "forceDataRefresh";
 
     private static final int REQCODE_FILECHOOSE = 0;
 
-    private static final String TASK_EXPORT = "export";
-
-    private static AsyncTaskWithProgressDialog<Void> 
-        exportTask;
+    private Set<OnStopListener> stopListeners = 
+        new HashSet<OnStopListener>();
+    private Set<OnSaveInstanceListener> saveInstanceListeners = 
+        new HashSet<OnSaveInstanceListener>();
+    private Set<OnRestoreInstanceListener> restoreInstanceListeners = 
+        new HashSet<OnRestoreInstanceListener>();
 
     private OnFileChosenListener currentFileChoiceListener;
     private Intent result;
+
+    public interface OnStopListener {
+        public void onStop();
+    }
+
+    public interface OnSaveInstanceListener {
+        public void onSaveInstance(Bundle bundle);
+    }
+
+    public interface OnRestoreInstanceListener {
+        public void onRestoreInstance(Bundle bundle);
+    }
+
+    public void registerOnStopListener(OnStopListener listener) {
+        stopListeners.add(listener);
+    }
+
+    public void unregisterOnStopListener(OnStopListener listener) {
+        stopListeners.remove(listener);
+    }
+
+    public void registerOnSaveInstanceListener(OnSaveInstanceListener listener) {
+        saveInstanceListeners.add(listener);
+    }
+
+    public void unregisterOnSaveInstanceListener(OnSaveInstanceListener listener) {
+        saveInstanceListeners.remove(listener);
+    }
+
+    public void registerOnRestoreInstanceListener(OnRestoreInstanceListener listener) {
+        restoreInstanceListeners.add(listener);
+    }
+
+    public void unregisterOnRestoreInstanceListener(OnRestoreInstanceListener listener) {
+        restoreInstanceListeners.remove(listener);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {    
@@ -52,10 +80,30 @@ public class PreferencesActivity extends PreferenceActivity
         getPreferenceManager().setSharedPreferencesName(
                 prefManager.getCurrentUserPreferencesName());
         addPreferencesFromResource(R.xml.preferences);       
+    }
 
-        if (exportTask != null) {
-            exportTask.setContext(this);
-            exportTask.setResultListener(this);
+    @Override
+    protected void onStop() {
+        for (OnStopListener listener : stopListeners) {
+            listener.onStop();
+        }
+       super.onStop();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        for (OnSaveInstanceListener listener : saveInstanceListeners) {
+            listener.onSaveInstance(outState);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+
+        for (OnRestoreInstanceListener listener : restoreInstanceListeners) {
+            listener.onRestoreInstance(state);
         }
     }
 
@@ -84,67 +132,6 @@ public class PreferencesActivity extends PreferenceActivity
                     currentFileChoiceListener.onFileChosen(data.getData());
                 }
         }
-    }
-
-    // TODO: Move this to a pref dialog like import with date filtering
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-            Preference preference) {
-        if (preference.getKey().equals("pref_key_export_data")) {
-            if (exportTask == null) {
-                exportTask = new AsyncTaskWithProgressDialog<Void> 
-                (this, TASK_EXPORT, "Exporting...") {
-                    @Override
-                    protected Bundle doInBackground(Void... args) {
-                        CSVImportExport exporter = new CSVImportExport();
-                        DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.cvs'");
-                        File extDir = Environment.getExternalStorageDirectory();
-                        File tmmDir = new File(extDir, "TMM");
-                        File exportPath = new File(tmmDir, dateFormat.format(new Date()));
-
-                        try {
-                            tmmDir.mkdirs();
-                            exporter.exportData(exportPath.getPath());
-                        } catch (Exception e) {
-                            setThrowable(e);
-                        }
-
-                        return null;
-                    }
-                };
-
-                exportTask.setResultListener(this);
-                exportTask.ensureDatabaseOpen(true);
-                exportTask.execute();
-            }
-        }
-        return super.onPreferenceTreeClick(preferenceScreen, preference);
-    }
-
-    @Override
-    public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
-        Toast.makeText(this, "Export successful!", 3).show();
-        exportTask = null;
-    }
-
-    @Override
-    public void onAsyncTaskResultCanceled(String taskId) {
-        exportTask = null;
-    }
-
-    @Override
-    public void onAsyncTaskResultFailure(String taskId, Throwable e) {
-        Toast.makeText(this, "Import error! (" + e.getMessage() + ")", 3).show();
-        Log.e("TMM", e.getMessage(), e);
-        exportTask = null;
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (exportTask != null) {
-            exportTask.setContext(null);
-        }
-        super.onDestroy();
     }
 
     public interface OnFileChosenListener {

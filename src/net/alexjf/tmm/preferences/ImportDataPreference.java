@@ -30,8 +30,7 @@ public class ImportDataPreference extends DialogPreference
     implements OnFileChosenListener, AsyncTaskResultListener {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_import_data;
 
-    private static AsyncTaskWithProgressDialog<String> 
-        importTask;
+    private static AsyncTaskWithProgressDialog<String> importTask;
 
     private static final String TASK_IMPORT = "import";
 
@@ -79,6 +78,10 @@ public class ImportDataPreference extends DialogPreference
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         if (!positiveResult) {
+            return;
+        }
+
+        if (importTask != null) {
             return;
         }
 
