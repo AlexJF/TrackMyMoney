@@ -89,6 +89,9 @@
     <string name="date_interval">Date Interval:</string>
 
     <!-- Preferences -->
+    <string name="pref_general">General</string>
+    <string name="pref_default_currency">Default currency</string>
+    <string name="pref_default_timeinterval">Default time interval</string>
     <string name="pref_import_export_data">Import/Export Data</string>
     <string name="pref_import_data">Import</string>
     <string name="pref_import_data_summary">Import data from a CSV file</string>

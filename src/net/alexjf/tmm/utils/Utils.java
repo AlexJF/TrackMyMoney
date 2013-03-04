@@ -7,9 +7,14 @@ package net.alexjf.tmm.utils;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.widget.Adapter;
 
@@ -17,6 +22,9 @@ import android.widget.Adapter;
  * This class implements miscelaneous function used throughout the entire app
  */
 public class Utils {
+    private static Map<Activity, Integer> prevOrientations = 
+        new HashMap<Activity, Integer>();
+
     /**
      * Combines 2 Date objects, one representing date (d/m/y) and another
      * representing time (h:m:s) into a single Date object
@@ -116,6 +124,13 @@ public class Utils {
         }
     }
 
+    /**
+     * Create a SHA-1 digest of the provided message.
+     *
+     * @param message The message to digest.
+     *
+     * @return The digest of the message using SHA-1.
+     */
     public static String sha1(String message) {
         String hash = null;
         try {
@@ -133,5 +148,35 @@ public class Utils {
             Log.e("TMM", e.getMessage(), e);
         }
         return hash;
+    }
+
+    public static void preventOrientationChanges(Activity activity) {
+        Integer prevOrientation = prevOrientations.get(activity);
+
+        if (prevOrientation == null) {
+            prevOrientation = activity.getRequestedOrientation();
+            prevOrientations.put(activity, prevOrientation);
+        } else {
+            return;
+        }
+
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else if(activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+        }
+    }
+
+    public static void allowOrientationChanges(Activity activity) {
+        Integer prevOrientation = prevOrientations.get(activity);
+
+        if (prevOrientation == null) {
+            return;
+        }
+
+        activity.setRequestedOrientation(prevOrientation);
+        prevOrientations.remove(activity);
     }
 }

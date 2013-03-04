@@ -21,12 +21,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     private User currentUser;
+    private boolean preventClose = false;
 
     private static DatabaseHelper instance = null;
 
     public static DatabaseHelper initialize(Context context, User user) {
         instance = new DatabaseHelper(context, user);
         return getInstance();
+    }
+
+    /**
+     * Prevent the closure of the database until otherwise stated.
+     *
+     * This is useful for AsyncTasks to be able to continue accessing the
+     * database even when an activity restarts.
+     *
+     * @param preventClose the preventClose to set
+     */
+    public void setPreventClose(boolean preventClose) {
+        this.preventClose = preventClose;
     }
 
     public static DatabaseHelper getInstance() {
@@ -252,6 +265,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * @return the currentUser
+     */
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    /**
      * Deletes a database associated with a particular user
      *
      * @param User user whose database we want to delete.
@@ -265,5 +285,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (currentUser == null) {
             throw new DatabaseUnknownUserException();
         }
+    }
+
+    @Override
+    public synchronized void close() {
+        if (preventClose) return;
+        super.close();
     }
 }

@@ -9,9 +9,12 @@ import net.alexjf.tmm.activities.PreferencesActivity;
 import net.alexjf.tmm.activities.PreferencesActivity.OnFileChosenListener;
 import net.alexjf.tmm.importexport.CSVImportExport;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
+import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -24,8 +27,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class ImportDataPreference extends DialogPreference 
-    implements OnFileChosenListener {
+    implements OnFileChosenListener, AsyncTaskResultListener {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_import_data;
+
+    private static AsyncTaskWithProgressDialog<String> 
+        importTask;
+
+    private static final String TASK_IMPORT = "import";
 
     private PreferencesActivity activity;
 
@@ -74,11 +82,11 @@ public class ImportDataPreference extends DialogPreference
             return;
         }
 
-        AsyncTaskWithProgressDialog<String, Void, Void> asyncTask = 
-            new AsyncTaskWithProgressDialog<String, Void, Void> 
-            (getContext(), "Importing...") {
+        importTask = 
+            new AsyncTaskWithProgressDialog<String> 
+            (getContext(), TASK_IMPORT, "Importing...") {
                 @Override
-                protected Void doInBackground(String... args) {
+                protected Bundle doInBackground(String... args) {
                     CSVImportExport importer = new CSVImportExport();
                     String path = args[0];
 
@@ -91,25 +99,57 @@ public class ImportDataPreference extends DialogPreference
 
                     return null;
                 }
-
-                protected void onPostExecuteSuccess(Void v) {
-                    Toast.makeText(getContext(), 
-                        "Export successful!", 3).show();
-                }
-
-                protected void onPostExecuteFail(Throwable e) {
-                    Toast.makeText(getContext(), 
-                        "Import error! (" + e.getMessage() + ")", 3).show();
-                    Log.e("TMM", e.getMessage(), e);
-                }
             };
 
-        asyncTask.execute(locationEditText.getText().toString(), 
+        importTask.setResultListener(this);
+        importTask.ensureDatabaseOpen(true);
+        importTask.execute(locationEditText.getText().toString(), 
                 Boolean.toString(replaceCheckBox.isChecked()));
     }
 
     @Override
     public void onFileChosen(Uri uri) {
         locationEditText.setText(uri.getPath());
+    }
+
+    @Override
+    public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
+        Toast.makeText(getContext(), 
+            "Import successful!", 3).show();
+        activity.setForceDataRefresh(true);
+        importTask = null;
+    }
+
+    @Override
+    public void onAsyncTaskResultCanceled(String taskId) {
+        importTask = null;
+    }
+
+    @Override
+    public void onAsyncTaskResultFailure(String taskId, Throwable e) {
+        Toast.makeText(getContext(), 
+            "Import error! (" + e.getMessage() + ")", 3).show();
+        Log.e("TMM", e.getMessage(), e);
+        importTask = null;
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        if (importTask != null) {
+            importTask.setContext(null);
+        }
+        return super.onSaveInstanceState();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        activity = (PreferencesActivity) getContext();
+
+        if (importTask != null) {
+            importTask.setContext(getContext());
+            importTask.setResultListener(this);
+        }
+
+        super.onRestoreInstanceState(state);
     }
 }

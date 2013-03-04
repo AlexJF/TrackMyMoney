@@ -12,6 +12,8 @@ import java.util.Date;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.importexport.CSVImportExport;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
+import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
+import net.alexjf.tmm.utils.PreferenceManager;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -26,10 +28,16 @@ import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
-public class PreferencesActivity extends PreferenceActivity {
+public class PreferencesActivity extends PreferenceActivity 
+        implements AsyncTaskResultListener {
     public static final String KEY_FORCEDATAREFRESH = "forceDataRefresh";
 
     private static final int REQCODE_FILECHOOSE = 0;
+
+    private static final String TASK_EXPORT = "export";
+
+    private static AsyncTaskWithProgressDialog<Void> 
+        exportTask;
 
     private OnFileChosenListener currentFileChoiceListener;
     private Intent result;
@@ -39,7 +47,16 @@ public class PreferencesActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);       
         result = new Intent();
         setResult(RESULT_OK, result);
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        Log.d("TMM", prefManager.getCurrentUserPreferencesName());
+        getPreferenceManager().setSharedPreferencesName(
+                prefManager.getCurrentUserPreferencesName());
         addPreferencesFromResource(R.xml.preferences);       
+
+        if (exportTask != null) {
+            exportTask.setContext(this);
+            exportTask.setResultListener(this);
+        }
     }
 
     public void requestFileChooser(OnFileChosenListener requester) {
@@ -74,11 +91,11 @@ public class PreferencesActivity extends PreferenceActivity {
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
             Preference preference) {
         if (preference.getKey().equals("pref_key_export_data")) {
-            AsyncTaskWithProgressDialog<Void, Void, Void> asyncTask = 
-                new AsyncTaskWithProgressDialog<Void, Void, Void> 
-                (this, "Exporting...") {
+            if (exportTask == null) {
+                exportTask = new AsyncTaskWithProgressDialog<Void> 
+                (this, TASK_EXPORT, "Exporting...") {
                     @Override
-                    protected Void doInBackground(Void... args) {
+                    protected Bundle doInBackground(Void... args) {
                         CSVImportExport exporter = new CSVImportExport();
                         DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.cvs'");
                         File extDir = Environment.getExternalStorageDirectory();
@@ -86,7 +103,7 @@ public class PreferencesActivity extends PreferenceActivity {
                         File exportPath = new File(tmmDir, dateFormat.format(new Date()));
 
                         try {
-                            exportPath.mkdirs();
+                            tmmDir.mkdirs();
                             exporter.exportData(exportPath.getPath());
                         } catch (Exception e) {
                             setThrowable(e);
@@ -94,22 +111,40 @@ public class PreferencesActivity extends PreferenceActivity {
 
                         return null;
                     }
-
-                    protected void onPostExecuteSuccess(Void v) {
-                        Toast.makeText(getContext(), 
-                            "Export successful!", 3).show();
-                    }
-
-                    protected void onPostExecuteFail(Throwable e) {
-                        Toast.makeText(getContext(), 
-                            "Import error! (" + e.getMessage() + ")", 3).show();
-                        Log.e("TMM", e.getMessage(), e);
-                    }
                 };
 
-            asyncTask.execute();
+                exportTask.setResultListener(this);
+                exportTask.ensureDatabaseOpen(true);
+                exportTask.execute();
+            }
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
+
+    @Override
+    public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
+        Toast.makeText(this, "Export successful!", 3).show();
+        exportTask = null;
+    }
+
+    @Override
+    public void onAsyncTaskResultCanceled(String taskId) {
+        exportTask = null;
+    }
+
+    @Override
+    public void onAsyncTaskResultFailure(String taskId, Throwable e) {
+        Toast.makeText(this, "Import error! (" + e.getMessage() + ")", 3).show();
+        Log.e("TMM", e.getMessage(), e);
+        exportTask = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (exportTask != null) {
+            exportTask.setContext(null);
+        }
+        super.onDestroy();
     }
 
     public interface OnFileChosenListener {

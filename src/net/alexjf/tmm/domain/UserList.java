@@ -9,8 +9,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.alexjf.tmm.utils.PreferenceManager;
+
 import android.content.Context;
-import android.content.SharedPreferences;
 
 /**
  * This class represents a list of users of the application.
@@ -24,8 +25,10 @@ public class UserList {
     private Map<String, User> users;
 
     public static User getRememberedLogin(Context context) {
-        SharedPreferences preferences = getPreferences(context);
-        String[] rememberedLogin = preferences.getString(USERDATA_REMEMBEREDLOGIN, "").split(":");
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        String[] rememberedLogin = prefManager.readGlobalStringPreference(
+                USERDATA_REMEMBEREDLOGIN, "").split(":");
+
         if (rememberedLogin.length != 2) {
             return null;
         } else {
@@ -36,20 +39,21 @@ public class UserList {
     }
 
     public static void setRememberedLogin(Context context, User user) {
-        SharedPreferences.Editor editor = getPreferences(context).edit();
+        PreferenceManager prefManager = PreferenceManager.getInstance();
         
         if (user != null) {
-            editor.putString(USERDATA_REMEMBEREDLOGIN, user.getName() + ":" + user.getPassword());
+            prefManager.writeGlobalStringPreference(USERDATA_REMEMBEREDLOGIN, 
+                    user.getName() + ":" + user.getPassword());
         } else {
-            editor.remove(USERDATA_REMEMBEREDLOGIN);
+            prefManager.removeGlobalPreference(USERDATA_REMEMBEREDLOGIN);
         }
-        editor.commit();
     }
 
     public UserList(Context context) {
         this.context = context;
-        SharedPreferences preferences = getPreferences();
-        String[] userNames = preferences.getString(USERDATA_USERNAMES_KEY, "").split(":");
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        String[] userNames = prefManager.readGlobalStringPreference(
+                    USERDATA_USERNAMES_KEY, "").split(":");
 
         this.users = new HashMap<String, User>();
 
@@ -95,16 +99,7 @@ public class UserList {
             userNames += userName + ":";
         }
 
-        SharedPreferences.Editor editor = getPreferences().edit();
-        editor.putString(USERDATA_USERNAMES_KEY, userNames);
-        editor.commit();
-    }
-
-    protected SharedPreferences getPreferences() {
-        return getPreferences(context);
-    }
-
-    protected static SharedPreferences getPreferences(Context context) {
-        return context.getSharedPreferences(USERDATA_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        PreferenceManager.getInstance().writeGlobalStringPreference(
+                USERDATA_USERNAMES_KEY, userNames);
     }
 }

@@ -6,10 +6,12 @@ package net.alexjf.tmm.fragments;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 import net.alexjf.tmm.R;
+import net.alexjf.tmm.utils.PreferenceManager;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -33,14 +35,11 @@ public class DateIntervalBarFragment extends Fragment
     private static String KEY_SPINNERSELECTION = "spinnerSelection";
     private static String KEY_STARTDATEEDIT = "startTimeEdit";
 
+    private static String PREFKEY_DEFAULTTIMEINTERVAL = "pref_key_default_timeinterval";
+
     private static String TAG_DATEPICKER = "datePicker";
 
-    private static enum SPINNER_POS {
-        TODAY, YESTERDAY, THISMONTH, LASTMONTH,
-        THISYEAR, ALLTIME, CUSTOM;
-    }
-
-    final static SPINNER_POS[] SPINNER_POS_VALUES = SPINNER_POS.values();
+    private String[] dateIntervalTypes;
 
     private OnDateIntervalChangedListener listener;
 
@@ -75,18 +74,23 @@ public class DateIntervalBarFragment extends Fragment
         allTime = false;
         startDate = Calendar.getInstance();
         endDate = Calendar.getInstance();
-        resetDates();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+            final Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dateinterval_bar, container, false);
+
+        dateIntervalTypes = getResources().getStringArray(R.array.date_intervals);
 
         dateIntervalSpinner = (Spinner) v.findViewById(R.id.interval_spinner);
         startDateButton = (Button) v.findViewById(R.id.start_button);
         endDateButton = (Button) v.findViewById(R.id.end_button);
         customSelector = v.findViewById(R.id.custom_selector);
+
+        int selectedSpinnerPos = 0;
+
+        Log.d("TMM", "Creating bar fragment");
 
         if (savedInstanceState != null) {
             try {
@@ -102,11 +106,45 @@ public class DateIntervalBarFragment extends Fragment
                 Log.e("TMM", "Error parsing saved end date", e);
             }
 
-            dateIntervalSpinner.setSelection(savedInstanceState.getInt(
-                        KEY_SPINNERSELECTION), false);
+            selectedSpinnerPos = savedInstanceState.getInt(
+                        KEY_SPINNERSELECTION);
             startDateBeingEdited = 
                 savedInstanceState.getByte(KEY_STARTDATEEDIT) == 1;
+        } else {
+            PreferenceManager prefManager = PreferenceManager.getInstance();
+            String prefDateInterval = prefManager.readUserStringPreference(
+                    PREFKEY_DEFAULTTIMEINTERVAL, null);
+            if (prefDateInterval != null) { 
+                selectedSpinnerPos = Arrays.asList(dateIntervalTypes).indexOf(
+                        prefDateInterval);
+            }
         }
+
+        dateIntervalSpinner.setSelection(selectedSpinnerPos, false);
+        final int positionToSelect = selectedSpinnerPos;
+
+        // Hack to ignore initial onItemSelecteds due to layout and measure
+        dateIntervalSpinner.post(new Runnable() {
+            public void run() {
+                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+                    Log.d("TMM", ste.toString());
+                }
+                dateIntervalSpinner.setOnItemSelectedListener(
+                    new OnItemSelectedListener() {
+                        public void onItemSelected(AdapterView<?> parent, View view, 
+                            int position, long id) {
+                            setDateInterval(position);
+                            notifyDatesChanged();
+                        };
+
+                        public void onNothingSelected(AdapterView<?> parent) {
+                        };
+                    });
+
+                setDateInterval(positionToSelect);
+                notifyDatesChanged();
+            }
+        });
 
         datePicker = (DatePickerFragment) 
             getFragmentManager().findFragmentByTag(TAG_DATEPICKER);
@@ -116,62 +154,6 @@ public class DateIntervalBarFragment extends Fragment
         }
 
         datePicker.setListener(this);
-
-        dateIntervalSpinner.setOnItemSelectedListener(
-            new OnItemSelectedListener() {
-                public void onItemSelected(AdapterView<?> parent, View view, 
-                    int position, long id) {
-
-                    try {
-                        if (SPINNER_POS_VALUES[position] == SPINNER_POS.CUSTOM) {
-                            allTime = false;
-                            customSelector.setVisibility(View.VISIBLE);
-                        } 
-                        else if (SPINNER_POS_VALUES[position] == SPINNER_POS.ALLTIME) {
-                            allTime = true;
-                            customSelector.setVisibility(View.GONE);
-                        }
-                        else {
-                            allTime = false;
-                            customSelector.setVisibility(View.GONE);
-                            resetDates();
-                            switch (SPINNER_POS_VALUES[position]) {
-                                case YESTERDAY:
-                                    startDate.add(Calendar.DAY_OF_MONTH, -1);
-                                    endDate.add(Calendar.DAY_OF_MONTH, -1);
-                                    break;
-                                case THISMONTH:
-                                    startDate.set(Calendar.DAY_OF_MONTH, 1);
-                                    endDate.set(Calendar.DAY_OF_MONTH, 
-                                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                                    break;
-                                case LASTMONTH:
-                                    startDate.add(Calendar.MONTH, -1);
-                                    endDate.add(Calendar.MONTH, -1);
-                                    startDate.set(Calendar.DAY_OF_MONTH, 1);
-                                    endDate.set(Calendar.DAY_OF_MONTH, 
-                                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                                    break;
-                                case THISYEAR:
-                                    startDate.set(Calendar.DAY_OF_YEAR, 1);
-                                    endDate.set(Calendar.DAY_OF_YEAR, 
-                                        endDate.getActualMaximum(Calendar.DAY_OF_YEAR));
-                                    break;
-                                case TODAY:
-                                default:
-                                    break;
-                            }
-                        }
-                        updateDates(true);
-                    } catch (IndexOutOfBoundsException e) {
-                        Log.e("TMM", "Date interval selection out of bounds",
-                                e);
-                    }
-                };
-
-                public void onNothingSelected(AdapterView<?> parent) {
-                };
-            });
 
         startDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -200,6 +182,13 @@ public class DateIntervalBarFragment extends Fragment
         return v;
     }
 
+    @Override
+    public void onDestroyView() {
+        // Hack to ignore initial onItemSelecteds due to layout and measure
+        dateIntervalSpinner.setOnItemSelectedListener(null);
+        super.onDestroyView();
+    };
+
     public void onDateSet(DatePicker view, int year, int month, int day) {
         Calendar calendar;
 
@@ -210,7 +199,8 @@ public class DateIntervalBarFragment extends Fragment
         }
 
         calendar.set(year, month, day);
-        updateDates(true);
+        updateDateButtons();
+        notifyDatesChanged();
     }
 
     @Override
@@ -251,27 +241,25 @@ public class DateIntervalBarFragment extends Fragment
 
     public void setStartDate(Date date) {
         startDate.setTime(date);
-        updateDates(true);
+        updateDateButtons();
+        notifyDatesChanged();
     }
 
     public void setEndDate(Date date) {
         endDate.setTime(date);
-        updateDates(true);
+        updateDateButtons();
+        notifyDatesChanged();
     }
 
-    private void updateDates(boolean changed) {
-        String startDateString = dateFormat.format(startDate.getTime());
-        String endDateString = dateFormat.format(endDate.getTime());
+    private void notifyDatesChanged() {
+        if (listener == null) {
+            return;
+        }
 
-        startDateButton.setText(startDateString);
-        endDateButton.setText(endDateString);
-
-        if (changed) {
-            if (allTime) {
-                listener.onDateIntervalChanged(null, null);
-            } else {
-                listener.onDateIntervalChanged(startDate.getTime(), endDate.getTime());
-            }
+        if (allTime) {
+            listener.onDateIntervalChanged(null, null);
+        } else {
+            listener.onDateIntervalChanged(startDate.getTime(), endDate.getTime());
         }
     }
 
@@ -286,5 +274,61 @@ public class DateIntervalBarFragment extends Fragment
         endDate.set(Calendar.MINUTE, 59);
         endDate.set(Calendar.SECOND, 59);
     }
-}
 
+    private void setDateInterval(int position) {
+        // If Custom
+        if (position == 6) {
+            allTime = false;
+            customSelector.setVisibility(View.VISIBLE);
+            updateDateButtons();
+        } 
+        // If all time
+        else if (position == 5) {
+            allTime = true;
+            customSelector.setVisibility(View.GONE);
+        }
+        else {
+            allTime = false;
+            customSelector.setVisibility(View.GONE);
+            resetDates();
+            switch (position) {
+                // Yesterday
+                case 1:
+                    startDate.add(Calendar.DAY_OF_MONTH, -1);
+                    endDate.add(Calendar.DAY_OF_MONTH, -1);
+                    break;
+                // This month
+                case 2:
+                    startDate.set(Calendar.DAY_OF_MONTH, 1);
+                    endDate.set(Calendar.DAY_OF_MONTH, 
+                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                    break;
+                // Last month
+                case 3:
+                    startDate.add(Calendar.MONTH, -1);
+                    endDate.add(Calendar.MONTH, -1);
+                    startDate.set(Calendar.DAY_OF_MONTH, 1);
+                    endDate.set(Calendar.DAY_OF_MONTH, 
+                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                    break;
+                // This year
+                case 4:
+                    startDate.set(Calendar.DAY_OF_YEAR, 1);
+                    endDate.set(Calendar.DAY_OF_YEAR, 
+                        endDate.getActualMaximum(Calendar.DAY_OF_YEAR));
+                    break;
+                case 0:
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void updateDateButtons() {
+        String startDateString = dateFormat.format(startDate.getTime());
+        String endDateString = dateFormat.format(endDate.getTime());
+
+        startDateButton.setText(startDateString);
+        endDateButton.setText(endDateString);
+    }
+}

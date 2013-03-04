@@ -36,7 +36,8 @@
             android:name=".activities.MoneyNodeEditActivity">
         </activity>
         <activity
-            android:name=".activities.MoneyNodeDetailsActivity">
+            android:name=".activities.MoneyNodeDetailsActivity"
+            android:configChanges="keyboardHidden">
         </activity>
         <activity
             android:name=".activities.ImmedTransactionEditActivity">

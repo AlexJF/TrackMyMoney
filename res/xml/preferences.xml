@@ -2,6 +2,21 @@
 <PreferenceScreen 
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tmm="http://schemas.android.com/apk/res/net.alexjf.tmm">
+    <PreferenceCategory
+        android:title="@string/pref_general">
+        <ListPreference
+            android:key="pref_key_default_currency"
+            android:title="@string/pref_default_currency"
+            android:entries="@array/currencies"
+            android:entryValues="@array/currencies"
+            android:persistent="true" />
+        <ListPreference
+            android:key="pref_key_default_timeinterval"
+            android:title="@string/pref_default_timeinterval"
+            android:entries="@array/date_intervals"
+            android:entryValues="@array/date_intervals"
+            android:persistent="true" />
+    </PreferenceCategory>
     <PreferenceCategory 
         android:title="@string/pref_import_export_data">
         <net.alexjf.tmm.preferences.ImportDataPreference

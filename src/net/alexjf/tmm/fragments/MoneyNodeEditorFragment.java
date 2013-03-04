@@ -16,6 +16,7 @@ import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
+import net.alexjf.tmm.utils.PreferenceManager;
 import net.alexjf.tmm.views.SelectorButton;
 
 import android.app.Activity;
@@ -39,6 +40,8 @@ public class MoneyNodeEditorFragment extends Fragment
     implements OnDateSetListener, OnDrawablePickedListener {
     private static final String KEY_CURRENTNODE = "currentNode";
     private static final String KEY_SELECTEDICON = "selectedIcon";
+
+    private static final String PREFKEY_DEFAULTCURRENCY = "pref_key_default_currency";
 
     private static final String TAG_DATEPICKER = "datePicker";
     private static final String TAG_DRAWABLEPICKER = "drawablePicker";
@@ -159,6 +162,7 @@ public class MoneyNodeEditorFragment extends Fragment
 
         if (savedInstanceState != null) {
             node = savedInstanceState.getParcelable(KEY_CURRENTNODE);
+        } else {
         }
         
         updateNodeFields();
@@ -228,7 +232,21 @@ public class MoneyNodeEditorFragment extends Fragment
             iconSelectorButton.setDrawableId(0);
             creationDateButton.setText(dateFormat.format(new Date()));
             initialBalanceText.setText("");
-            currencySpinner.setSelection(0);
+
+            PreferenceManager prefManager = PreferenceManager.getInstance();
+            String prefCurrency = prefManager.readUserStringPreference(
+                    PREFKEY_DEFAULTCURRENCY, null);
+
+            int positionInSpinner = 0;
+
+            if (prefCurrency != null) {
+                @SuppressWarnings("unchecked")
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>) 
+                    currencySpinner.getAdapter();
+                positionInSpinner = adapter.getPosition(prefCurrency);
+            }
+
+            currencySpinner.setSelection(positionInSpinner);
             addButton.setText(R.string.add);
         // If we are editing a node, fill fields with current information
         } else {

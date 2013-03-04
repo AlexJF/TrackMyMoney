@@ -188,6 +188,7 @@ public class UserListActivity extends SherlockActivity {
             adapter.add(user);
         }
         adapter.sort(new User.Comparator());
+        selectUser(-1);
     }
 
     private void selectUser(int position) {
@@ -218,6 +219,7 @@ public class UserListActivity extends SherlockActivity {
 
             Intent intent = new Intent(UserListActivity.this,
                 MoneyNodeListActivity.class);
+            intent.putExtra(User.KEY_USER, user);
             startActivity(intent);
 
             if (finish) {

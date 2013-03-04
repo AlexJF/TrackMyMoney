@@ -20,6 +20,7 @@ import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.interfaces.IWithAdapter;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
+import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
 import net.alexjf.tmm.utils.Filter;
 import net.alexjf.tmm.utils.Utils;
 
@@ -47,10 +48,17 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 public class ImmedTransactionStatsFragment extends Fragment 
-    implements IWithAdapter {
+    implements IWithAdapter, AsyncTaskResultListener {
     private final static String KEY_SPINNERSELECTION = "spinnerSelection";
+    private final static String KEY_CATEGORIES = "categories";
+    private final static String KEY_VALUES = "values";
+    private final static String KEY_TOTALVALUE = "totalValue";
+
+    private final static String TASK_CATEGORYSTATS = "categoryStats";
 
     private static int[] colors = null;
+    private static AsyncTaskWithProgressDialog<ImmediateTransactionAdapter> 
+        categoryStatsTask;
 
     private ImmediateTransactionAdapter adapter;
     private CategoryPercentageAdapter catPercentageAdapter;
@@ -180,6 +188,11 @@ public class ImmedTransactionStatsFragment extends Fragment
                     };
         });
 
+        if (categoryStatsTask != null) {
+            categoryStatsTask.setContext(getActivity());
+            categoryStatsTask.setResultListener(this);
+        }
+
         return v;
     }
 
@@ -192,19 +205,27 @@ public class ImmedTransactionStatsFragment extends Fragment
             return;
         }
 
-        AsyncTaskWithProgressDialog<ImmediateTransactionAdapter, Void, Map<Category, Double>> asyncTask = 
-            new AsyncTaskWithProgressDialog<ImmediateTransactionAdapter, Void, Map<Category, Double>> 
-            (getActivity(), "Analyzing stats...") {
+        if (categoryStatsTask != null) {
+            return;
+        }
+
+        Utils.preventOrientationChanges(getActivity());
+
+        categoryStatsTask = 
+            new AsyncTaskWithProgressDialog<ImmediateTransactionAdapter> 
+            (getActivity(), TASK_CATEGORYSTATS, "Analyzing stats...") {
                 // TODO: Make this more efficient by already getting all the
                 // data from the database
                 @Override
-                protected Map<Category, Double> doInBackground(ImmediateTransactionAdapter... args) {
+                protected Bundle doInBackground(ImmediateTransactionAdapter... args) {
                     List<ImmediateTransaction> currentTransactionSet = 
                         new LinkedList<ImmediateTransaction>();
                     Utils.fromAdapterToList(adapter, currentTransactionSet);
                     currentFilter.applyInPlace(currentTransactionSet);
 
                     Map<Category, Double> perCategoryValues = new HashMap<Category, Double>();
+
+                    double totalValue = 0;
 
                     for (ImmediateTransaction transaction : currentTransactionSet) {
                         try {
@@ -216,6 +237,8 @@ public class ImmedTransactionStatsFragment extends Fragment
                                 transaction.getValue().abs().doubleValue();
                             Double existingValue = perCategoryValues.get(cat);
 
+                            totalValue += transactionValue;
+
                             if (existingValue != null) {
                                 transactionValue += existingValue;
                             }
@@ -223,58 +246,33 @@ public class ImmedTransactionStatsFragment extends Fragment
                             perCategoryValues.put(cat, transactionValue);
                         } catch (DatabaseException e) {
                             setThrowable(e);
+                            return null;
                         }
                     }
 
-                    return perCategoryValues;
+                    Bundle bundle = new Bundle();
+                    int size = perCategoryValues.size();
+                    Category[] categories = new Category[size];
+                    double[] values = new double[size];
+
+                    int i = 0;
+                    for (Entry<Category, Double> catValue : perCategoryValues.entrySet()) {
+                        categories[i] = catValue.getKey();
+                        values[i] = catValue.getValue();
+                        i++;
+                    }
+
+                    bundle.putParcelableArray(KEY_CATEGORIES, categories);
+                    bundle.putDoubleArray(KEY_VALUES, values);
+                    bundle.putDouble(KEY_TOTALVALUE, totalValue);
+
+                    return bundle;
                 };
-
-                @Override
-                protected void onPostExecuteSuccess(Map<Category, Double> perCategoryValues) {
-                    for (SimpleSeriesRenderer simpleRenderer : renderer.getSeriesRenderers()) {
-                        renderer.removeSeriesRenderer(simpleRenderer);
-                    }
-
-                    dataSet.clear();
-
-                    int totalValue = 0;
-                    for (Entry<Category, Double> catValue : perCategoryValues.entrySet()) {
-                        totalValue += catValue.getValue();
-                    }
-
-                    catPercentageAdapter.clear();
-                    catPercentageAdapter.setNotifyOnChange(false);
-                    for (Entry<Category, Double> catValue : perCategoryValues.entrySet()) {
-                        Category category = catValue.getKey();
-                        int color = colors[dataSet.getItemCount() % colors.length];
-                        double categoryTotalValue = catValue.getValue();
-                        dataSet.add(category.getName(), catValue.getValue());
-                        catPercentageAdapter.add(new CategoryPercentageInfo(category, 
-                                    categoryTotalValue, categoryTotalValue / totalValue,
-                                    color));
-                        SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-                        seriesRenderer.setColor(color);
-                        renderer.addSeriesRenderer(seriesRenderer);
-                    }
-
-                    catPercentageAdapter.sort(
-                            new CategoryPercentageInfo.PercentageComparator(true));
-                    catPercentageAdapter.notifyDataSetChanged();
-
-                    if (chartView != null) {
-                        chartView.repaint();
-                    }
-                }
-
-                @Override
-                protected void onPostExecuteFail(Throwable e) {
-                    Toast.makeText(getContext(), 
-                        "Stat analysis error! (" + e.getMessage() + ")", 3).show();
-                    Log.e("TMM", e.getMessage(), e);
-                }
             };
 
-        asyncTask.execute(adapter);
+        categoryStatsTask.setResultListener(this);
+        categoryStatsTask.ensureDatabaseOpen(true);
+        categoryStatsTask.execute(adapter);
     }
 
     @Override
@@ -306,6 +304,68 @@ public class ImmedTransactionStatsFragment extends Fragment
         outState.putInt(KEY_SPINNERSELECTION, 
                 transactionTypeSpinner.getSelectedItemPosition());
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
+        for (SimpleSeriesRenderer simpleRenderer : renderer.getSeriesRenderers()) {
+            renderer.removeSeriesRenderer(simpleRenderer);
+        }
+
+        dataSet.clear();
+        catPercentageAdapter.clear();
+        catPercentageAdapter.setNotifyOnChange(false);
+
+        Category[] categories = (Category[]) 
+            resultData.getParcelableArray(KEY_CATEGORIES);
+        double[] values = resultData.getDoubleArray(KEY_VALUES);
+        double totalValue = resultData.getDouble(KEY_TOTALVALUE);
+
+        for (int i = 0; i < categories.length; i++) {
+            Category category = categories[i];
+            double categoryTotalValue = values[i];
+            int color = colors[dataSet.getItemCount() % colors.length];
+            dataSet.add(category.getName(), categoryTotalValue);
+            catPercentageAdapter.add(new CategoryPercentageInfo(category, 
+                        categoryTotalValue, categoryTotalValue / totalValue,
+                        color));
+            SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+            seriesRenderer.setColor(color);
+            renderer.addSeriesRenderer(seriesRenderer);
+        }
+
+        catPercentageAdapter.sort(
+                new CategoryPercentageInfo.PercentageComparator(true));
+        catPercentageAdapter.notifyDataSetChanged();
+
+        if (chartView != null) {
+            chartView.repaint();
+        }
+        categoryStatsTask = null;
+        Utils.allowOrientationChanges(getActivity());
+    }
+
+    @Override
+    public void onAsyncTaskResultCanceled(String taskId) {
+        categoryStatsTask = null;
+        Utils.allowOrientationChanges(getActivity());
+    }
+
+    @Override
+    public void onAsyncTaskResultFailure(String taskId, Throwable e) {
+        Toast.makeText(getActivity(), 
+            "Stat analysis error! (" + e.getMessage() + ")", 3).show();
+        Log.e("TMM", e.getMessage(), e);
+        categoryStatsTask = null;
+        Utils.allowOrientationChanges(getActivity());
+    }
+
+    @Override
+    public void onDestroy() {
+        if (categoryStatsTask != null) {
+            categoryStatsTask.setContext(null);
+        }
+        super.onDestroy();
     }
 
     /**
