@@ -339,7 +339,7 @@ public class ImmedTransactionStatsFragment extends Fragment
         for (int i = 0; i < categories.length; i++) {
             Category category = categories[i];
             double categoryTotalValue = values[i];
-            int color = colors[dataSet.getItemCount() % colors.length];
+            int color = colors[(categories.length - i - 1) % colors.length];
             dataSet.add(category.getName(), categoryTotalValue);
             catPercentageAdapter.add(new CategoryPercentageInfo(category, 
                         categoryTotalValue, categoryTotalValue / totalValue,

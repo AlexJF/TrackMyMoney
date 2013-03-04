@@ -4,6 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm;
 
+import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -16,5 +17,6 @@ public class TrackMyMoneyApplication extends Application {
         SQLiteDatabase.loadLibs(this);
         DrawableResolver.initialize(this);
         PreferenceManager.initialize(this);
+        DatabaseHelper.initialize(this);
     }
 }

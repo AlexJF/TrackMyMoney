@@ -208,8 +208,7 @@ public class UserListActivity extends SherlockActivity {
     }
 
     private void navigateToMoneyNodeList(User user, boolean finish) {
-        DatabaseHelper dbHelper = DatabaseHelper.initialize(
-            getApplicationContext(), user);
+        DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
         if (dbHelper.login()) {
             if (rememberLoginCheck.isChecked()) {
                 UserList.setRememberedLogin(UserListActivity.this, 
@@ -219,7 +218,6 @@ public class UserListActivity extends SherlockActivity {
 
             Intent intent = new Intent(UserListActivity.this,
                 MoneyNodeListActivity.class);
-            intent.putExtra(User.KEY_USER, user);
             startActivity(intent);
 
             if (finish) {

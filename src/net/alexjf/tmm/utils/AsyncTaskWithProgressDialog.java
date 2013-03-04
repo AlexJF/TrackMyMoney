@@ -91,6 +91,8 @@ public abstract class AsyncTaskWithProgressDialog<Params>
         if (progInfo.progressDialog == null) {
             progInfo.progressDialog = new ProgressDialog(context);
             progInfo.progressDialog.setIndeterminate(true);
+            progInfo.progressDialog.setCancelable(false);
+            progInfo.progressDialog.setCanceledOnTouchOutside(false);
             progInfo.progressDialog.setMessage(progressMessage);
             progInfo.progressDialog.show();
         }

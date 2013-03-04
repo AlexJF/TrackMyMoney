@@ -11,7 +11,6 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
 import net.alexjf.tmm.exceptions.DatabaseException;
 
@@ -48,17 +47,6 @@ public class MoneyNodeListActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moneynode_list);
-
-        Intent intent = getIntent();
-
-        DatabaseHelper dbHelper = DatabaseHelper.getInstance();
-
-        // If app was restarted and we've skipped the first activity,
-        // reinitialize database helper.
-        if (dbHelper == null) {
-            User user = intent.getParcelableExtra(User.KEY_USER);
-            DatabaseHelper.initialize(this, user);
-        }
 
         adapter = new MoneyNodeAdapter(this);
 

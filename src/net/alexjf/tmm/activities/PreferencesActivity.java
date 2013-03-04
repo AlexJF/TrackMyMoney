@@ -25,6 +25,8 @@ public class PreferencesActivity extends PreferenceActivity {
 
     private Set<OnStopListener> stopListeners = 
         new HashSet<OnStopListener>();
+    private Set<OnDestroyListener> destroyListeners = 
+        new HashSet<OnDestroyListener>();
     private Set<OnSaveInstanceListener> saveInstanceListeners = 
         new HashSet<OnSaveInstanceListener>();
     private Set<OnRestoreInstanceListener> restoreInstanceListeners = 
@@ -45,6 +47,10 @@ public class PreferencesActivity extends PreferenceActivity {
         public void onStop();
     }
 
+    public interface OnDestroyListener {
+        public void onDestroy();
+    }
+
     public interface OnSaveInstanceListener {
         public void onSaveInstance(Bundle bundle);
     }
@@ -59,6 +65,14 @@ public class PreferencesActivity extends PreferenceActivity {
 
     public void unregisterOnStopListener(OnStopListener listener) {
         stopListeners.remove(listener);
+    }
+
+    public void registerOnDestroyListener(OnDestroyListener listener) {
+        destroyListeners.add(listener);
+    }
+
+    public void unregisterOnDestroyListener(OnDestroyListener listener) {
+        destroyListeners.remove(listener);
     }
 
     public void registerOnSaveInstanceListener(OnSaveInstanceListener listener) {
@@ -92,6 +106,14 @@ public class PreferencesActivity extends PreferenceActivity {
             listener.onStop();
         }
        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        for (OnDestroyListener listener : destroyListeners) {
+            listener.onDestroy();
+        }
+        super.onDestroy();
     }
 
     @Override

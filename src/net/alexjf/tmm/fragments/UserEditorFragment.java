@@ -98,15 +98,14 @@ public class UserEditorFragment extends Fragment {
                 if (user == null) {
                     User newUser = userList.addUser(username);
                     newUser.setPassword(password);
-                    DatabaseHelper dbHelper = DatabaseHelper.initialize(
-                            getActivity(), newUser);
+                    DatabaseHelper dbHelper = DatabaseHelper.getInstance(newUser);
                     dbHelper.login();
                     dbHelper.close();
                     listener.onUserCreated(newUser);
                 } else {
                     String oldPassword = oldPasswordText.getText().toString();
                     user.setPassword(oldPassword);
-                    DatabaseHelper dbHelper = DatabaseHelper.initialize(getActivity(), user);
+                    DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
                     if (!dbHelper.changePassword(password)) {
                         Toast.makeText(getActivity(), "Failed to change password", 3).show();
                         return;
@@ -191,7 +190,7 @@ public class UserEditorFragment extends Fragment {
 
         // If we are editing a user...
         if (user != null) {
-            DatabaseHelper dbHelper = DatabaseHelper.initialize(getActivity(), user);
+            DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
             user.setPassword(oldPasswordText.getText().toString());
             if (!dbHelper.login()) {
                 oldPasswordText.setError("Wrong password", errorDrawable);

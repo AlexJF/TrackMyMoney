@@ -5,6 +5,7 @@
 package net.alexjf.tmm.preferences;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,9 +14,9 @@ import java.util.Date;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.PreferencesActivity;
+import net.alexjf.tmm.activities.PreferencesActivity.OnDestroyListener;
 import net.alexjf.tmm.activities.PreferencesActivity.OnRestoreInstanceListener;
 import net.alexjf.tmm.activities.PreferencesActivity.OnSaveInstanceListener;
-import net.alexjf.tmm.activities.PreferencesActivity.OnStopListener;
 import net.alexjf.tmm.importexport.CSVImportExport;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
@@ -42,7 +43,7 @@ import android.widget.Toast;
 
 public class ExportDataPreference extends DialogPreference 
     implements AsyncTaskResultListener, OnDateSetListener,
-           OnStopListener, OnSaveInstanceListener,
+           OnDestroyListener, OnSaveInstanceListener,
            OnRestoreInstanceListener {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_export_data;
 
@@ -51,6 +52,7 @@ public class ExportDataPreference extends DialogPreference
     private static final String KEY_CURRENTPICKERDATE = "pickerDate";
     private static final String KEY_STARTDATEEDIT = "startTimeEdit";
     private static final String KEY_FILE = "file";
+    private static final String KEY_SENDTO = "sendTo";
 
     private static AsyncTaskWithProgressDialog<Date> exportTask;
 
@@ -72,15 +74,21 @@ public class ExportDataPreference extends DialogPreference
 
     public ExportDataPreference(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initialize();
+        initialize(context);
     }
 
     public ExportDataPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize();
+        initialize(context);
     }
 
-    protected void initialize() {
+    protected void initialize(Context context) {
+        activity = (PreferencesActivity) context;
+
+        activity.registerOnDestroyListener(this);
+        activity.registerOnSaveInstanceListener(this);
+        activity.registerOnRestoreInstanceListener(this);
+
         setPositiveButtonText(R.string.export_text);
         startDate = Calendar.getInstance();
         endDate = Calendar.getInstance();
@@ -88,12 +96,6 @@ public class ExportDataPreference extends DialogPreference
 
     @Override
     protected View onCreateDialogView() {
-        activity = (PreferencesActivity) getContext();
-
-        activity.registerOnStopListener(this);
-        activity.registerOnSaveInstanceListener(this);
-        activity.registerOnRestoreInstanceListener(this);
-
         LayoutInflater vi = (LayoutInflater) activity.
             getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = vi.inflate(RES_DIALOGLAYOUT, null);
@@ -161,7 +163,9 @@ public class ExportDataPreference extends DialogPreference
         }
 
         exportTask = new AsyncTaskWithProgressDialog<Date> 
-        (getContext(), TASK_EXPORT, "Exporting...") {
+        (activity, TASK_EXPORT, "Exporting...") {
+            private boolean sendToOnSuccess = shareCheckBox.isChecked();
+
             @Override
             protected Bundle doInBackground(Date... args) {
                 CSVImportExport exporter = new CSVImportExport();
@@ -180,6 +184,7 @@ public class ExportDataPreference extends DialogPreference
 
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(KEY_FILE, exportPath);
+                    bundle.putBoolean(KEY_SENDTO, sendToOnSuccess);
                     return bundle;
                 } catch (Exception e) {
                     setThrowable(e);
@@ -199,16 +204,16 @@ public class ExportDataPreference extends DialogPreference
 
     @Override
     public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
-        if (shareCheckBox.isChecked()) {
+        if (resultData.getBoolean(KEY_SENDTO)) {
             File file = (File) resultData.getSerializable(KEY_FILE);
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
             i.putExtra(Intent.EXTRA_STREAM, Uri.parse(file.getPath()));
-            String title = getContext().getResources().getString(
+            String title = activity.getResources().getString(
                     R.string.export_share_title);
-            getContext().startActivity(Intent.createChooser(i, title));
+            activity.startActivity(Intent.createChooser(i, title));
         }
-        Toast.makeText(getContext(), 
+        Toast.makeText(activity, 
             "Export successful!", 3).show();
         exportTask = null;
     }
@@ -220,7 +225,7 @@ public class ExportDataPreference extends DialogPreference
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
-        Toast.makeText(getContext(), 
+        Toast.makeText(activity, 
             "Export error! (" + e.getMessage() + ")", 3).show();
         Log.e("TMM", e.getMessage(), e);
         exportTask = null;
@@ -232,7 +237,7 @@ public class ExportDataPreference extends DialogPreference
         int day = date.get(Calendar.DAY_OF_MONTH);
 
         // Create a new instance of DatePickerDialog and show it
-        datePicker = new DatePickerDialog(getContext(), this, year, month, day);
+        datePicker = new DatePickerDialog(activity, this, year, month, day);
         datePicker.show();
     }
 
@@ -261,7 +266,19 @@ public class ExportDataPreference extends DialogPreference
         Log.d("TMM", "Saving picker state");
 
         Calendar currentDatePickerDate = Calendar.getInstance();
-        DatePicker picker = datePicker.getDatePicker();
+        DatePicker picker = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            picker = datePicker.getDatePicker();
+        } else {
+            try {
+                Field mDatePickerField = datePicker.getClass().getDeclaredField("mDatePicker");
+                mDatePickerField.setAccessible(true);
+                picker = (DatePicker) mDatePickerField.get(datePicker);
+            } catch (Exception e) {
+                Log.e("TMM", e.getMessage(), e);
+                return;
+            }
+        }
         currentDatePickerDate.set(Calendar.DAY_OF_MONTH, picker.getDayOfMonth());
         currentDatePickerDate.set(Calendar.MONTH, picker.getMonth());
         currentDatePickerDate.set(Calendar.YEAR, picker.getYear());
@@ -279,7 +296,11 @@ public class ExportDataPreference extends DialogPreference
     }
 
     @Override
-    public void onStop() {
+    public void onDestroy() {
+        if (exportTask != null) {
+            exportTask.setContext(null);
+        }
+
         if (datePicker != null && datePicker.isShowing()) {
             Log.d("TMM", "Dismissing date picker");
             datePicker.dismiss();
@@ -288,10 +309,6 @@ public class ExportDataPreference extends DialogPreference
 
     @Override
     public void onSaveInstance(Bundle outState) {
-        if (exportTask != null) {
-            exportTask.setContext(null);
-        }
-
         saveDatePicker(outState);
 
         outState.putString(KEY_CURRENTSTARTDATE, 
@@ -305,7 +322,7 @@ public class ExportDataPreference extends DialogPreference
     @Override
     public void onRestoreInstance(Bundle savedInstanceState) {
         if (exportTask != null) {
-            exportTask.setContext(getContext());
+            exportTask.setContext(activity);
             exportTask.setResultListener(this);
         }
 

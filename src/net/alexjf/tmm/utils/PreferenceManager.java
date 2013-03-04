@@ -24,13 +24,15 @@ public class PreferenceManager {
     private User currentUser;
     private SharedPreferences currentUserPreferences;
 
-    public static final void initialize(Application app) {
+    public static PreferenceManager initialize(Application app) {
         if (instance == null) {
             instance = new PreferenceManager(app);
         }
+
+        return instance;
     }
 
-    public static final PreferenceManager getInstance() {
+    public static  PreferenceManager getInstance() {
         return instance;
     }
 
