@@ -1,0 +1,12 @@
+1.0.0 - 04 Mar 2013
+- Stability, consistency and performance improvements.
+- Allow users to change passwords.
+- Allow application to remember logins.
+- Allow sharing of exports and limiting to certain date intervals.
+- Allow scrolling of big activities on small screens / landscape mode.
+- Added preferences for default currency and date interval.
+- Load transactions in background with progress dialog on GUI.
+- Uniformized export date format.
+
+1.0.0beta - 02 Mar 2013
+- First beta release of the application.
