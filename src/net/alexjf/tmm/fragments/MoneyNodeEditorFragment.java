@@ -105,7 +105,8 @@ public class MoneyNodeEditorFragment extends Fragment
         creationDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
                 try {
-                    datePicker.setDate(dateFormat.parse(creationDateButton.getText().toString()));
+                    datePicker.setDate(dateFormat.parse(
+                            creationDateButton.getText().toString()));
                 } catch (ParseException e) {
                 }
                 datePicker.show(getFragmentManager(), TAG_DATEPICKER);

@@ -24,7 +24,7 @@
     <linearGradient
        id="linearGradient3758">
       <stop
-         style="stop-color:#404040;stop-opacity:1;"
+         style="stop-color:#4e4e4e;stop-opacity:1;"
          offset="0"
          id="stop3760" />
       <stop
@@ -65,11 +65,11 @@
     </linearGradient>
     <filter
        inkscape:collect="always"
-       id="filter3919">
+       id="filter3821">
       <feGaussianBlur
          inkscape:collect="always"
-         stdDeviation="0.6"
-         id="feGaussianBlur3921" />
+         stdDeviation="0.96"
+         id="feGaussianBlur3823" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -79,10 +79,10 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="9.5816548"
-     inkscape:cx="17.825318"
-     inkscape:cy="22.574151"
-     inkscape:current-layer="layer6"
+     inkscape:zoom="9.31"
+     inkscape:cx="18.350455"
+     inkscape:cy="35.219895"
+     inkscape:current-layer="layer3"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -106,9 +106,10 @@
   <g
      inkscape:groupmode="layer"
      id="layer3"
-     inkscape:label="Layer">
+     inkscape:label="Layer"
+     style="display:inline">
     <rect
-       style="fill:url(#linearGradient3764);fill-opacity:1;stroke:none;filter:url(#filter3919)"
+       style="fill:url(#linearGradient3764);fill-opacity:1;stroke:none;filter:url(#filter3821)"
        id="rect2988"
        width="60"
        height="60"
@@ -134,10 +135,11 @@
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="Layer#1">
+     inkscape:label="Layer#1"
+     style="display:inline">
     <path
-       style="fill:#666666;fill-opacity:1;stroke:none"
-       d="m 3.3494318,1.8238636 c -0.753165,0 -1.34375,0.638817 -1.34375,1.4375 l 0,0.5625 60.0000002,0 0,-0.5625 c 0,-0.798683 -0.621835,-1.4375 -1.375,-1.4375 l -57.2812502,0 z"
+       style="opacity:0.92682926;fill:#666666;fill-opacity:1;stroke:none"
+       d="m 3.3494318,1.8238636 c -0.753165,0 -1.34375,0.673236 -1.34375,1.5149515 l 0,0.5928071 60.0000002,0 0,-0.5928071 c 0,-0.8417155 -0.621835,-1.5149515 -1.375,-1.5149515 l -57.2812502,0 z"
        id="rect2988-7"
        inkscape:connector-curvature="0" />
     <rect
@@ -153,29 +155,32 @@
   <g
      inkscape:groupmode="layer"
      id="layer7"
-     inkscape:label="Layer#4">
+     inkscape:label="Layer#4"
+     style="display:inline">
     <path
-       style="fill:#3e3e3e;fill-opacity:1;stroke:none"
-       d="m 3.3437505,2.8181822 c -0.753165,0 -1.34375,0.638817 -1.34375,1.4375 l 0,0.5625 59.9999995,0 0,-0.5625 c 0,-0.798683 -0.621835,-1.4375 -1.375,-1.4375 l -57.2812495,0 z"
+       style="fill:#4e4e4e;fill-opacity:1;stroke:none"
+       d="m 3.3437505,2.818182 c -0.753165,0 -1.34375,0.638817 -1.34375,1.4375 l 0,0.5625 59.9999995,0 0,-0.5625 c 0,-0.798683 -0.621835,-1.4375 -1.375,-1.4375 l -57.2812495,0 z"
        id="rect2988-7-9"
        inkscape:connector-curvature="0" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer5"
-     inkscape:label="Layer#2">
+     inkscape:label="Layer#2"
+     style="display:inline">
     <path
-       style="fill:#101010;fill-opacity:1;stroke:none;"
-       d="m 3.34375,62.090909 c -0.753165,0 -1.3437498,-0.638817 -1.3437498,-1.4375 l 0,-0.5625 59.9999998,0 0,0.5625 c 0,0.798683 -0.621835,1.4375 -1.375,1.4375 l -57.28125,0 z"
+       style="opacity:0.54878049;fill:#101010;fill-opacity:1;stroke:none"
+       d="m 3.34375,62.090909 c -0.753165,0 -1.3437498,-0.505475 -1.3437498,-1.137447 l 0,-0.445089 59.9999998,0 0,0.445089 c 0,0.631972 -0.621835,1.137447 -1.375,1.137447 l -57.28125,0 z"
        id="rect2988-7-7"
        inkscape:connector-curvature="0" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer6"
-     inkscape:label="Layer#3">
+     inkscape:label="Layer#3"
+     style="display:inline">
     <path
-       style="fill:#1a1a1a;fill-opacity:1;stroke:none"
+       style="fill:#232323;fill-opacity:1;stroke:none"
        d="m 1.9424449,60.037136 c 0.102669,0.685447 0.6348379,1.1875 1.3125,1.1875 l 57.2812501,0 c 0.677662,0 1.236009,-0.502053 1.34375,-1.1875 l -59.9375001,0 z"
        id="rect2988-7-7-3"
        inkscape:connector-curvature="0" />
@@ -187,7 +192,7 @@
     <flowRoot
        xml:space="preserve"
        id="flowRoot2993"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#fffcfc;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#fffcfc;fill-opacity:1;stroke:#363636;font-family:Sans;stroke-opacity:0.98642534;stroke-width:0.20000000000000001;stroke-miterlimit:4;stroke-dasharray:none"
        transform="translate(7.6972656,-5.518641)"><flowRegion
          id="flowRegion2995"><rect
            id="rect2997"
@@ -195,7 +200,7 @@
            height="48.545456"
            x="10.909091"
            y="12.363636"
-           style="fill:#fffcfc;fill-opacity:1" /></flowRegion><flowPara
+           style="fill:#fffcfc;fill-opacity:1;stroke:#363636;stroke-opacity:0.98642534;stroke-width:0.20000000000000001;stroke-miterlimit:4;stroke-dasharray:none" /></flowRegion><flowPara
          id="flowPara2999"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#fffcfc;fill-opacity:1;font-family:Metal;-inkscape-font-specification:Metal">€</flowPara></flowRoot>  </g>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#fffcfc;fill-opacity:1;font-family:Metal;-inkscape-font-specification:Metal;stroke:#363636;stroke-opacity:0.98642534;stroke-width:0.20000000000000001;stroke-miterlimit:4;stroke-dasharray:none">€</flowPara></flowRoot>  </g>
 </svg>

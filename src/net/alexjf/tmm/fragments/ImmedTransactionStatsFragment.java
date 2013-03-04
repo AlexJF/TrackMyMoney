@@ -4,6 +4,9 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -255,8 +258,20 @@ public class ImmedTransactionStatsFragment extends Fragment
                     Category[] categories = new Category[size];
                     double[] values = new double[size];
 
+                    List<Entry<Category, Double>> catValues = 
+                        new ArrayList<Entry<Category, Double>> (
+                            perCategoryValues.entrySet());
+                    Collections.sort(catValues, 
+                        new Comparator<Entry<Category, Double>> () {
+                            @Override
+                            public int compare(Map.Entry<Category,Double> arg0, 
+                                Map.Entry<Category,Double> arg1) {
+                                return arg0.getValue().compareTo(arg1.getValue());
+                            };
+                        });
+
                     int i = 0;
-                    for (Entry<Category, Double> catValue : perCategoryValues.entrySet()) {
+                    for (Entry<Category, Double> catValue : catValues) {
                         categories[i] = catValue.getKey();
                         values[i] = catValue.getValue();
                         i++;
