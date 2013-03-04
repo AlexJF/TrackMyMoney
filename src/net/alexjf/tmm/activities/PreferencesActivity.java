@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.util.Log;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
@@ -32,7 +31,15 @@ public class PreferencesActivity extends PreferenceActivity {
         new HashSet<OnRestoreInstanceListener>();
 
     private OnFileChosenListener currentFileChoiceListener;
-    private Intent result;
+    private boolean forceDataRefresh;
+
+    @Override
+    public void finish() {
+        Intent result = new Intent();
+        result.putExtra(KEY_FORCEDATAREFRESH, forceDataRefresh);
+        setResult(RESULT_OK, result);
+        super.finish();
+    }
 
     public interface OnStopListener {
         public void onStop();
@@ -73,10 +80,7 @@ public class PreferencesActivity extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {    
         super.onCreate(savedInstanceState);       
-        result = new Intent();
-        setResult(RESULT_OK, result);
         PreferenceManager prefManager = PreferenceManager.getInstance();
-        Log.d("TMM", prefManager.getCurrentUserPreferencesName());
         getPreferenceManager().setSharedPreferencesName(
                 prefManager.getCurrentUserPreferencesName());
         addPreferencesFromResource(R.xml.preferences);       
@@ -95,12 +99,17 @@ public class PreferencesActivity extends PreferenceActivity {
         for (OnSaveInstanceListener listener : saveInstanceListeners) {
             listener.onSaveInstance(outState);
         }
+        outState.putBoolean(KEY_FORCEDATAREFRESH, forceDataRefresh);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
+
+        if (state != null) {
+            forceDataRefresh = state.getBoolean(KEY_FORCEDATAREFRESH);
+        }
 
         for (OnRestoreInstanceListener listener : restoreInstanceListeners) {
             listener.onRestoreInstance(state);
@@ -120,7 +129,7 @@ public class PreferencesActivity extends PreferenceActivity {
     }
 
     public void setForceDataRefresh(boolean force) {
-        result.putExtra(KEY_FORCEDATAREFRESH, force);
+        forceDataRefresh = force;
     }
 
     @Override

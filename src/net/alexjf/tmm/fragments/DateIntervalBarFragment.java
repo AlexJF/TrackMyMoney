@@ -90,8 +90,6 @@ public class DateIntervalBarFragment extends Fragment
 
         int selectedSpinnerPos = 0;
 
-        Log.d("TMM", "Creating bar fragment");
-
         if (savedInstanceState != null) {
             try {
                 startDate.setTime(dateTimeFormat.parse(
@@ -126,9 +124,6 @@ public class DateIntervalBarFragment extends Fragment
         // Hack to ignore initial onItemSelecteds due to layout and measure
         dateIntervalSpinner.post(new Runnable() {
             public void run() {
-                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-                    Log.d("TMM", ste.toString());
-                }
                 dateIntervalSpinner.setOnItemSelectedListener(
                     new OnItemSelectedListener() {
                         public void onItemSelected(AdapterView<?> parent, View view, 
