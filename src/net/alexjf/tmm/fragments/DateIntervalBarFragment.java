@@ -72,8 +72,7 @@ public class DateIntervalBarFragment extends Fragment
 
     public DateIntervalBarFragment() {
         allTime = false;
-        startDate = Calendar.getInstance();
-        endDate = Calendar.getInstance();
+        resetDates();
     }
 
     @Override
@@ -260,12 +259,11 @@ public class DateIntervalBarFragment extends Fragment
     }
 
     private void resetDates() {
-        Date today = new Date();
-        startDate.setTime(today);
+        startDate = Calendar.getInstance();
         startDate.set(Calendar.HOUR_OF_DAY, 0);
         startDate.set(Calendar.MINUTE, 0);
         startDate.set(Calendar.SECOND, 0);
-        endDate.setTime(today);
+        endDate = Calendar.getInstance();
         endDate.set(Calendar.HOUR_OF_DAY, 23);
         endDate.set(Calendar.MINUTE, 59);
         endDate.set(Calendar.SECOND, 59);
