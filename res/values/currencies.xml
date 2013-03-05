@@ -4,6 +4,9 @@
 -->
 <resources>
     <string-array name="currencies">
+        <item>EUR</item>
+        <item>USD</item>
+        <item>GBP</item>
         <item>AED</item>
         <item>AFN</item>
         <item>ALL</item>
@@ -52,10 +55,8 @@
         <item>EGP</item>
         <item>ERN</item>
         <item>ETB</item>
-        <item>EUR</item>
         <item>FJD</item>
         <item>FKP</item>
-        <item>GBP</item>
         <item>GEL</item>
         <item>GHS</item>
         <item>GIP</item>
@@ -154,7 +155,6 @@
         <item>TZS</item>
         <item>UAH</item>
         <item>UGX</item>
-        <item>USD</item>
         <item>USN</item>
         <item>USS</item>
         <item>UYI</item>
