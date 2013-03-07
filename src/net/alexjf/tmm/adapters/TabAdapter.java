@@ -5,6 +5,10 @@
 package net.alexjf.tmm.adapters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import net.alexjf.tmm.R;
+import net.alexjf.tmm.utils.PreferenceManager;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,6 +16,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -23,20 +30,18 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  */
 public class TabAdapter extends FragmentPagerAdapter implements
         ActionBar.TabListener, ViewPager.OnPageChangeListener {
+    private final static String KEY_TABNAV = "pref_key_tab_navigation";
+
     private final Activity activity;
     private final ActionBar actionBar;
     private final ViewPager viewPager;
     private final ArrayList<TabInfo> tabs = new ArrayList<TabInfo>();
+    private boolean tabsShown = true;
+    private boolean swipeEnabled = true;
+
     private OnTabChangeListener onTabChangeListener;
     private OnTabFragmentCreateListener onTabFragmentCreateListener;
 
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        Fragment fragment = (Fragment) super.instantiateItem(container, position);
-        tabs.get(position).fragment = fragment;
-        onTabFragmentCreateListener.onTabFragmentCreated(fragment, position);
-        return fragment;
-    }
 
     public interface OnTabChangeListener {
         public void onTabChanged(int position);
@@ -63,8 +68,48 @@ public class TabAdapter extends FragmentPagerAdapter implements
         this.activity = activity;
         actionBar = activity.getSupportActionBar();
         viewPager = pager;
-        viewPager.setAdapter(this);
         viewPager.setOnPageChangeListener(this);
+        viewPager.setAdapter(this);
+
+        refreshPreferences();
+    }
+
+    public void refreshPreferences() {
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        
+        String[] tabNavigationTypes = 
+            activity.getResources().getStringArray(R.array.pref_tab_navigation);
+        String tabNavigation = 
+            prefManager.readUserStringPreference(KEY_TABNAV, "");
+
+        int navIndex = Arrays.asList(tabNavigationTypes).indexOf(tabNavigation);
+
+        tabsShown = navIndex % 2 == 0;
+        swipeEnabled = navIndex > 0;
+
+        if (tabsShown) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        } else {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        }
+
+        if (!swipeEnabled) {
+            viewPager.setOnTouchListener(new OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+        } else {
+            viewPager.setOnTouchListener(null);
+        }
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        tabs.get(position).fragment = fragment;
+        onTabFragmentCreateListener.onTabFragmentCreated(fragment, position);
+        return fragment;
     }
 
     public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
@@ -104,7 +149,9 @@ public class TabAdapter extends FragmentPagerAdapter implements
     }
 
     public void onPageSelected(int position) {
-        actionBar.setSelectedNavigationItem(position);
+        if (tabsShown) {
+            actionBar.setSelectedNavigationItem(position);
+        }
         notifyTabChanged(position);
     }
 

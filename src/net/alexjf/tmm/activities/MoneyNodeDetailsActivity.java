@@ -70,6 +70,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private TextView incomeTextView;
     private TextView expenseTextView;
     private ViewPager viewPager;
+    private TabAdapter tabAdapter;
 
     public MoneyNodeDetailsActivity() {
     }
@@ -92,7 +93,6 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         currency = currentMoneyNode.getCurrency();
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayUseLogoEnabled(true);
 
         setTitle(currentMoneyNode.getName());
@@ -109,7 +109,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         Bundle args = new Bundle();
         args.putString(MoneyNode.KEY_CURRENCY, currency);
 
-        final TabAdapter tabAdapter = new TabAdapter(this, viewPager);
+        tabAdapter = new TabAdapter(this, viewPager);
         tabAdapter.addTab(actionBar.newTab().setText(R.string.list),
                 ImmedTransactionListFragment.class, args);
         tabAdapter.addTab(actionBar.newTab().setText(R.string.stats),
@@ -123,8 +123,6 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 fragmentWithAdapter.setAdapter(immedTransAdapter);
             }
         });
-
-        Log.d("TMM", "MoneyNodeDetails created");
 
         if (transactionTask != null) {
             transactionTask.setContext(this);
@@ -375,6 +373,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         if (transactionTask == null) {
             updateGui();
         }
+        tabAdapter.refreshPreferences();
     }
 
     @Override

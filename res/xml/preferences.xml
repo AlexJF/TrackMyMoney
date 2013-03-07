@@ -17,6 +17,16 @@
             android:entryValues="@array/date_intervals"
             android:persistent="true" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_interface">
+        <ListPreference
+            android:key="pref_key_tab_navigation"
+            android:title="@string/pref_tab_navigation"
+            android:entries="@array/pref_tab_navigation"
+            android:entryValues="@array/pref_tab_navigation"
+            android:defaultValue="@string/both"
+            android:persistent="true" />
+    </PreferenceCategory>
     <PreferenceCategory 
         android:title="@string/pref_import_export_data">
         <net.alexjf.tmm.preferences.ImportDataPreference
