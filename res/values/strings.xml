@@ -50,6 +50,8 @@
     <string name="file_path">File path:</string>
     <string name="import_text">Import</string>
     <string name="export_text">Export</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -98,6 +100,11 @@
     <string name="pref_import_data_summary">Import data from a CSV file</string>
     <string name="pref_export_data">Export</string>
     <string name="pref_export_data_summary">Export data to a CSV file</string>
+    <string name="pref_backup_restore">Backup/Restore</string>
+    <string name="pref_backup">Backup</string>
+    <string name="pref_backup_summary">Backup entire database and settings</string>
+    <string name="pref_restore">Restore</string>
+    <string name="pref_restore_summary">Restore entire database and settings</string>
     <string name="pref_misc">Misc</string>
     <string name="pref_about">About</string>
 

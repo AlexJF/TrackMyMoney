@@ -9,10 +9,12 @@ import net.alexjf.tmm.adapters.SelectedAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
+import net.alexjf.tmm.utils.PreferenceManager;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -168,6 +170,11 @@ public class UserListActivity extends SherlockActivity {
             case R.id.menu_remove:
                 UserList userList = new UserList(this);
                 userList.removeUser(user);
+                PreferenceManager prefManager = PreferenceManager.getInstance();
+                SharedPreferences.Editor editor = 
+                    prefManager.getUserPreferences(user).edit();
+                editor.clear();
+                editor.commit();
                 refreshUserList();
                 return true;
             case R.id.menu_edit:

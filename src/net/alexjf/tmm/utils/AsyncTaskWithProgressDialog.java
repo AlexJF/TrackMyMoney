@@ -29,12 +29,18 @@ public abstract class AsyncTaskWithProgressDialog<Params>
     private Throwable throwable;
     private AsyncTaskResultListener resultListener;
     private boolean ensureDatabaseOpen;
+    private boolean running;
+
+    public AsyncTaskWithProgressDialog(String taskId, String progressMessage) {
+        this(null, taskId, progressMessage);
+    }
 
     public AsyncTaskWithProgressDialog(Context context, String taskId, 
             String progressMessage) {
         this.context = context;
         this.taskId = taskId;
         this.progressMessage = progressMessage;
+        running = false;
     }
 
     @Override
@@ -42,11 +48,14 @@ public abstract class AsyncTaskWithProgressDialog<Params>
         if (ensureDatabaseOpen) {
             DatabaseHelper.getInstance().setPreventClose(true);
         }
+
+        running = true;
         showDialog();
     }
 
     @Override
     protected void onPostExecute(Bundle result) {
+        running = false;
         dismissDialog();
 
         if (ensureDatabaseOpen) {
@@ -75,7 +84,7 @@ public abstract class AsyncTaskWithProgressDialog<Params>
     }
 
     private void showDialog() {
-        if (context == null) {
+        if (context == null || !running) {
             return;
         }
 

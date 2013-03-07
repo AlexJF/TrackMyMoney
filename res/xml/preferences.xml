@@ -30,6 +30,19 @@
             android:summary="@string/pref_export_data_summary"
             android:persistent="false" />
     </PreferenceCategory>
+    <PreferenceCategory 
+        android:title="@string/pref_backup_restore">
+        <net.alexjf.tmm.preferences.BackupPreference
+            android:key="pref_key_backup"
+            android:title="@string/pref_backup"
+            android:summary="@string/pref_backup_summary"
+            android:persistent="false" />
+        <net.alexjf.tmm.preferences.RestorePreference
+            android:key="pref_key_restore"
+            android:title="@string/pref_restore"
+            android:summary="@string/pref_restore_summary"
+            android:persistent="false" />
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_misc">
         <PreferenceScreen

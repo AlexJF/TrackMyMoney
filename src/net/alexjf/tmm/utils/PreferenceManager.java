@@ -82,6 +82,10 @@ public class PreferenceManager {
         return globalPreferences;
     }
 
+    public SharedPreferences getUserPreferences(User user) {
+        return getSharedPreferences(user.getName());
+    }
+
     public SharedPreferences getCurrentUserPreferences() {
         User currentUser = DatabaseHelper.getInstance().getCurrentUser();
         

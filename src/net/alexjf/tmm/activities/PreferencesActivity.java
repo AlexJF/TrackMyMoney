@@ -154,6 +154,11 @@ public class PreferencesActivity extends PreferenceActivity {
         forceDataRefresh = force;
     }
 
+    public void refreshPreferenceScreen() {
+        setPreferenceScreen(null);
+        addPreferencesFromResource(R.xml.preferences);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
