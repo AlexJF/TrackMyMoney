@@ -68,7 +68,7 @@ public class CategoryEditorFragment extends Fragment
 
         iconImageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                drawablePicker.show(getFragmentManager(), "icon");
+                drawablePicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
             }
         });
 
