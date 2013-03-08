@@ -181,8 +181,11 @@ public class MoneyNodeListActivity extends SherlockActivity {
                     adapter.remove(node);
                 } catch (DatabaseException e) {
                     Log.e("TMM", "Unable to delete money node", e);
-                    Toast.makeText(this, 
-                        "Error deleting money node", 3).show();
+                    Toast.makeText(
+                        this, 
+                        getResources().getString(
+                            R.string.error_moneynode_delete), 
+                        3).show();
                 }
                 return true;
             case R.id.menu_edit:

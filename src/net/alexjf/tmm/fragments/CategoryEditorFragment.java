@@ -13,6 +13,7 @@ import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.views.SelectorButton;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -155,41 +156,42 @@ public class CategoryEditorFragment extends Fragment
         if (category == null) {
             nameText.setText("");
             iconImageButton.setDrawableId(0);
-            addButton.setText("Add");
+            addButton.setText(R.string.add);
         // If we are editing a category, fill fields with current information
         } else {
             nameText.setText(category.getName());
             selectedDrawableName = category.getIcon();
             int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
             iconImageButton.setDrawableId(iconId);
-            addButton.setText("Edit");
+            addButton.setText(R.string.edit);
         }
     }
 
     private boolean validateInputFields() {
         boolean error = false;
 
+        Resources res = getResources();
         Drawable errorDrawable = 
-            getResources().getDrawable(R.drawable.indicator_input_error);
+            res.getDrawable(R.drawable.indicator_input_error);
         errorDrawable.setBounds(0, 0, 
                 errorDrawable.getIntrinsicWidth(), 
                 errorDrawable.getIntrinsicHeight());
         String name = nameText.getText().toString();
 
-        // TODO move error strings to resources
         String nameError = null;
         if (TextUtils.isEmpty(name)) {
-            nameError = "Name cannot be empty.";
+            nameError = res.getString(R.string.error_name_not_empty);
         }
         else {
             try {
                 // If we are adding a new category and the name already exists
                 if (category == null && 
                     DatabaseHelper.getInstance().hasCategoryWithName(name)) {
-                    nameError = "A category with that name already exists.";
+                    nameError = 
+                        res.getString(R.string.error_cat_name_already_exists);
                 }
             } catch (DatabaseException e) {
-                nameError = "Unable to determine if category already exists.";
+                nameError = res.getString(R.string.error_cat_determine_exists);
             }
         }
 

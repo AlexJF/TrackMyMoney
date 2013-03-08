@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -314,17 +315,17 @@ public class ImmedTransactionEditorFragment extends Fragment
     private boolean validateInputFields() {
         boolean error = false;
 
+        Resources res = getResources();
         Drawable errorDrawable = 
-            getResources().getDrawable(R.drawable.indicator_input_error);
+            res.getDrawable(R.drawable.indicator_input_error);
         errorDrawable.setBounds(0, 0, 
                 errorDrawable.getIntrinsicWidth(), 
                 errorDrawable.getIntrinsicHeight());
         String value = valueText.getText().toString();
 
         if (TextUtils.isEmpty(value)) {
-            // TODO: Move string into resources
             valueText.setError(
-                    "You have to specify a value for the transaction", 
+                    res.getString(R.string.error_trans_value_unspecified),
                     errorDrawable);
             error = true;
         }
@@ -396,7 +397,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     try {
                         date = dateFormat.parse(in.readString());
                     } catch (ParseException e) {
-                        Log.d("TMM", e.getMessage(), e);
+                        Log.e("TMM", e.getMessage(), e);
                     }
                     BigDecimal value = new BigDecimal(in.readString());
                     return new ImmedTransactionEditOldInfo(description, 

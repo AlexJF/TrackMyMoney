@@ -55,6 +55,7 @@
     <string name="tabs">Tabs</string>
     <string name="swipe">Swipe</string>
     <string name="both">Both</string>
+    <string name="file_select">Select a file</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -65,7 +66,6 @@
     <string name="password_confirm">Confirm Password:</string>
     <string name="password_new">New Password:</string>
     <string name="password_old">Old Password:</string>
-    <string name="error_loginFailed">Login failed for user \'%s\'</string>
 
     <!-- Money Node Related -->
     <string name="creationDate">Creation Date:</string>
@@ -77,6 +77,7 @@
     <string name="expense">Expense</string>
     <string name="expense_label">Expense:</string>
     <string name="moneynode_empty">There are no money nodes.\nPlease add one via the menu.</string>
+    <string name="moneynode_balance_complete">%1$s %3$s\n(Init. bal: %2$s %3$s)</string>
 
     <!-- Transaction Related -->
     <string name="transaction_type_label">Transaction type:</string>
@@ -119,9 +120,59 @@
 
     <!-- Import -->
     <string name="import_replace">Replace existing matching data</string>
+    <string name="import_success">Import successful!</string>
 
     <!-- Export -->
     <string name="export_share_check">Send to... after export</string>
     <string name="export_dateinterval_check">Limit date interval</string>
     <string name="export_share_title">Send to...</string>
+    <string name="export_success">Export successful!</string>
+
+    <!-- Backup -->
+    <string name="backup_success">Backup successful!</string>
+
+    <!-- Restore -->
+    <string name="restore_success">Restore successful!</string>
+
+    <!-- Loader messages -->
+    <string name="loading">Loading...</string>
+    <string name="analyzing_stats">Analyzing stats...</string>
+    <string name="backingup">Backing up...</string>
+    <string name="restoring">Restoring...</string>
+    <string name="importing">Importing...</string>
+    <string name="exporting">Exporting...</string>
+
+    <!-- Errors -->
+    <string name="error_name_not_empty">Name cannot be empty.</string>
+
+    <string name="error_cat_name_already_exists">A category with that name already exists.</string>
+    <string name="error_cat_determine_exists">Unable to determine if category already exists.</string>
+    <string name="error_cat_add">Error adding category: %1$s.</string>
+    <string name="error_cat_edit">Error editing category: %1$s.</string>
+    <string name="error_cat_delete">Error deleting category.</string>
+
+    <string name="error_trans_value_unspecified">You have to specify a value for the transaction.</string>
+    <string name="error_trans_add">Error adding transaction: %1$s.</string>
+    <string name="error_trans_edit">Error editing transaction: %1$s.</string>
+
+    <string name="error_stat_analysis">Stat analysis error: %1$s.</string>
+
+    <string name="error_moneynode_name_already_exists">A money node with that name already exists.</string>
+    <string name="error_moneynode_determine_exists">Unable to determine if node already exists.</string>
+    <string name="error_moneynode_load_transactions">Error while loading transactions: %1$s.</string>
+    <string name="error_moneynode_add">Error adding money node: %1$s.</string>
+    <string name="error_moneynode_edit">Error editing money node: %1$s.</string>
+    <string name="error_moneynode_delete">Error deleting money node.</string>
+
+    <string name="error_username_not_empty">Username cannot be empty.</string>
+    <string name="error_username_already_exists">Username already exists.</string>
+    <string name="error_password_change">Failed to change password.</string>
+    <string name="error_password_confirmation">Password confirmation doesn\'t match password.</string>
+    <string name="error_wrong_password">Wrong password.</string>
+    <string name="error_login_failed">Login failed for user \'%1$s\'.</string>
+
+    <string name="error_import">Import error: %1$s.</string>
+    <string name="error_export">Export error: %1$s.</string>
+    <string name="error_backup">Backup error: %1$s.</string>
+    <string name="error_restore">Restore error: %1$s.</string>
 </resources>

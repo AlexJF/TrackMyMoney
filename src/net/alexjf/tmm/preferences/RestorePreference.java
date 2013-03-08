@@ -80,8 +80,10 @@ public class RestorePreference
     @Override
     @SuppressWarnings("unchecked")
     protected AsyncTaskWithProgressDialog<String> createTask() {
+        String strLoading = getActivity().getResources().getString(
+                R.string.restoring);
         return new AsyncTaskWithProgressDialog<String> 
-            (TASK_RESTORE, "Restoring...") {
+            (TASK_RESTORE, strLoading) {
                 @Override
                 protected Bundle doInBackground(String... args) {
                     try {
@@ -166,7 +168,8 @@ public class RestorePreference
         super.onAsyncTaskResultSuccess(taskId, resultData);
         PreferencesActivity activity = getActivity();
         Toast.makeText(activity, 
-            "Restore successful!", 3).show();
+            getActivity().getResources().getString(R.string.restore_success), 
+            3).show();
         activity.setForceDataRefresh(true);
         activity.refreshPreferenceScreen();
     }
@@ -174,8 +177,10 @@ public class RestorePreference
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
         super.onAsyncTaskResultFailure(taskId, e);
+        String strError = getActivity().getResources().getString(
+                R.string.error_restore);
         Toast.makeText(getActivity(), 
-            "Restore error! (" + e.getMessage() + ")", 3).show();
+            String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
     }
 }

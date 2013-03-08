@@ -238,9 +238,12 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         Utils.preventOrientationChanges(this);
 
+        String strLoading = getResources().getString(
+                R.string.loading);
+
         transactionTask = 
             new AsyncTaskWithProgressDialog<Date> 
-            (this, TASK_TRANSACTIONS, "Loading...") {
+            (this, TASK_TRANSACTIONS, strLoading) {
                 @Override
                 protected Bundle doInBackground(Date... args) {
                     try {
@@ -280,8 +283,10 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
             startDate.compareTo(currentMoneyNode.getCreationDate()) <= 0) {
             BigDecimal initialBalance = currentMoneyNode.getInitialBalance();
             balance = balance.add(initialBalance);
-            balanceTextView.setText(balance + " " + currency + 
-                    "\n(Init. bal: " + initialBalance + " " + currency + ")");
+            String strBalance = getResources().getString(
+                    R.string.moneynode_balance_complete);
+            balanceTextView.setText(String.format(strBalance, balance, 
+                        initialBalance, currency));
         } else {
             balanceTextView.setText(balance + " " + currency);
         }
@@ -411,8 +416,10 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
+        String strError = getResources().getString(
+                R.string.error_moneynode_load_transactions);
         Toast.makeText(this, 
-            "Import error! (" + e.getMessage() + ")", 3).show();
+            String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
         transactionTask = null;
         Utils.allowOrientationChanges(this);

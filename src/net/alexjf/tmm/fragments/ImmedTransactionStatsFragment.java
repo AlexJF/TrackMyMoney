@@ -214,9 +214,12 @@ public class ImmedTransactionStatsFragment extends Fragment
 
         Utils.preventOrientationChanges(getActivity());
 
+        String strLoading = getActivity().getResources().getString(
+                R.string.analyzing_stats);
+
         categoryStatsTask = 
             new AsyncTaskWithProgressDialog<ImmediateTransactionAdapter> 
-            (getActivity(), TASK_CATEGORYSTATS, "Analyzing stats...") {
+            (getActivity(), TASK_CATEGORYSTATS, strLoading) {
                 // TODO: Make this more efficient by already getting all the
                 // data from the database
                 @Override
@@ -368,8 +371,9 @@ public class ImmedTransactionStatsFragment extends Fragment
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
+        String strError = getResources().getString(R.string.error_stat_analysis); 
         Toast.makeText(getActivity(), 
-            "Stat analysis error! (" + e.getMessage() + ")", 3).show();
+            String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
         categoryStatsTask = null;
         Utils.allowOrientationChanges(getActivity());

@@ -140,8 +140,10 @@ public class ExportDataPreference
 
     @Override
     protected AsyncTaskWithProgressDialog<Date> createTask() {
+        String strLoading = getActivity().getResources().getString(
+                R.string.exporting);
         return new AsyncTaskWithProgressDialog<Date> 
-        (TASK_EXPORT, "Exporting...") {
+        (TASK_EXPORT, strLoading) {
             private boolean sendToOnSuccess = shareCheckBox.isChecked();
 
             @Override
@@ -196,14 +198,17 @@ public class ExportDataPreference
             activity.startActivity(Intent.createChooser(i, title));
         }
         Toast.makeText(activity, 
-            "Export successful!", 3).show();
+            activity.getResources().getString(R.string.export_success),
+            3).show();
     }
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
         super.onAsyncTaskResultFailure(taskId, e);
+        String strError = getActivity().getResources().getString(
+                R.string.error_export);
         Toast.makeText(getActivity(), 
-            "Export error! (" + e.getMessage() + ")", 3).show();
+            String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
     }
 

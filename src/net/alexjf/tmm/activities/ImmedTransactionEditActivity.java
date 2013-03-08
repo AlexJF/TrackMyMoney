@@ -64,8 +64,10 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure editing immediate transaction", e);
+            String strError = 
+                getResources().getString(R.string.error_trans_edit);
             Toast.makeText(ImmedTransactionEditActivity.this,
-                "Error editing transaction: " + e.getMessage(), 3).show();
+                String.format(strError, e.getMessage()), 3).show();
         }
     }
 
@@ -79,8 +81,10 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure adding immediate transaction", e);
+            String strError = 
+                getResources().getString(R.string.error_trans_add);
             Toast.makeText(ImmedTransactionEditActivity.this,
-                "Error adding transaction: " + e.getMessage(), 3).show();
+                String.format(strError, e.getMessage()), 3).show();
         }
     }
 }

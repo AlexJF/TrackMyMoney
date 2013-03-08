@@ -70,8 +70,10 @@ public class ImportDataPreference
 
     @Override
     protected AsyncTaskWithProgressDialog<String> createTask() {
+        String strLoading = getActivity().getResources().getString(
+                R.string.importing);
         return new AsyncTaskWithProgressDialog<String> 
-            (TASK_IMPORT, "Importing...") {
+            (TASK_IMPORT, strLoading) {
                 @Override
                 protected Bundle doInBackground(String... args) {
                     CSVImportExport importer = new CSVImportExport();
@@ -106,15 +108,18 @@ public class ImportDataPreference
         super.onAsyncTaskResultSuccess(taskId, resultData);
         PreferencesActivity activity = getActivity();
         Toast.makeText(activity, 
-            "Import successful!", 3).show();
+            getActivity().getResources().getString(R.string.import_success),
+            3).show();
         activity.setForceDataRefresh(true);
     }
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
         super.onAsyncTaskResultFailure(taskId, e);
+        String strError = getActivity().getResources().getString(
+                R.string.error_import);
         Toast.makeText(getActivity(), 
-            "Import error! (" + e.getMessage() + ")", 3).show();
+            String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
     }
 }

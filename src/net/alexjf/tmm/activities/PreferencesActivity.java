@@ -141,7 +141,8 @@ public class PreferencesActivity extends PreferenceActivity {
     public void requestFileChooser(OnFileChosenListener requester) {
         currentFileChoiceListener = requester;
         Intent target = FileUtils.createGetContentIntent();
-        Intent intent = Intent.createChooser(target, "Select a file");
+        Intent intent = Intent.createChooser(target, 
+                getResources().getString(R.string.file_select));
 
         try {
             startActivityForResult(intent, REQCODE_FILECHOOSE);

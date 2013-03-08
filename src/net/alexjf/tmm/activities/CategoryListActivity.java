@@ -173,8 +173,10 @@ public class CategoryListActivity extends SherlockActivity {
                     adapter.remove(category);
                 } catch (DatabaseException e) {
                     Log.e("TMM", "Unable to delete category", e);
+                    String strError = getResources().getString(
+                            R.string.error_cat_delete);
                     Toast.makeText(this, 
-                        "Error deleting category", 3).show();
+                        strError, 3).show();
                 }
                 return true;
             case R.id.menu_edit:

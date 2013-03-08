@@ -21,6 +21,7 @@ import net.alexjf.tmm.views.SelectorButton;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -269,27 +270,28 @@ public class MoneyNodeEditorFragment extends Fragment
     private boolean validateInputFields() {
         boolean error = false;
 
+        Resources res = getResources();
         Drawable errorDrawable = 
-            getResources().getDrawable(R.drawable.indicator_input_error);
+            res.getDrawable(R.drawable.indicator_input_error);
         errorDrawable.setBounds(0, 0, 
                 errorDrawable.getIntrinsicWidth(), 
                 errorDrawable.getIntrinsicHeight());
         String name = nameText.getText().toString();
 
-        // TODO move error strings to resources
         String nameError = null;
         if (TextUtils.isEmpty(name)) {
-            nameError = "Name cannot be empty.";
-        }
-        else {
+            nameError = res.getString(R.string.error_name_not_empty);
+        } else {
             try {
                 // If we are adding a new node and name already exists
                 if (node == null && 
                     DatabaseHelper.getInstance().hasMoneyNodeWithName(name)) {
-                    nameError = "A money node with that name already exists.";
+                    nameError = res.getString(
+                            R.string.error_moneynode_name_already_exists);
                 }
             } catch (DatabaseException e) {
-                nameError = "Unable to determine if node already exists.";
+                nameError = res.getString(
+                        R.string.error_moneynode_determine_exists);
             }
         }
 

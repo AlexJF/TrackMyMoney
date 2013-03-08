@@ -57,8 +57,9 @@ public class CategoryEditActivity extends SherlockFragmentActivity
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure editing category", e);
+            String strError = getResources().getString(R.string.error_cat_edit);
             Toast.makeText(CategoryEditActivity.this,
-                "Error editing category: " + e.getMessage(), 3).show();
+                String.format(strError, e.getMessage()), 3).show();
         }
     }
 
@@ -72,8 +73,9 @@ public class CategoryEditActivity extends SherlockFragmentActivity
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure adding category", e);
+            String strError = getResources().getString(R.string.error_cat_add);
             Toast.makeText(CategoryEditActivity.this,
-                "Error adding category: " + e.getMessage(), 3).show();
+                String.format(strError, e.getMessage()), 3).show();
         }
     }
 }

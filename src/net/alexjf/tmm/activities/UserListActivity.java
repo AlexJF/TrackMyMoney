@@ -233,8 +233,8 @@ public class UserListActivity extends SherlockActivity {
         } else {
             userPasswordText.setText("");
             Toast.makeText(UserListActivity.this, 
-                "Login Failure!", 3).show();
+                getResources().getString(R.string.error_login_failed), 
+                3).show();
         }
     }
-    
 }

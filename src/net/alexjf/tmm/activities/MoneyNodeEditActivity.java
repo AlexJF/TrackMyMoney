@@ -56,8 +56,10 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure editing money node", e);
+            String strError = getResources().getString(
+                    R.string.error_moneynode_edit);
             Toast.makeText(MoneyNodeEditActivity.this,
-                "Error editing money node: " + e.getMessage(), 3).show();
+                String.format(strError, e.getMessage()), 3).show();
         }
     }
 
@@ -71,8 +73,10 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure adding money node", e);
+            String strError = getResources().getString(
+                    R.string.error_moneynode_add);
             Toast.makeText(MoneyNodeEditActivity.this,
-                "Error adding money node: " + e.getMessage(), 3).show();
+                String.format(strError, e.getMessage()), 3).show();
         }
     }
 }

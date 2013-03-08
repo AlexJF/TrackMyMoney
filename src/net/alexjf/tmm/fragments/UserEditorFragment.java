@@ -9,6 +9,7 @@ import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -107,7 +108,7 @@ public class UserEditorFragment extends Fragment {
                     user.setPassword(oldPassword);
                     DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
                     if (!dbHelper.changePassword(password)) {
-                        Toast.makeText(getActivity(), "Failed to change password", 3).show();
+                        Toast.makeText(getActivity(), R.string.error_password_change, 3).show();
                         return;
                     }
                     user.setPassword("");
@@ -157,23 +158,24 @@ public class UserEditorFragment extends Fragment {
     private boolean validateInputFields() {
         boolean error = false;
 
+        Resources res = getResources();
         Drawable errorDrawable = 
-            getResources().getDrawable(R.drawable.indicator_input_error);
+            res.getDrawable(R.drawable.indicator_input_error);
         errorDrawable.setBounds(0, 0, 
                 errorDrawable.getIntrinsicWidth(), 
                 errorDrawable.getIntrinsicHeight());
 
         String name = usernameText.getText().toString();
 
-        // TODO move error strings to resources
         String nameError = null;
         if (TextUtils.isEmpty(name)) {
-            nameError = "Username cannot be empty.";
+            nameError = res.getString(R.string.error_username_not_empty);
         }
         else {
             UserList userList = new UserList(getActivity());
             if (user == null && userList.getUser(name) != null) {
-                nameError = "Username already exists";
+                nameError = 
+                    res.getString(R.string.error_username_already_exists);
             }
         }
 
@@ -184,7 +186,9 @@ public class UserEditorFragment extends Fragment {
 
         if (!passwordConfirmText.getText().toString().equals(
             passwordText.getText().toString())) {
-            passwordConfirmText.setError("Password confirmation doesn't match password", errorDrawable);
+            passwordConfirmText.setError(
+                    res.getString(R.string.error_password_confirmation), 
+                    errorDrawable);
             error = true;
         }
 
@@ -193,7 +197,9 @@ public class UserEditorFragment extends Fragment {
             DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
             user.setPassword(oldPasswordText.getText().toString());
             if (!dbHelper.login()) {
-                oldPasswordText.setError("Wrong password", errorDrawable);
+                oldPasswordText.setError(
+                        res.getString(R.string.error_wrong_password), 
+                            errorDrawable);
                 error = true;
             }
             user.setPassword("");

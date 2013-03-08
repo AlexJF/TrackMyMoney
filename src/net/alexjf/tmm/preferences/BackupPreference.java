@@ -75,8 +75,10 @@ public class BackupPreference
 
     @Override
     protected AsyncTaskWithProgressDialog<Void> createTask() {
+        String strLoading = getActivity().getResources().getString(
+                R.string.backingup);
         return new AsyncTaskWithProgressDialog<Void> 
-        (TASK_BACKUP, "Backing up...") {
+        (TASK_BACKUP, strLoading) {
             private boolean sendToOnSuccess = shareCheckBox.isChecked();
 
             @Override
@@ -168,14 +170,17 @@ public class BackupPreference
             activity.startActivity(Intent.createChooser(i, title));
         }
         Toast.makeText(activity, 
-            "Backup successful!", 3).show();
+            activity.getResources().getString(R.string.backup_success), 
+            3).show();
     }
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
         super.onAsyncTaskResultFailure(taskId, e);
+        String strError = getActivity().getResources().getString(
+                R.string.error_backup);
         Toast.makeText(getActivity(), 
-            "Backup error! (" + e.getMessage() + ")", 3).show();
+            String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
     }
 }
