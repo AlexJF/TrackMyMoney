@@ -56,6 +56,7 @@
     <string name="swipe">Swipe</string>
     <string name="both">Both</string>
     <string name="file_select">Select a file</string>
+    <string name="all">All</string>
 
     <!-- User Related -->
     <string name="login">Login</string>
@@ -91,6 +92,21 @@
     <string name="manage_categories">Manage Categories</string>
     <string name="category_empty">There are no categories.\nPlease add one via the menu.</string>
     <string name="category_nonselected">No category selected</string>
+
+    <!-- Icon categories -->
+    <string name="iconcat_transportation">Transportation</string>
+    <string name="iconcat_people">People and Interaction</string>
+    <string name="iconcat_fooddrink">Food and drink</string>
+    <string name="iconcat_entertainment">Entertainment</string>
+    <string name="iconcat_finance">Finance</string>
+    <string name="iconcat_shopping">Shopping</string>
+    <string name="iconcat_health">Health and Fitness</string>
+    <string name="iconcat_science">Science/Education</string>
+    <string name="iconcat_buildings">Buildings</string>
+    <string name="iconcat_office">Office</string>
+    <string name="iconcat_dev">Electronic Devices</string>
+    <string name="iconcat_nature">Nature and Pets</string>
+    <string name="iconcat_misc">Misc</string>
 
     <!-- DateIntervalBar Related -->
     <string name="date_interval">Date Interval:</string>

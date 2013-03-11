@@ -14,7 +14,7 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
-import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
+import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.alexjf.tmm.views.SelectorButton;
@@ -38,14 +38,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 public class MoneyNodeEditorFragment extends Fragment 
-    implements OnDateSetListener, OnDrawablePickedListener {
+    implements OnDateSetListener, OnIconPickedListener {
     private static final String KEY_CURRENTNODE = "currentNode";
     private static final String KEY_SELECTEDICON = "selectedIcon";
 
     private static final String PREFKEY_DEFAULTCURRENCY = "pref_key_default_currency";
 
     private static final String TAG_DATEPICKER = "datePicker";
-    private static final String TAG_DRAWABLEPICKER = "drawablePicker";
+    private static final String TAG_DRAWABLEPICKER = "iconPicker";
 
     private OnMoneyNodeEditListener listener;
 
@@ -53,7 +53,7 @@ public class MoneyNodeEditorFragment extends Fragment
     private String selectedDrawableName;
 
     private DatePickerFragment datePicker;
-    private DrawablePickerFragment drawablePicker;
+    private IconPickerFragment iconPicker;
 
     private EditText nameText;
     private EditText descriptionText;
@@ -88,20 +88,19 @@ public class MoneyNodeEditorFragment extends Fragment
 
         FragmentManager fm = getFragmentManager();
         datePicker = (DatePickerFragment) fm.findFragmentByTag(TAG_DATEPICKER);
-        drawablePicker = (DrawablePickerFragment) 
+        iconPicker = (IconPickerFragment) 
             fm.findFragmentByTag(TAG_DRAWABLEPICKER);
 
         if (datePicker == null) {
             datePicker = new DatePickerFragment();
         }
 
-        if (drawablePicker == null) {
-            drawablePicker = new DrawablePickerFragment();
-            drawablePicker.setFilter("glyphish_");
+        if (iconPicker == null) {
+            iconPicker = new IconPickerFragment();
         }
 
         datePicker.setListener(this);
-        drawablePicker.setListener(this);
+        iconPicker.setListener(this);
 
         creationDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
@@ -116,7 +115,7 @@ public class MoneyNodeEditorFragment extends Fragment
 
         iconSelectorButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                drawablePicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
+                iconPicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
             }
         });
 
@@ -183,7 +182,7 @@ public class MoneyNodeEditorFragment extends Fragment
         creationDateButton.setText(dateFormat.format(calendar.getTime()));
     }
 
-    public void onDrawablePicked(int drawableId, String drawableName) {
+    public void onIconPicked(int drawableId, String drawableName) {
         iconSelectorButton.setDrawableId(drawableId);
         selectedDrawableName = drawableName;
         iconSelectorButton.setError(false);

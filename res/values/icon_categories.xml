@@ -1,0 +1,309 @@
+<!--
+  Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
+  License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<resources>
+    <string-array name="icons_transportation">
+        <item name="airplane">@drawable/glyphish_airplane</item>
+        <item name="dashboard">@drawable/glyphish_dashboard</item>
+        <item name="fuel">@drawable/glyphish_fuel</item>
+        <item name="sailboat">@drawable/glyphish_sailboat</item>
+        <item name="tractor">@drawable/glyphish_tractor</item>
+    </string-array>
+    <string-array name="iconcat_transportation">
+        <item name="title">@string/iconcat_transportation</item>
+        <item name="entries">@array/icons_transportation</item>
+    </string-array>
+
+    <string-array name="icons_people">
+        <item name="baby">@drawable/glyphish_baby</item>
+        <item name="chat">@drawable/glyphish_chat</item>
+        <item name="chat">@drawable/glyphish_chat_2</item>
+        <item name="group">@drawable/glyphish_group</item>
+        <item name="id_card">@drawable/glyphish_id_card</item>
+        <item name="runner">@drawable/glyphish_runner</item>
+        <item name="user">@drawable/glyphish_user</item>
+        <item name="walk">@drawable/glyphish_walk</item>
+    </string-array>
+    <string-array name="iconcat_people">
+        <item name="title">@string/iconcat_people</item>
+        <item name="entries">@array/icons_people</item>
+    </string-array>
+
+    <string-array name="icons_fooddrink">
+        <item name="beer_mug">@drawable/glyphish_beer_mug</item>
+        <item name="chicken">@drawable/glyphish_chicken</item>
+        <item name="coffee">@drawable/glyphish_coffee</item>
+        <item name="food">@drawable/glyphish_food</item>
+        <item name="fork_and_knife">@drawable/glyphish_fork_and_knife</item>
+        <item name="liquor_bottle">@drawable/glyphish_liquor_bottle</item>
+        <item name="martini">@drawable/glyphish_martini</item>
+        <item name="popsicle">@drawable/glyphish_popsicle</item>
+        <item name="wine_bottle">@drawable/glyphish_wine_bottle</item>
+        <item name="wine_glass">@drawable/glyphish_wine_glass</item>
+    </string-array>
+    <string-array name="iconcat_fooddrink">
+        <item name="title">@string/iconcat_fooddrink</item>
+        <item name="entries">@array/icons_fooddrink</item>
+    </string-array>
+
+    <string-array name="icons_entertainment">
+        <item name="balloon">@drawable/glyphish_balloon</item>
+        <item name="bow_and_arrow">@drawable/glyphish_bow_and_arrow</item>
+        <item name="card_clubs">@drawable/glyphish_card_clubs</item>
+        <item name="card_diamonds">@drawable/glyphish_card_diamonds</item>
+        <item name="card_hearts">@drawable/glyphish_card_hearts</item>
+        <item name="card_spades">@drawable/glyphish_card_spades</item>
+        <item name="controller">@drawable/glyphish_controller</item>
+        <item name="controlpad">@drawable/glyphish_controlpad</item>
+        <item name="dice">@drawable/glyphish_dice</item>
+        <item name="equalizer">@drawable/glyphish_equalizer</item>
+        <item name="film_roll">@drawable/glyphish_film_roll</item>
+        <item name="flags">@drawable/glyphish_flags</item>
+        <item name="golf">@drawable/glyphish_golf</item>
+        <item name="guitar">@drawable/glyphish_guitar</item>
+        <item name="headphones">@drawable/glyphish_headphones</item>
+        <item name="hockeymask">@drawable/glyphish_hockeymask</item>
+        <item name="microphone">@drawable/glyphish_microphone</item>
+        <item name="movie_1">@drawable/glyphish_movie_1</item>
+        <item name="movie_2">@drawable/glyphish_movie_2</item>
+        <item name="note">@drawable/glyphish_note</item>
+        <item name="note_2">@drawable/glyphish_note_2</item>
+        <item name="palette">@drawable/glyphish_palette</item>
+        <item name="piano">@drawable/glyphish_piano</item>
+        <item name="puzzle">@drawable/glyphish_puzzle</item>
+        <item name="target">@drawable/glyphish_target</item>
+        <item name="trophy">@drawable/glyphish_trophy</item>
+        <item name="8ball">@drawable/glyphish_8ball</item>
+    </string-array>
+    <string-array name="iconcat_entertainment">
+        <item name="title">@string/iconcat_entertainment</item>
+        <item name="entries">@array/icons_entertainment</item>
+    </string-array>
+
+    <string-array name="icons_finance">
+        <item name="bank">@drawable/glyphish_bank</item>
+        <item name="credit_card">@drawable/glyphish_credit_card</item>
+        <item name="piggy_bank">@drawable/glyphish_piggy_bank</item>
+    </string-array>
+    <string-array name="iconcat_finance">
+        <item name="title">@string/iconcat_finance</item>
+        <item name="entries">@array/icons_finance</item>
+    </string-array>
+
+    <string-array name="icons_shopping">
+        <item name="barcode">@drawable/glyphish_barcode</item>
+        <item name="coat_hanger">@drawable/glyphish_coat_hanger</item>
+        <item name="gift">@drawable/glyphish_gift</item>
+        <item name="glasses_2">@drawable/glyphish_glasses_2</item>
+        <item name="glasses_3">@drawable/glyphish_glasses_3</item>
+        <item name="pricetag">@drawable/glyphish_pricetag</item>
+        <item name="receipt">@drawable/glyphish_receipt</item>
+        <item name="shopping">@drawable/glyphish_shopping</item>
+        <item name="shopping_cart">@drawable/glyphish_shopping_cart</item>
+        <item name="tag">@drawable/glyphish_tag</item>
+        <item name="tags">@drawable/glyphish_tags</item>
+        <item name="tshirt">@drawable/glyphish_tshirt</item>
+    </string-array>
+    <string-array name="iconcat_shopping">
+        <item name="title">@string/iconcat_shopping</item>
+        <item name="entries">@array/icons_shopping</item>
+    </string-array>
+
+    <string-array name="icons_health">
+        <item name="bandaid">@drawable/glyphish_bandaid</item>
+        <item name="dumbell">@drawable/glyphish_dumbell</item>
+        <item name="ekg">@drawable/glyphish_ekg</item>
+        <item name="glasses_1">@drawable/glyphish_glasses_1</item>
+        <item name="medical">@drawable/glyphish_medical</item>
+        <item name="medical_bag">@drawable/glyphish_medical_bag</item>
+        <item name="pill">@drawable/glyphish_pill</item>
+    </string-array>
+    <string-array name="iconcat_health">
+        <item name="title">@string/iconcat_health</item>
+        <item name="entries">@array/icons_health</item>
+    </string-array>
+
+    <string-array name="icons_science">
+        <item name="beaker">@drawable/glyphish_beaker</item>
+        <item name="beaker2">@drawable/glyphish_beaker_2</item>
+        <item name="book">@drawable/glyphish_book</item>
+        <item name="bookmark">@drawable/glyphish_bookmark</item>
+        <item name="gradhat">@drawable/glyphish_gradhat</item>
+        <item name="planet">@drawable/glyphish_planet</item>
+        <item name="telescope">@drawable/glyphish_telescope</item>
+        <item name="test_tube">@drawable/glyphish_test_tube</item>
+        <item name="thermometer">@drawable/glyphish_thermometer</item>
+        <item name="ufo">@drawable/glyphish_ufo</item>
+    </string-array>
+    <string-array name="iconcat_science">
+        <item name="title">@string/iconcat_science</item>
+        <item name="entries">@array/icons_science</item>
+    </string-array>
+
+    <string-array name="icons_buildings">
+        <item name="building">@drawable/glyphish_building</item>
+        <item name="city">@drawable/glyphish_city</item>
+        <item name="house">@drawable/glyphish_house</item>
+        <item name="tower">@drawable/glyphish_tower</item>
+        <item name="windmill">@drawable/glyphish_windmill</item>
+    </string-array>
+    <string-array name="iconcat_buildings">
+        <item name="title">@string/iconcat_buildings</item>
+        <item name="entries">@array/icons_buildings</item>
+    </string-array>
+
+    <string-array name="icons_office">
+        <item name="cabinet">@drawable/glyphish_cabinet</item>
+        <item name="calculator">@drawable/glyphish_calculator</item>
+        <item name="calendar">@drawable/glyphish_calendar</item>
+        <item name="clock">@drawable/glyphish_clock</item>
+        <item name="envelope">@drawable/glyphish_envelope</item>
+        <item name="index_cards">@drawable/glyphish_index_cards</item>
+        <item name="notepad">@drawable/glyphish_notepad</item>
+        <item name="paperclip">@drawable/glyphish_paperclip</item>
+        <item name="pencil">@drawable/glyphish_pencil</item>
+        <item name="presentation">@drawable/glyphish_presentation</item>
+        <item name="rolodex">@drawable/glyphish_rolodex</item>
+        <item name="ruler">@drawable/glyphish_ruler</item>
+        <item name="stickynote">@drawable/glyphish_stickynote</item>
+        <item name="suitcase">@drawable/glyphish_suitcase</item>
+    </string-array>
+    <string-array name="iconcat_office">
+        <item name="title">@string/iconcat_office</item>
+        <item name="entries">@array/icons_office</item>
+    </string-array>
+
+    <string-array name="icons_devices">
+        <item name="camera">@drawable/glyphish_camera</item>
+        <item name="display">@drawable/glyphish_display</item>
+        <item name="imac">@drawable/glyphish_imac</item>
+        <item name="ipad">@drawable/glyphish_ipad</item>
+        <item name="iphone">@drawable/glyphish_iphone</item>
+        <item name="ipod">@drawable/glyphish_ipod</item>
+        <item name="macbook">@drawable/glyphish_macbook</item>
+        <item name="phone">@drawable/glyphish_phone</item>
+        <item name="printer">@drawable/glyphish_printer</item>
+        <item name="tv">@drawable/glyphish_tv</item>
+        <item name="widescreen">@drawable/glyphish_widescreen</item>
+    </string-array>
+    <string-array name="iconcat_devices">
+        <item name="title">@string/iconcat_dev</item>
+        <item name="entries">@array/icons_devices</item>
+    </string-array>
+
+    <string-array name="icons_nature">
+        <item name="bird">@drawable/glyphish_bird</item>
+        <item name="bone">@drawable/glyphish_bone</item>
+        <item name="bug">@drawable/glyphish_bug</item>
+        <item name="butterfly">@drawable/glyphish_butterfly</item>
+        <item name="compass">@drawable/glyphish_compass</item>
+        <item name="dog_paw">@drawable/glyphish_dog_paw</item>
+        <item name="doghouse">@drawable/glyphish_doghouse</item>
+        <item name="landscape">@drawable/glyphish_landscape</item>
+        <item name="map">@drawable/glyphish_map</item>
+        <item name="moon">@drawable/glyphish_moon</item>
+        <item name="pine_tree">@drawable/glyphish_pine_tree</item>
+        <item name="plant">@drawable/glyphish_plant</item>
+        <item name="sun">@drawable/glyphish_sun</item>
+        <item name="weather">@drawable/glyphish_weather</item>
+        <item name="zap">@drawable/glyphish_zap</item>
+    </string-array>
+    <string-array name="iconcat_nature">
+        <item name="title">@string/iconcat_nature</item>
+        <item name="entries">@array/icons_nature</item>
+    </string-array>
+
+    <string-array name="icons_misc">
+        <item name="badge">@drawable/glyphish_badge</item>
+        <item name="bar_chart">@drawable/glyphish_bar_chart</item>
+        <item name="battery">@drawable/glyphish_battery</item>
+        <item name="brightness">@drawable/glyphish_brightness</item>
+        <item name="bowtie">@drawable/glyphish_bowtie</item>
+        <item name="bullhorn">@drawable/glyphish_bullhorn</item>
+        <item name="cloud">@drawable/glyphish_cloud</item>
+        <item name="collection">@drawable/glyphish_collection</item>
+        <item name="contrast">@drawable/glyphish_contrast</item>
+        <item name="download">@drawable/glyphish_download</item>
+        <item name="eye">@drawable/glyphish_eye</item>
+        <item name="eyedropper">@drawable/glyphish_eyedropper</item>
+        <item name="flag">@drawable/glyphish_flag</item>
+        <item name="gameplan">@drawable/glyphish_gameplan</item>
+        <item name="gavel">@drawable/glyphish_gavel</item>
+        <item name="gear">@drawable/glyphish_gear</item>
+        <item name="gear2">@drawable/glyphish_gear2</item>
+        <item name="genie_lamp">@drawable/glyphish_genie_lamp</item>
+        <item name="ghost">@drawable/glyphish_ghost</item>
+        <item name="hammer">@drawable/glyphish_hammer</item>
+        <item name="heart">@drawable/glyphish_heart</item>
+        <item name="inbox">@drawable/glyphish_inbox</item>
+        <item name="key">@drawable/glyphish_key</item>
+        <item name="lamp">@drawable/glyphish_lamp</item>
+        <item name="life_buoy">@drawable/glyphish_life_buoy</item>
+        <item name="lightbulb">@drawable/glyphish_lightbulb</item>
+        <item name="line_chart">@drawable/glyphish_line_chart</item>
+        <item name="location">@drawable/glyphish_location</item>
+        <item name="location_arrow">@drawable/glyphish_location_arrow</item>
+        <item name="lock">@drawable/glyphish_lock</item>
+        <item name="loopback">@drawable/glyphish_loopback</item>
+        <item name="magnify">@drawable/glyphish_magnify</item>
+        <item name="map_marker">@drawable/glyphish_map_marker</item>
+        <item name="navigation">@drawable/glyphish_navigation</item>
+        <item name="necktie">@drawable/glyphish_necktie</item>
+        <item name="network">@drawable/glyphish_network</item>
+        <item name="outlet">@drawable/glyphish_outlet</item>
+        <item name="paint_roller">@drawable/glyphish_paint_roller</item>
+        <item name="persondot">@drawable/glyphish_persondot</item>
+        <item name="photos">@drawable/glyphish_photos</item>
+        <item name="picture_frame">@drawable/glyphish_picture_frame</item>
+        <item name="pin">@drawable/glyphish_pin</item>
+        <item name="radar">@drawable/glyphish_radar</item>
+        <item name="radiation">@drawable/glyphish_radiation</item>
+        <item name="redo">@drawable/glyphish_redo</item>
+        <item name="refresh">@drawable/glyphish_refresh</item>
+        <item name="scales">@drawable/glyphish_scales</item>
+        <item name="shoebox">@drawable/glyphish_shoebox</item>
+        <item name="shuffle">@drawable/glyphish_shuffle</item>
+        <item name="signpost">@drawable/glyphish_signpost</item>
+        <item name="skull">@drawable/glyphish_skull</item>
+        <item name="skull_n_bones">@drawable/glyphish_skull_n_bones</item>
+        <item name="sliders">@drawable/glyphish_sliders</item>
+        <item name="sock">@drawable/glyphish_sock</item>
+        <item name="spraycan">@drawable/glyphish_spraycan</item>
+        <item name="squiggle">@drawable/glyphish_squiggle</item>
+        <item name="star">@drawable/glyphish_star</item>
+        <item name="stats">@drawable/glyphish_stats</item>
+        <item name="stopwatch">@drawable/glyphish_stopwatch</item>
+        <item name="todo">@drawable/glyphish_todo</item>
+        <item name="toolbox">@drawable/glyphish_toolbox</item>
+        <item name="umbrella">@drawable/glyphish_umbrella</item>
+        <item name="upload_photo">@drawable/glyphish_upload_photo</item>
+        <item name="upload_photo_2">@drawable/glyphish_upload_photo_2</item>
+        <item name="viking">@drawable/glyphish_viking</item>
+        <item name="voicemail">@drawable/glyphish_voicemail</item>
+        <item name="voicemail_2">@drawable/glyphish_voicemail_2</item>
+        <item name="warning">@drawable/glyphish_warning</item>
+        <item name="wrench">@drawable/glyphish_wrench</item>
+        <item name="wrench_2">@drawable/glyphish_wrench_2</item>
+    </string-array>
+    <string-array name="iconcat_misc">
+        <item name="title">@string/iconcat_misc</item>
+        <item name="entries">@array/icons_misc</item>
+    </string-array>
+
+    <array name="iconcats">
+        <item>@array/iconcat_transportation</item>
+        <item>@array/iconcat_misc</item>
+        <item>@array/iconcat_office</item>
+        <item>@array/iconcat_nature</item>
+        <item>@array/iconcat_fooddrink</item>
+        <item>@array/iconcat_people</item>
+        <item>@array/iconcat_entertainment</item>
+        <item>@array/iconcat_finance</item>
+        <item>@array/iconcat_shopping</item>
+        <item>@array/iconcat_health</item>
+        <item>@array/iconcat_science</item>
+        <item>@array/iconcat_buildings</item>
+        <item>@array/iconcat_devices</item>
+    </array>
+</resources>

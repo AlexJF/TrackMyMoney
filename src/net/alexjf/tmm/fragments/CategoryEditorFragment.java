@@ -8,7 +8,7 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.exceptions.DatabaseException;
-import net.alexjf.tmm.fragments.DrawablePickerFragment.OnDrawablePickedListener;
+import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.views.SelectorButton;
 
@@ -26,7 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class CategoryEditorFragment extends Fragment 
-    implements OnDrawablePickedListener {
+    implements OnIconPickedListener {
     private static final String KEY_CURRENTCATEGORY = "currentCategory";
     private static final String KEY_SELECTEDICON = "selectedIcon";
     
@@ -37,7 +37,7 @@ public class CategoryEditorFragment extends Fragment
     private Category category;
     private String selectedDrawableName;
 
-    private DrawablePickerFragment drawablePicker;
+    private IconPickerFragment iconPicker;
 
     private EditText nameText;
     private SelectorButton iconImageButton;
@@ -57,19 +57,18 @@ public class CategoryEditorFragment extends Fragment
         iconImageButton = (SelectorButton) v.findViewById(R.id.icon_button);
         addButton = (Button) v.findViewById(R.id.add_button);
 
-        drawablePicker = (DrawablePickerFragment) 
+        iconPicker = (IconPickerFragment) 
             getFragmentManager().findFragmentByTag(TAG_DRAWABLEPICKER);
 
-        if (drawablePicker == null) {
-            drawablePicker = new DrawablePickerFragment();
+        if (iconPicker == null) {
+            iconPicker = new IconPickerFragment();
         }
 
-        drawablePicker.setListener(this);
-        drawablePicker.setFilter("glyphish_");
+        iconPicker.setListener(this);
 
         iconImageButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                drawablePicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
+                iconPicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
             }
         });
 
@@ -108,7 +107,7 @@ public class CategoryEditorFragment extends Fragment
         return v;
     }
 
-    public void onDrawablePicked(int drawableId, String drawableName) {
+    public void onIconPicked(int drawableId, String drawableName) {
         iconImageButton.setDrawableId(drawableId);
         iconImageButton.setError(false);
         selectedDrawableName = drawableName;

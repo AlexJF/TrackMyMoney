@@ -7,9 +7,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-    <GridView android:id="@+id/drawable_grid"
+    <Spinner android:id="@+id/iconcat_spinner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content" />
+    <GridView android:id="@+id/icon_grid"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:numColumns="auto_fit"
         android:columnWidth="45dp"
         android:horizontalSpacing="10dp"
