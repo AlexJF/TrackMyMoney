@@ -1,0 +1,15 @@
+<!--
+  Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
+  License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<resources>
+    <string-array name="date_intervals_values">
+        <item>today</item>
+        <item>yesterday</item>
+        <item>this_month</item>
+        <item>last_month</item>
+        <item>this_year</item>
+        <item>all_time</item>
+        <item>custom</item>
+    </string-array>
+</resources>

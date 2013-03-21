@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:padding="15dp" >
     <TextView android:id="@+id/balance_label"
-            android:text="@string/balance"
+            android:text="@string/balance_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true" />

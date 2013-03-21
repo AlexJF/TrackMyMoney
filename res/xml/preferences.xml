@@ -14,7 +14,7 @@
             android:key="pref_key_default_timeinterval"
             android:title="@string/pref_default_timeinterval"
             android:entries="@array/date_intervals"
-            android:entryValues="@array/date_intervals"
+            android:entryValues="@array/date_intervals_values"
             android:persistent="true" />
     </PreferenceCategory>
     <PreferenceCategory
@@ -23,7 +23,7 @@
             android:key="pref_key_tab_navigation"
             android:title="@string/pref_tab_navigation"
             android:entries="@array/pref_tab_navigation"
-            android:entryValues="@array/pref_tab_navigation"
+            android:entryValues="@array/pref_tab_navigation_values"
             android:defaultValue="@string/both"
             android:persistent="true" />
     </PreferenceCategory>

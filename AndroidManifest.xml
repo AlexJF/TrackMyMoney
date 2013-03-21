@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.alexjf.tmm"
-    android:versionCode="2"
+    android:versionCode="3"
     android:installLocation="preferExternal"
     android:versionName="@string/app_version_value" >
 

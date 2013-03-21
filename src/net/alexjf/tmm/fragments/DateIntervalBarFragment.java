@@ -80,7 +80,7 @@ public class DateIntervalBarFragment extends Fragment
             final Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_dateinterval_bar, container, false);
 
-        dateIntervalTypes = getResources().getStringArray(R.array.date_intervals);
+        dateIntervalTypes = getResources().getStringArray(R.array.date_intervals_values);
 
         dateIntervalSpinner = (Spinner) v.findViewById(R.id.interval_spinner);
         startDateButton = (Button) v.findViewById(R.id.start_button);

@@ -78,7 +78,7 @@ public class TabAdapter extends FragmentPagerAdapter implements
         PreferenceManager prefManager = PreferenceManager.getInstance();
         
         String[] tabNavigationTypes = 
-            activity.getResources().getStringArray(R.array.pref_tab_navigation);
+            activity.getResources().getStringArray(R.array.pref_tab_navigation_values);
         String tabNavigation = 
             prefManager.readUserStringPreference(KEY_TABNAV, "");
 

@@ -68,7 +68,8 @@
             android:layout_alignRight="@+id/value_text"
             android:layout_below="@id/executionDate_label"
             android:gravity="center_vertical" />
-    <net.alexjf.tmm.views.SignToggleButton android:id="@id/value_sign"
+    <net.alexjf.tmm.views.SignToggleButton 
+            android:id="@id/value_sign"
             positive="false"
             android:gravity="center"
             android:background="@android:color/transparent"

@@ -1,4 +1,6 @@
 Next version - To be defined
+
+1.0.1 - 21 Mar 2013
 - Added secure backup and restore of data and user settings.
 - Organized icons in categories for easier browsing.
 - Added a value sign toggle button to the value textbox on the transaction
@@ -7,6 +9,7 @@ editor.
 - Fixed transaction editor activity on small screens.
 - Put EUR, USD and GBP at the top of the currency list.
 - Fix bug in date selection if custom interval set as default.
+- Added Portuguese localization.
 
 1.0.0 - 04 Mar 2013
 - Stability, consistency and performance improvements.

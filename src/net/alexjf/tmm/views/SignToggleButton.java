@@ -52,11 +52,7 @@ public class SignToggleButton extends Button {
             attributeArray.recycle();
         }
 
-        if (positive) {
-            setPositive();
-        } else {
-            setNegative();
-        }
+        setValue(positive);
 
         setOnClickListener(new OnClickListener() {
             @Override
