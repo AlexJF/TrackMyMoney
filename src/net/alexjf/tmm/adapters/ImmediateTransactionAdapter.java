@@ -11,7 +11,6 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.Transaction;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
 
@@ -47,8 +46,8 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
 
     private void commonConstructorActions(Context context) {
         resources = context.getResources();
-        colorValuePositive = resources.getColor(R.color.balance_positive);
-        colorValueNegative = resources.getColor(R.color.balance_negative);
+        colorValuePositive = resources.getColor(R.color.positive);
+        colorValueNegative = resources.getColor(R.color.negative);
         dateFormat = DateFormat.getDateTimeInstance();
     }
 

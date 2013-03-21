@@ -18,6 +18,7 @@ import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
 import net.alexjf.tmm.views.SelectorButton;
+import net.alexjf.tmm.views.SignToggleButton;
 
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -62,6 +63,7 @@ public class ImmedTransactionEditorFragment extends Fragment
     private SelectorButton categoryButton;
     private Button executionDateButton;
     private Button executionTimeButton;
+    private SignToggleButton valueSignToggle;
     private EditText valueText;
     private TextView currencyTextView;
     private Button addButton;
@@ -83,6 +85,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         categoryButton = (SelectorButton) v.findViewById(R.id.category_button);
         executionDateButton = (Button) v.findViewById(R.id.executionDate_button);
         executionTimeButton = (Button) v.findViewById(R.id.executionTime_button);
+        valueSignToggle = (SignToggleButton) v.findViewById(R.id.value_sign);
         valueText = (EditText) v.findViewById(R.id.value_text);
         currencyTextView = (TextView) v.findViewById(R.id.currency_label);
         addButton = (Button) v.findViewById(R.id.add_button);
@@ -163,6 +166,10 @@ public class ImmedTransactionEditorFragment extends Fragment
                     value = new BigDecimal(valueText.getText().toString());
                 } catch (NumberFormatException e) {
                     value = new BigDecimal(0);
+                }
+
+                if (valueSignToggle.isNegative()) {
+                    value = value.multiply(BigDecimal.valueOf(-1));
                 }
 
                 if (transaction == null) {
@@ -276,6 +283,7 @@ public class ImmedTransactionEditorFragment extends Fragment
             executionDateButton.setText(dateFormat.format(new Date()));
             executionTimeButton.setText(timeFormat.format(new Date()));
             valueText.setText("");
+            valueSignToggle.setNegative();
             addButton.setText(R.string.add);
         // If we are editing a node, fill fields with current information
         } else {
@@ -284,7 +292,9 @@ public class ImmedTransactionEditorFragment extends Fragment
                         transaction.getExecutionDate()));
             executionTimeButton.setText(timeFormat.format(
                         transaction.getExecutionDate()));
-            valueText.setText(transaction.getValue().toString());
+            BigDecimal value = transaction.getValue();
+            valueText.setText(value.abs().toString());
+            valueSignToggle.setToNumberSign(value);
             addButton.setText(R.string.edit);
         }
 

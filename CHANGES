@@ -1,5 +1,8 @@
 Next version - To be defined
 - Added secure backup and restore of data and user settings.
+- Organized icons in categories for easier browsing.
+- Added a value sign toggle button to the value textbox on the transaction
+editor.
 - Added option to choose tab navigation mode (tabs, swipe or both).
 - Fixed transaction editor activity on small screens.
 - Put EUR, USD and GBP at the top of the currency list.

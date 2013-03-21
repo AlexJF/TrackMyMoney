@@ -36,7 +36,7 @@
             android:layout_below="@id/balance_value"
             android:layout_alignParentLeft="true" />
     <TextView android:id="@+id/income_value"
-            android:textColor="@color/balance_positive"
+            android:textColor="@color/positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
@@ -52,7 +52,7 @@
             android:layout_below="@id/balance_value"
             android:layout_toLeftOf="@+id/expense_value" />
     <TextView android:id="@id/expense_value"
-            android:textColor="@color/balance_negative"
+            android:textColor="@color/negative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/balance_value"

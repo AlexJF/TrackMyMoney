@@ -6,8 +6,8 @@
     <color name="user_bg_normal">#00000000</color>
     <color name="user_bg_selected">#313131</color>
 
-    <color name="balance_positive">#00FF00</color>
-    <color name="balance_negative">#FF0000</color>
+    <color name="positive">#00FF00</color>
+    <color name="negative">#FF0000</color>
 
     <color name="pie1">#0099CC</color>
     <color name="pie2">#9933CC</color>

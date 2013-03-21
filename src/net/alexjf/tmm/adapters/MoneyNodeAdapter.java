@@ -40,8 +40,8 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
 
     protected void initialize() {
         colorBalanceDefault = null;
-        colorBalancePositive = getContext().getResources().getColor(R.color.balance_positive);
-        colorBalanceNegative = getContext().getResources().getColor(R.color.balance_negative);
+        colorBalancePositive = getContext().getResources().getColor(R.color.positive);
+        colorBalanceNegative = getContext().getResources().getColor(R.color.negative);
     }
 
     @Override
