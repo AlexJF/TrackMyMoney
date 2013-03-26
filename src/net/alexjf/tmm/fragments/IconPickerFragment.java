@@ -174,7 +174,7 @@ public class IconPickerFragment extends DialogFragment {
         iconCategories = new ArrayList<IconCategory>(numCategories);
 
         for (int i = 0; i < numCategories; i++) {
-            int resId = iconCats.getResourceId(i, 0);
+            int resId = iconCats.peekValue(i).resourceId;
 
             if (resId > 0) {
                 IconCategory iconCat = new IconCategory();
