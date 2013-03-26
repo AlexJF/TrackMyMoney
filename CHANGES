@@ -1,5 +1,9 @@
 Next version - To be defined
 
+1.0.2 - 26 Mar 2013
+- Fix major crash on icon selection
+- Force initial focus to value on transaction editing.
+
 1.0.1 - 21 Mar 2013
 - Added secure backup and restore of data and user settings.
 - Organized icons in categories for easier browsing.
