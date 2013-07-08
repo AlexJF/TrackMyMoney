@@ -31,6 +31,7 @@ public class ImmediateTransaction extends Transaction {
     // Table Columns
     public static final String COL_ID = "id";
     public static final String COL_EXECUTIONDATE = "executionDate";
+    public static final String COL_TRANSFERTRANSID = "transferTransactionId";
 
     // Queries
     public static final String QUERY_CREATETABLE = 
@@ -38,7 +39,9 @@ public class ImmediateTransaction extends Transaction {
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
             COL_EXECUTIONDATE + " DATETIME " + 
-                "DEFAULT (DATETIME('now', 'localtime'))" +
+                "DEFAULT (DATETIME('now', 'localtime'))," +
+            COL_TRANSFERTRANSID + " INTEGER " + 
+                "REFERENCES " + Transaction.TABLE_NAME + "ON DELETE CASCADE" +
         ");";
 
     // Database maintenance
@@ -92,6 +95,7 @@ public class ImmediateTransaction extends Transaction {
 
     // Private fields
     private Date executionDate;
+    private ImmediateTransaction transferTransaction;
     private BigDecimal deltaValueFromPrevious;
     private BigDecimal valueOnDatabase;
 
@@ -114,8 +118,42 @@ public class ImmediateTransaction extends Transaction {
             String description, Category category, Date executionDate) {
         super(moneyNode, value, description, category);
         this.executionDate = executionDate;
+        this.transferTransaction = null;
         deltaValueFromPrevious = value;
         valueOnDatabase = BigDecimal.valueOf(0);
+    }
+
+    /**
+     * Creates a copy of the transaction passed as argument.
+     *
+     * The created copy is a shallow copy. However, the only mutable objects
+     * are the moneynode and the category of which there should only be one
+     * instance anyway.
+     *
+     * @param original The transaction from which to copy from.
+     */
+    public ImmediateTransaction(ImmediateTransaction original) {
+        this(original.getMoneyNode(), original.getValue(),
+             original.getDescription(), original.getCategory(),
+             original.getExecutionDate());
+    }
+
+    /**
+     * Constructs a new instance symmetric to the provided one.
+     *
+     * This is used for creating an opposite transaction in a transfer.
+     *
+     * @param transferTransaction An existing transaction representing
+     * one side of a transfer.
+     * @param moneyNode The money node to which this new transaction
+     * will be associated.
+     */
+    public ImmediateTransaction(ImmediateTransaction transferTransaction,
+            MoneyNode moneyNode) {
+        this(transferTransaction);
+        this.setValue(this.getValue().multiply(new BigDecimal(-1)));
+        this.setMoneyNode(moneyNode);
+        this.transferTransaction = transferTransaction;
     }
 
     @Override
@@ -126,6 +164,13 @@ public class ImmediateTransaction extends Transaction {
         try {
             if (cursor.moveToFirst()) {
                 executionDate = new Date(cursor.getLong(1));
+                long transferTransId = cursor.getLong(2);
+
+                if (transferTransaction == null || 
+                    !transferTransaction.getId().equals(transferTransId)) {
+                    transferTransaction = ImmediateTransaction.createFromId(
+                            transferTransId);
+                }
             } else {
                 throw new DbObjectLoadException("Couldn't find immediate transaction " +
                         "associated with id "+ getId());
@@ -149,6 +194,13 @@ public class ImmediateTransaction extends Transaction {
             ContentValues contentValues = new ContentValues();
             contentValues.put(COL_ID, id);
             contentValues.put(COL_EXECUTIONDATE, executionDate.getTime());
+
+            if (transferTransaction != null) {
+                contentValues.put(COL_TRANSFERTRANSID, 
+                        transferTransaction.getId());
+            } else {
+                contentValues.put(COL_TRANSFERTRANSID, (String) null);
+            }
 
             long result;
 
@@ -184,6 +236,15 @@ public class ImmediateTransaction extends Transaction {
     }
 
     /**
+     * Gets the other transaction involved in a transfer with this one.
+     *
+     * @return An opposite ImmediateTransaction or null if not a transfer.
+     */
+    public ImmediateTransaction getTransferTransaction() {
+        return this.transferTransaction;
+    }
+
+    /**
      * Sets the executionDate for this instance.
      *
      * @param executionDate The executionDate.
@@ -191,6 +252,17 @@ public class ImmediateTransaction extends Transaction {
     public void setExecutionDate(Date executionDate) {
         this.executionDate = executionDate;
         setChanged(true);
+    }
+
+    /**
+     * Sets the other transaction involved in a transfer with this one.
+     *
+     * @param transferTransaction The opposite transaction in the transfer.
+     */
+    public void setTransferTransaction(
+            ImmediateTransaction transferTransaction) {
+        this.transferTransaction = transferTransaction;
+        this.setLoaded(true);
     }
 
     public static final Parcelable.Creator<ImmediateTransaction> CREATOR =

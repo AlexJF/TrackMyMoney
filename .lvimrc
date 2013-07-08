@@ -1,0 +1,24 @@
+let s:project_dir = resolve(expand("<sfile>:p:h")) . '/'
+let s:project_sourcepath = [
+    \'src',
+    \'gen', 
+\]
+let s:project_classpath = [
+    \'libs/common-codec.jar',
+    \'libs/guava-r09.jar',
+    \'libs/sqlcipher.jar',
+    \'libs/opencsv-2.3.jar',
+    \'libs/achartengine-1.0.0.jar',
+    \'extra/aFileChooser/aFileChooser/bin/classes.jar',
+    \'extra/actionbarsherlock/library/bin/classes.jar',
+    \'extra/actionbarsherlock/library/libs/android-support-v4.jar',
+    \'/opt/android-sdk/platforms/android-14/android.jar',
+\]
+let s:project_sourcepath = map(s:project_sourcepath, 
+\ "(xolox#misc#path#is_relative(v:val) == 1 ? s:project_dir . v:val : v:val)")
+let s:project_classpath = map(s:project_classpath, 
+\ "(xolox#misc#path#is_relative(v:val) == 1 ? s:project_dir . v:val : v:val)")
+let g:syntastic_java_javac_classpath = join(s:project_sourcepath + s:project_classpath, "\n")
+let g:syntastic_java_javac_options = "-Xlint -encoding utf8"
+let b:sourcepath = join(s:project_sourcepath, ":")
+let b:classpath = join(s:project_classpath, ":")

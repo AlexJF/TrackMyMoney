@@ -37,7 +37,13 @@ public class MoneyNodeListActivity extends SherlockActivity {
     private static final int REQCODE_EDIT = 1;
     private static final int REQCODE_PREF = 2;
 
+    public static final String KEY_INTENTION = "intention";
+    public static final String INTENTION_MANAGE = "manage";
+    public static final String INTENTION_SELECT = "select";
+
     private MoneyNodeAdapter adapter;
+
+    private String intention;
 
     public MoneyNodeListActivity() {
         adapter = null;
@@ -47,6 +53,14 @@ public class MoneyNodeListActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moneynode_list);
+
+        Intent intent = getIntent();
+
+        intention = intent.getStringExtra(KEY_INTENTION);
+
+        if (intention == null) {
+            intention = INTENTION_MANAGE;
+        }
 
         adapter = new MoneyNodeAdapter(this);
 
@@ -61,10 +75,18 @@ public class MoneyNodeListActivity extends SherlockActivity {
             public void onItemClick(AdapterView<?> parent, View view, 
                 int position, long id) {
                 MoneyNode selectedNode = adapter.getItem(position);
-                Intent intent = new Intent(MoneyNodeListActivity.this, 
-                    MoneyNodeDetailsActivity.class);
-                intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
-                startActivity(intent);
+
+                if (intention.equals(INTENTION_MANAGE)) {
+                    Intent intent = new Intent(MoneyNodeListActivity.this, 
+                        MoneyNodeDetailsActivity.class);
+                    intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
+                    startActivity(intent);
+                } else {
+                    Intent data = new Intent();
+                    data.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
+                    setResult(SherlockActivity.RESULT_OK, data);
+                    finish();
+                }
             }
         });
 
