@@ -3,45 +3,49 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="15dp" >
-    <TextView android:id="@+id/name_label"
-            android:text="@string/name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" 
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:gravity="center_vertical" />
-    <EditText android:id="@+id/name_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/name_label"
-            android:singleLine="true" />
-    <TextView android:id="@+id/icon_label"
-            android:text="@string/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/name_text"
-            android:layout_alignTop="@+id/icon_button"
-            android:layout_alignBottom="@id/icon_button"
-            android:gravity="center_vertical" />
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp" >
+    <TextView
+        android:id="@+id/name_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:text="@string/name" />
+    <EditText
+        android:id="@+id/name_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/name_label"
+        android:singleLine="true" />
+    <TextView
+        android:id="@+id/icon_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/icon_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/icon_button"
+        android:layout_below="@id/name_text"
+        android:gravity="center_vertical"
+        android:text="@string/icon" />
     <net.alexjf.tmm.views.SelectorButton
-            android:id="@id/icon_button"
-            android:text="@string/choose"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_toRightOf="@id/icon_label"
-            android:layout_below="@id/name_text" />
-    <Button android:id="@+id/add_button"
-            android:text="@string/add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/icon_button"
-            android:layout_marginTop="5dp" />
+        android:id="@id/icon_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name_text"
+        android:layout_toRightOf="@id/icon_label"
+        android:text="@string/choose" />
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/icon_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:text="@string/add" />
 </RelativeLayout>

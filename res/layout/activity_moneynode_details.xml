@@ -3,69 +3,79 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp" >
+    <TextView
+        android:id="@+id/balance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/balance_label" />
+    <TextView
+        android:id="@+id/balance_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/balance_label" />
+    <TextView
+        android:id="@+id/total_transactions_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@+id/total_transactions_value"
+        android:layout_toRightOf="@id/balance_value"
+        android:gravity="right|center_vertical"
+        android:text="@string/total_transactions" />
+    <TextView
+        android:id="@id/total_transactions_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" />
+    <TextView
+        android:id="@+id/income_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/balance_value"
+        android:text="@string/income_label" />
+    <TextView
+        android:id="@+id/income_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/balance_value"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/income_label"
+        android:textColor="@color/positive" />
+    <TextView
+        android:id="@+id/expense_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/balance_value"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@+id/expense_value"
+        android:layout_toRightOf="@id/income_value"
+        android:gravity="right|center_vertical"
+        android:text="@string/expense_label" />
+    <TextView
+        android:id="@id/expense_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/balance_value"
+        android:textColor="@color/negative" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="15dp" >
-    <TextView android:id="@+id/balance_label"
-            android:text="@string/balance_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true" />
-    <TextView android:id="@+id/balance_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/balance_label" />
-    <TextView android:id="@+id/total_transactions_label"
-            android:text="@string/total_transactions"
-            android:gravity="right|center_vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/balance_value" 
-            android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@+id/total_transactions_value" />
-    <TextView android:id="@id/total_transactions_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" />
-    <TextView android:id="@+id/income_label"
-            android:text="@string/income_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/balance_value"
-            android:layout_alignParentLeft="true" />
-    <TextView android:id="@+id/income_value"
-            android:textColor="@color/positive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_below="@id/balance_value"
-            android:layout_toRightOf="@id/income_label" />
-    <TextView android:id="@+id/expense_label"
-            android:text="@string/expense_label"
-            android:gravity="right|center_vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/income_value" 
-            android:layout_marginRight="5dp"
-            android:layout_below="@id/balance_value"
-            android:layout_toLeftOf="@+id/expense_value" />
-    <TextView android:id="@id/expense_value"
-            android:textColor="@color/negative"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/balance_value"
-            android:layout_alignParentRight="true" />
-    <android.support.v4.view.ViewPager android:id="@+id/view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            android:layout_above="@+id/dateinterval_bar"
-            android:layout_below="@id/income_label" />
-    <fragment android:name="net.alexjf.tmm.fragments.DateIntervalBarFragment"
-            android:id="@id/dateinterval_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_alignParentBottom="true" />
+        android:layout_height="0dp"
+        android:layout_above="@+id/dateinterval_bar"
+        android:layout_below="@id/income_label"
+        android:layout_marginTop="5dp" />
+    <fragment
+        android:id="@id/dateinterval_bar"
+        android:name="net.alexjf.tmm.fragments.DateIntervalBarFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

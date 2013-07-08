@@ -3,36 +3,40 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:paddingBottom="15dp"
-        android:paddingTop="15dp" >
-    <ImageView android:id="@+id/transaction_caticon"
-            android:gravity="center"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:padding="3dp" />
-    <TextView android:id="@+id/transaction_cat" 
-            android:textSize="20sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/transaction_caticon" />
-    <TextView android:id="@+id/transaction_execDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/transaction_caticon"
-            android:layout_below="@id/transaction_cat" />
-    <TextView android:id="@+id/transaction_value" 
-            android:gravity="right|center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/transaction_cat"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" />
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="15dp"
+    android:paddingTop="15dp" >
+    <ImageView
+        android:id="@+id/transaction_caticon"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:padding="3dp" />
+    <TextView
+        android:id="@+id/transaction_cat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/transaction_caticon"
+        android:textSize="20sp" />
+    <TextView
+        android:id="@+id/transaction_execDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/transaction_cat"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/transaction_caticon" />
+    <TextView
+        android:id="@+id/transaction_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@id/transaction_cat"
+        android:gravity="right|center_vertical" />
 </RelativeLayout>

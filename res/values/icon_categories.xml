@@ -14,7 +14,6 @@
         <item name="title">@string/iconcat_transportation</item>
         <item name="entries">@array/icons_transportation</item>
     </string-array>
-
     <string-array name="icons_people">
         <item name="baby">@drawable/glyphish_baby</item>
         <item name="chat">@drawable/glyphish_chat</item>
@@ -29,7 +28,6 @@
         <item name="title">@string/iconcat_people</item>
         <item name="entries">@array/icons_people</item>
     </string-array>
-
     <string-array name="icons_fooddrink">
         <item name="beer_mug">@drawable/glyphish_beer_mug</item>
         <item name="chicken">@drawable/glyphish_chicken</item>
@@ -46,7 +44,6 @@
         <item name="title">@string/iconcat_fooddrink</item>
         <item name="entries">@array/icons_fooddrink</item>
     </string-array>
-
     <string-array name="icons_entertainment">
         <item name="balloon">@drawable/glyphish_balloon</item>
         <item name="bow_and_arrow">@drawable/glyphish_bow_and_arrow</item>
@@ -80,7 +77,6 @@
         <item name="title">@string/iconcat_entertainment</item>
         <item name="entries">@array/icons_entertainment</item>
     </string-array>
-
     <string-array name="icons_finance">
         <item name="bank">@drawable/glyphish_bank</item>
         <item name="credit_card">@drawable/glyphish_credit_card</item>
@@ -90,7 +86,6 @@
         <item name="title">@string/iconcat_finance</item>
         <item name="entries">@array/icons_finance</item>
     </string-array>
-
     <string-array name="icons_shopping">
         <item name="barcode">@drawable/glyphish_barcode</item>
         <item name="coat_hanger">@drawable/glyphish_coat_hanger</item>
@@ -109,7 +104,6 @@
         <item name="title">@string/iconcat_shopping</item>
         <item name="entries">@array/icons_shopping</item>
     </string-array>
-
     <string-array name="icons_health">
         <item name="bandaid">@drawable/glyphish_bandaid</item>
         <item name="dumbell">@drawable/glyphish_dumbell</item>
@@ -123,7 +117,6 @@
         <item name="title">@string/iconcat_health</item>
         <item name="entries">@array/icons_health</item>
     </string-array>
-
     <string-array name="icons_science">
         <item name="beaker">@drawable/glyphish_beaker</item>
         <item name="beaker2">@drawable/glyphish_beaker_2</item>
@@ -140,7 +133,6 @@
         <item name="title">@string/iconcat_science</item>
         <item name="entries">@array/icons_science</item>
     </string-array>
-
     <string-array name="icons_buildings">
         <item name="building">@drawable/glyphish_building</item>
         <item name="city">@drawable/glyphish_city</item>
@@ -152,7 +144,6 @@
         <item name="title">@string/iconcat_buildings</item>
         <item name="entries">@array/icons_buildings</item>
     </string-array>
-
     <string-array name="icons_office">
         <item name="cabinet">@drawable/glyphish_cabinet</item>
         <item name="calculator">@drawable/glyphish_calculator</item>
@@ -173,7 +164,6 @@
         <item name="title">@string/iconcat_office</item>
         <item name="entries">@array/icons_office</item>
     </string-array>
-
     <string-array name="icons_devices">
         <item name="camera">@drawable/glyphish_camera</item>
         <item name="display">@drawable/glyphish_display</item>
@@ -191,7 +181,6 @@
         <item name="title">@string/iconcat_dev</item>
         <item name="entries">@array/icons_devices</item>
     </string-array>
-
     <string-array name="icons_nature">
         <item name="bird">@drawable/glyphish_bird</item>
         <item name="bone">@drawable/glyphish_bone</item>
@@ -213,7 +202,6 @@
         <item name="title">@string/iconcat_nature</item>
         <item name="entries">@array/icons_nature</item>
     </string-array>
-
     <string-array name="icons_misc">
         <item name="badge">@drawable/glyphish_badge</item>
         <item name="bar_chart">@drawable/glyphish_bar_chart</item>
@@ -290,7 +278,6 @@
         <item name="title">@string/iconcat_misc</item>
         <item name="entries">@array/icons_misc</item>
     </string-array>
-
     <array name="iconcats">
         <item>@array/iconcat_transportation</item>
         <item>@array/iconcat_misc</item>

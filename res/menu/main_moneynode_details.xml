@@ -2,14 +2,16 @@
   Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_addTransaction"
-        android:title="@string/addTransaction"
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/menu_addTransaction"
         android:icon="@android:drawable/ic_menu_add"
         android:orderInCategory="100"
-        android:showAsAction="always" />
-    <item android:id="@+id/menu_preferences"
-        android:title="@string/menu_preferences"
+        android:showAsAction="always"
+        android:title="@string/addTransaction"/>
+    <item
+        android:id="@+id/menu_preferences"
         android:orderInCategory="102"
-        android:showAsAction="never" />
+        android:showAsAction="never"
+        android:title="@string/menu_preferences"/>
 </menu>
