@@ -307,6 +307,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                 expense = expense.subtract(value);
                 break;
         }
+        updateGui();
     }
 
     @Override
@@ -365,6 +366,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         income = income.add(incomeDelta);
         expense = expense.add(expenseDelta);
+        updateGui();
     }
 
     @Override

@@ -40,9 +40,9 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         editor.setTransaction(transaction);
 
         if (transaction == null) {
-            setTitle(R.string.title_activity_moneynode_add);
+            setTitle(R.string.title_activity_immedtrans_add);
         } else {
-            setTitle(R.string.title_activity_moneynode_edit);
+            setTitle(R.string.title_activity_immedtrans_edit);
         }
     }
 
@@ -61,6 +61,9 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             // If this is a transfer transaction, save other one
             if (trans.getTransferTransaction() != null) {
                 trans.getTransferTransaction().save();
+                // Resave the original transaction to get the updated id
+                // of the other one
+                trans.save();
             }
             // If this is not a transfer transaction but was one before,
             // remove the other one
@@ -91,6 +94,9 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             // If this is a transfer transaction, save other one
             if (trans.getTransferTransaction() != null) {
                 trans.getTransferTransaction().save();
+                // Resave the original transaction to get the updated id
+                // of the other one.
+                trans.save();
             }
             data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
             setResult(SherlockFragmentActivity.RESULT_OK, data);

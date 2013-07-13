@@ -319,13 +319,13 @@ public class ImmedTransactionEditorFragment extends Fragment
             if (requestCode == REQCODE_CATEGORYCHOOSE) {
                 selectedCategory = (Category) data.getParcelableExtra(
                         Category.KEY_CATEGORY);
+                updateCategoryFields();
             } 
             else if (requestCode == REQCODE_MONEYNODECHOOSE) {
                 selectedTransferMoneyNode = (MoneyNode) 
                     data.getParcelableExtra(MoneyNode.KEY_MONEYNODE);
+                updateTransferFields();
             }
-
-            updateCategoryFields();
         }
     }
 
@@ -393,6 +393,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         }
 
         updateCategoryFields();
+        updateTransferFields();
     }
 
     private void updateCategoryFields() {

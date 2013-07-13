@@ -24,6 +24,8 @@
     <string name="title_activity_category_list">Categories</string>
     <string name="title_activity_category_add">Add Category</string>
     <string name="title_activity_category_edit">Edit Category</string>
+    <string name="title_activity_immedtrans_add">Add Transaction</string>
+    <string name="title_activity_immedtrans_edit">Edit Transaction</string>
     <string name="title_activity_filechooser">Choose a file</string>
     <!-- General -->
     <string name="add">Add</string>

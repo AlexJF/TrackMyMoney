@@ -442,6 +442,7 @@ public class MoneyNode extends DatabaseObject {
         if (transaction == null) {
             return;
         }
+
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();

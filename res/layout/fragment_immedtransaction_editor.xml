@@ -130,6 +130,7 @@
             android:layout_height="match_parent"
             android:layout_alignBottom="@+id/transfer_moneynode_button"
             android:layout_alignTop="@id/transfer_moneynode_button"
+            android:gravity="center_vertical"
             android:text="@string/transfer_moneynode" />
         <net.alexjf.tmm.views.SelectorButton
             android:id="@id/transfer_moneynode_button"

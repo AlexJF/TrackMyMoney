@@ -24,6 +24,8 @@
     <string name="title_activity_category_list">Categorias</string>
     <string name="title_activity_category_add">Adicionar categoria</string>
     <string name="title_activity_category_edit">Editar categoria</string>
+    <string name="title_activity_immedtrans_add">Adicionar transacção</string>
+    <string name="title_activity_immedtrans_edit">Editar transacção</string>
     <string name="title_activity_filechooser">Escolher um ficheiro</string>
     <!-- General -->
     <string name="add">Adicionar</string>

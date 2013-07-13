@@ -160,7 +160,7 @@ public class ImmediateTransaction extends Transaction {
     public ImmediateTransaction(ImmediateTransaction transferTransaction,
             MoneyNode moneyNode) {
         this(transferTransaction);
-        this.setValue(this.getValue().multiply(new BigDecimal(-1)));
+        this.setValue(this.getValue().multiply(new BigDecimal("-1")));
         this.setMoneyNode(moneyNode);
         this.transferTransaction = transferTransaction;
     }
@@ -219,6 +219,13 @@ public class ImmediateTransaction extends Transaction {
                 result = (result == 0 ? -1 : id);
             } else {
                 result = getDb().insert(TABLE_NAME, null, contentValues);
+
+                // If this transaction was just now added, signal that
+                // the opposing transfer transaction has changed cause it
+                // now has access to the id of this transaction.
+                if (transferTransaction != null) {
+                    transferTransaction.setChanged(true);
+                }
             }
 
             if (result >= 0) {
@@ -289,7 +296,7 @@ public class ImmediateTransaction extends Transaction {
     @Override
     public void setValue(BigDecimal value) {
         super.setValue(value);
-        deltaValueFromPrevious = valueOnDatabase.subtract(value);
+        deltaValueFromPrevious = value.subtract(valueOnDatabase);
     }
 
     public ImmediateTransaction clone() throws CloneNotSupportedException {
