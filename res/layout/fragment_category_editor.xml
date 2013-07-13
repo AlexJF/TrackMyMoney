@@ -17,6 +17,7 @@
         android:text="@string/name" />
     <EditText
         android:id="@+id/name_text"
+        android:inputType="textCapSentences"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
