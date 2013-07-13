@@ -56,7 +56,7 @@ public class MoneyNode extends DatabaseObject {
 
     // Queries
     private static final String QUERY_BALANCE = 
-        "SELECT TOTAL(" + Transaction.COL_VALUE + ") " + 
+        "SELECT " + Transaction.COL_VALUE + 
         " FROM " + Transaction.TABLE_NAME +
         "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + 
         "  USING (" + Transaction.COL_ID + ") " +
@@ -505,8 +505,11 @@ public class MoneyNode extends DatabaseObject {
         Cursor cursor = db.rawQuery(QUERY_BALANCE, 
                 new String[] {getId().toString()});
 
-        cursor.moveToFirst();
-        balance = new BigDecimal(cursor.getString(0)).add(initialBalance);
+        balance = BigDecimal.valueOf(0).add(initialBalance);
+
+        while (cursor.moveToNext()) {
+            balance = new BigDecimal(cursor.getString(0)).add(balance);
+        }
 
         cursor.close();
     }
