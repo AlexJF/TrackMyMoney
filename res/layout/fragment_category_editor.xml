@@ -27,9 +27,9 @@
         android:id="@+id/icon_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/icon_button"
+        android:layout_alignBottom="@+id/icon_button"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/icon_button"
+        android:layout_alignTop="@id/icon_button"
         android:layout_below="@id/name_text"
         android:gravity="center_vertical"
         android:text="@string/icon" />

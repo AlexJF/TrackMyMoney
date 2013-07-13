@@ -74,12 +74,15 @@
     <string name="expense_label">Expense:</string>
     <string name="moneynode_empty">There are no money nodes.\nPlease add one via the menu.</string>
     <string name="moneynode_balance_complete">%1$s %3$s\n(Init. bal: %2$s %3$s)</string>
+    <string name="moneynode_nonselected">No money node selected</string>
     <!-- Transaction Related -->
     <string name="transaction_type_label">Transaction type:</string>
     <string name="total_transactions">Total transactions:</string>
     <string name="transaction_empty">There are no transactions.\nPlease add one via the menu.</string>
     <string name="addTransaction">Add new transaction</string>
     <string name="executionDate">Execution Date:</string>
+    <string name="transfer_check">Is this a transfer?</string>
+    <string name="transfer_moneynode">From:</string>
     <!-- Category Related -->
     <string name="category">Category:</string>
     <string name="manage_categories">Manage Categories</string>

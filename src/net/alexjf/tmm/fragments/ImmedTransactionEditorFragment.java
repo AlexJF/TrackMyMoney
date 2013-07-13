@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.CategoryListActivity;
+import net.alexjf.tmm.activities.MoneyNodeListActivity;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
@@ -38,8 +39,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -50,8 +55,12 @@ public class ImmedTransactionEditorFragment extends Fragment
     private static final String TAG_DATEPICKER = "datePicker";
     private static final String TAG_TIMEPICKER = "timePicker";
 
+    private static final int REQCODE_CATEGORYCHOOSE = 0;
+    private static final int REQCODE_MONEYNODECHOOSE = 1;
+
     private OnImmediateTransactionEditListener listener;
     private Category selectedCategory;
+    private MoneyNode selectedTransferMoneyNode;
 
     private ImmediateTransaction transaction;
     private MoneyNode currentMoneyNode;
@@ -66,7 +75,11 @@ public class ImmedTransactionEditorFragment extends Fragment
     private SignToggleButton valueSignToggle;
     private EditText valueText;
     private TextView currencyTextView;
+    private CheckBox transferCheck;
+    private LinearLayout transferPanel;
+    private SelectorButton transferMoneyNodeButton;
     private Button addButton;
+
     private DateFormat dateFormat;
     private DateFormat timeFormat;
 
@@ -88,6 +101,10 @@ public class ImmedTransactionEditorFragment extends Fragment
         valueSignToggle = (SignToggleButton) v.findViewById(R.id.value_sign);
         valueText = (EditText) v.findViewById(R.id.value_text);
         currencyTextView = (TextView) v.findViewById(R.id.currency_label);
+        transferCheck = (CheckBox) v.findViewById(R.id.transfer_check);
+        transferPanel = (LinearLayout) v.findViewById(R.id.transfer_panel);
+        transferMoneyNodeButton = (SelectorButton) v.findViewById(
+                R.id.transfer_moneynode_button);
         addButton = (Button) v.findViewById(R.id.add_button);
 
         FragmentManager fm = getFragmentManager();
@@ -112,7 +129,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     CategoryListActivity.class);
                 intent.putExtra(CategoryListActivity.KEY_INTENTION, 
                     CategoryListActivity.INTENTION_SELECT);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, REQCODE_CATEGORYCHOOSE);
             }
         });
 
@@ -135,6 +152,26 @@ public class ImmedTransactionEditorFragment extends Fragment
                 } catch (ParseException e) {
                 }
                 timePicker.show(getFragmentManager(), TAG_TIMEPICKER);
+            }
+        });
+
+        transferCheck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton view, boolean checked) {
+                if (checked) {
+                    transferPanel.setVisibility(View.VISIBLE);
+                } else {
+                    transferPanel.setVisibility(View.GONE);
+                }
+            };
+        });
+
+        transferMoneyNodeButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), 
+                    MoneyNodeListActivity.class);
+                intent.putExtra(CategoryListActivity.KEY_INTENTION, 
+                    MoneyNodeListActivity.INTENTION_SELECT);
+                startActivityForResult(intent, REQCODE_MONEYNODECHOOSE);
             }
         });
 
@@ -172,18 +209,64 @@ public class ImmedTransactionEditorFragment extends Fragment
                     value = value.multiply(BigDecimal.valueOf(-1));
                 }
 
+                // If we are creating a new transaction
                 if (transaction == null) {
                     ImmediateTransaction newTransaction = 
                         new ImmediateTransaction(currentMoneyNode, value, 
                                 description, selectedCategory, executionDateTime);
+
+                    // If this new transaction is a transfer
+                    if (selectedTransferMoneyNode != null) {
+                        ImmediateTransaction otherTransaction = 
+                            new ImmediateTransaction(newTransaction,
+                                    selectedTransferMoneyNode);
+                        newTransaction.setTransferTransaction(otherTransaction);
+                        otherTransaction.setTransferTransaction(newTransaction);
+                    }
+
                     listener.onImmediateTransactionCreated(newTransaction);
-                } else {
+                } 
+                // If we are updating an existing transaction
+                else {
                     ImmedTransactionEditOldInfo oldInfo = 
                         new ImmedTransactionEditOldInfo(transaction);
                     transaction.setDescription(description);
                     transaction.setCategory(selectedCategory);
                     transaction.setExecutionDate(executionDateTime);
                     transaction.setValue(value);
+
+                    if (selectedTransferMoneyNode != null) {
+                        // If edited transaction wasn't part of a transfer and
+                        // now is, create transfer transaction
+                        if (transaction.getTransferTransaction() == null) {
+                            ImmediateTransaction otherTransaction = 
+                                new ImmediateTransaction(transaction,
+                                        selectedTransferMoneyNode);
+                            transaction.setTransferTransaction(
+                                    otherTransaction);
+                            otherTransaction.setTransferTransaction(
+                                    transaction);
+                        }
+                        // If edited transaction was already part of a 
+                        // transfer, update transfer transaction
+                        else {
+                            ImmediateTransaction otherTransaction =
+                                transaction.getTransferTransaction();
+
+                            otherTransaction.setMoneyNode(selectedTransferMoneyNode);
+                            otherTransaction.setDescription(description);
+                            otherTransaction.setCategory(selectedCategory);
+                            otherTransaction.setExecutionDate(executionDateTime);
+                            otherTransaction.setValue(
+                                    value.multiply(new BigDecimal("-1")));
+                        }
+                    }
+                    // If edited transaction no longer is a transfer but
+                    // was a transfer before, we need to remove the opposite
+                    // transaction.
+                    else if (transaction.getTransferTransaction() != null) {
+                        transaction.setTransferTransaction(null);
+                    }
                     listener.onImmediateTransactionEdited(transaction, 
                             oldInfo);
                 }
@@ -233,8 +316,15 @@ public class ImmedTransactionEditorFragment extends Fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            selectedCategory = (Category) data.getParcelableExtra(
-                    Category.KEY_CATEGORY);
+            if (requestCode == REQCODE_CATEGORYCHOOSE) {
+                selectedCategory = (Category) data.getParcelableExtra(
+                        Category.KEY_CATEGORY);
+            } 
+            else if (requestCode == REQCODE_MONEYNODECHOOSE) {
+                selectedTransferMoneyNode = (MoneyNode) 
+                    data.getParcelableExtra(MoneyNode.KEY_MONEYNODE);
+            }
+
             updateCategoryFields();
         }
     }
@@ -322,6 +412,31 @@ public class ImmedTransactionEditorFragment extends Fragment
         }
     }
 
+    private void updateTransferFields() {
+        if (selectedTransferMoneyNode == null && transaction != null) {
+            ImmediateTransaction transferTransaction = 
+                transaction.getTransferTransaction();
+
+            if (transferTransaction != null) {
+                selectedTransferMoneyNode = transferTransaction.getMoneyNode();
+            }
+        }
+
+        if (selectedTransferMoneyNode == null) {
+            transferCheck.setChecked(false);
+            transferMoneyNodeButton.setText(R.string.moneynode_nonselected);
+            transferMoneyNodeButton.setDrawableId(0);
+        } else {
+            transferCheck.setChecked(true);
+            transferMoneyNodeButton.setText(
+                    selectedTransferMoneyNode.getName());
+            int drawableId = DrawableResolver.getInstance().getDrawableId(
+                    selectedTransferMoneyNode.getIcon());
+            transferMoneyNodeButton.setDrawableId(drawableId);
+            transferMoneyNodeButton.setError(false);
+        }
+    }
+
     private boolean validateInputFields() {
         boolean error = false;
 
@@ -345,6 +460,11 @@ public class ImmedTransactionEditorFragment extends Fragment
             error = true;
         }
 
+        if (transferCheck.isChecked() && selectedTransferMoneyNode == null) {
+            transferMoneyNodeButton.setError(true);
+            error = true;
+        }
+
         return !error;
     }
 
@@ -356,18 +476,22 @@ public class ImmedTransactionEditorFragment extends Fragment
         private Category category;
         private Date executionDate;
         private BigDecimal value;
+        private ImmediateTransaction transferTransaction;
 
         public ImmedTransactionEditOldInfo(ImmediateTransaction trans) {
             this(trans.getDescription(), trans.getCategory(),
-                    trans.getExecutionDate(), trans.getValue());
+                    trans.getExecutionDate(), trans.getValue(),
+                    trans.getTransferTransaction());
         }
 
         public ImmedTransactionEditOldInfo(String description,
-                Category category, Date executionDate, BigDecimal value) {
+                Category category, Date executionDate, BigDecimal value,
+                ImmediateTransaction transferTransaction) {
             this.description = description;
             this.category = category;
             this.executionDate = executionDate;
             this.value = value;
+            this.transferTransaction = transferTransaction;
         }
 
         public String getDescription() {
@@ -386,11 +510,16 @@ public class ImmedTransactionEditorFragment extends Fragment
             return value;
         }
 
+        public ImmediateTransaction getTransferTransaction() {
+            return transferTransaction;
+        }
+
         public void writeToParcel(Parcel out, int flags) {
             out.writeString(description);
             out.writeParcelable(category, flags);
             out.writeString(dateFormat.format(executionDate));
             out.writeString(value.toString());
+            out.writeParcelable(transferTransaction, flags);
         }
 
         public int describeContents() {
@@ -410,8 +539,11 @@ public class ImmedTransactionEditorFragment extends Fragment
                         Log.e("TMM", e.getMessage(), e);
                     }
                     BigDecimal value = new BigDecimal(in.readString());
+                    ImmediateTransaction transferTransaction =
+                        (ImmediateTransaction) in.readParcelable(
+                                ImmediateTransaction.class.getClassLoader());
                     return new ImmedTransactionEditOldInfo(description, 
-                            category, date, value);
+                            category, date, value, transferTransaction);
                 }
      
                 public ImmedTransactionEditOldInfo[] newArray(int size) {

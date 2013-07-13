@@ -58,6 +58,18 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             Intent data = new Intent();
             Log.d("TMM", "Editing immediate transaction " + trans.getId());
             trans.save();
+            // If this is a transfer transaction, save other one
+            if (trans.getTransferTransaction() != null) {
+                trans.getTransferTransaction().save();
+            }
+            // If this is not a transfer transaction but was one before,
+            // remove the other one
+            else if (oldInfo.getTransferTransaction() != null) {
+                ImmediateTransaction otherTransaction = 
+                    oldInfo.getTransferTransaction();
+                MoneyNode otherNode = otherTransaction.getMoneyNode();
+                otherNode.removeImmediateTransaction(otherTransaction);
+            }
             data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
             data.putExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO, oldInfo);
             setResult(SherlockFragmentActivity.RESULT_OK, data);
@@ -76,6 +88,10 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             Intent data = new Intent();
             Log.d("TMM", "Adding immediate transaction " + trans.getId());
             trans.save();
+            // If this is a transfer transaction, save other one
+            if (trans.getTransferTransaction() != null) {
+                trans.getTransferTransaction().save();
+            }
             data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
             setResult(SherlockFragmentActivity.RESULT_OK, data);
             finish();

@@ -97,6 +97,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     null, null, null, null);
             return true;
         } catch (SQLiteException e) {
+            Log.e("TMM", e.getMessage(), e);
             return false;
         } catch (DatabaseUnknownUserException e) {
             Log.e("TMM", e.getMessage(), e);
@@ -151,12 +152,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE TABLE ScheduledToImmediate (" +
                 "scheduledId INTEGER NOT NULL REFERENCES ScheduledTransactions ON DELETE CASCADE," + 
                 "immediateId INTEGER NOT NULL REFERENCES ImmediateTransactions ON DELETE CASCADE" + 
-            ");");
-        sqlStatements.add(
-            "CREATE TABLE Transfers (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "inTransId INTEGER NOT NULL REFERENCES Transactions," +
-                "outTransId INTEGER NOT NULL REFERENCES Transactions" +
             ");");
 
         for (String sql : sqlStatements) {

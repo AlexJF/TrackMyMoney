@@ -33,16 +33,20 @@ public class ImmediateTransaction extends Transaction {
     public static final String COL_EXECUTIONDATE = "executionDate";
     public static final String COL_TRANSFERTRANSID = "transferTransactionId";
 
-    // Queries
-    public static final String QUERY_CREATETABLE = 
+    // Schema
+    public static final String SCHEMA_CREATETABLE = 
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
             COL_EXECUTIONDATE + " DATETIME " + 
                 "DEFAULT (DATETIME('now', 'localtime'))," +
             COL_TRANSFERTRANSID + " INTEGER " + 
-                "REFERENCES " + Transaction.TABLE_NAME + "ON DELETE CASCADE" +
+                "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE" +
         ");";
+    public static final String SCHEMA_ADDTRANSFERTRANS = 
+        "ALTER TABLE " + TABLE_NAME + "ADD COLUMN " +
+            COL_TRANSFERTRANSID + " INTEGER " + 
+                "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE";
 
     // Database maintenance
     /**
@@ -51,7 +55,7 @@ public class ImmediateTransaction extends Transaction {
      * @param db Database where to create the schemas.
      */
     public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL(QUERY_CREATETABLE);
+        db.execSQL(SCHEMA_CREATETABLE);
     }
 
     /**
@@ -63,6 +67,11 @@ public class ImmediateTransaction extends Transaction {
      */
     public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
                                         int newVersion) {
+        switch (oldVersion) {
+            case 0:
+                db.execSQL(SCHEMA_ADDTRANSFERTRANS);
+                break;
+        }
     }
 
     // Caching

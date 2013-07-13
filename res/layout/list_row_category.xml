@@ -13,8 +13,8 @@
         android:id="@+id/category_icon"
         android:layout_width="50dp"
         android:layout_height="0dp"
-        android:layout_alignBottom="@id/category_name"
-        android:layout_alignTop="@+id/category_name"
+        android:layout_alignBottom="@+id/category_name"
+        android:layout_alignTop="@id/category_name"
         android:scaleType="centerInside"
         android:src="@drawable/glyphish_piggy_bank" />
     <TextView

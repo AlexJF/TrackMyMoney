@@ -27,8 +27,8 @@ public abstract class Transaction extends DatabaseObject {
     public static final String COL_DESCRIPTION = "description";
     public static final String COL_CATEGORYID = "categoryId";
 
-    // Queries
-    private static final String QUERY_CREATETABLE = 
+    // Schema
+    private static final String SCHEMA_CREATETABLE = 
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " + 
@@ -45,7 +45,7 @@ public abstract class Transaction extends DatabaseObject {
      * @param db Database where to create the schemas.
      */
     public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL(QUERY_CREATETABLE);
+        db.execSQL(SCHEMA_CREATETABLE);
     }
 
     /**

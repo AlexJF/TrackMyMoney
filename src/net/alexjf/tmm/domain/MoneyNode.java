@@ -41,8 +41,8 @@ public class MoneyNode extends DatabaseObject {
     public static final String COL_CREATIONDATE = "creationDate";
     public static final String COL_INITIALBALANCE = "initialBalance";
 
-    // Queries
-    private static final String QUERY_CREATETABLE = 
+    // Schema
+    private static final String SCHEMA_CREATETABLE = 
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_NAME + " TEXT NOT NULL," +
@@ -53,6 +53,8 @@ public class MoneyNode extends DatabaseObject {
                 "DEFAULT (DATETIME('now', 'localtime'))," +
             COL_INITIALBALANCE + " NUMERIC DEFAULT 0" +
         ");";
+
+    // Queries
     private static final String QUERY_BALANCE = 
         "SELECT TOTAL(" + Transaction.COL_VALUE + ") " + 
         " FROM " + Transaction.TABLE_NAME +
@@ -79,7 +81,7 @@ public class MoneyNode extends DatabaseObject {
      * @param db Database where to create the schemas.
      */
     public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL(QUERY_CREATETABLE);
+        db.execSQL(SCHEMA_CREATETABLE);
     }
 
     /**

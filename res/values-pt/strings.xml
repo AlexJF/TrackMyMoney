@@ -74,12 +74,15 @@
     <string name="expense_label">Despesa:</string>
     <string name="moneynode_empty">Não existem nós de dinheiro.\nCrie um através do menu.</string>
     <string name="moneynode_balance_complete">%1$s %3$s\n(Sal. inic: %2$s %3$s)</string>
+    <string name="moneynode_nonselected">Nenhum nó de dinheiro seleccionado.</string>
     <!-- Transaction Related -->
     <string name="transaction_type_label">Tipo de transacção:</string>
     <string name="total_transactions">Núm. Transacções:</string>
     <string name="transaction_empty">Não existem transacções.\nCrie uma através do menu.</string>
     <string name="addTransaction">Adicionar transacção</string>
     <string name="executionDate">Data de execução:</string>
+    <string name="transfer_check">É uma transferência?</string>
+    <string name="transfer_moneynode">De:</string>
     <!-- Category Related -->
     <string name="category">Categoria:</string>
     <string name="manage_categories">Gerir categorias</string>

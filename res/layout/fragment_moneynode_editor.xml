@@ -43,9 +43,9 @@
         android:id="@+id/icon_label"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_alignBottom="@id/icon_selector"
+        android:layout_alignBottom="@+id/icon_selector"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/icon_selector"
+        android:layout_alignTop="@id/icon_selector"
         android:layout_below="@id/description_text"
         android:gravity="center_vertical"
         android:text="@string/icon" />
@@ -60,9 +60,9 @@
         android:id="@+id/creationDate_label"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_alignBottom="@id/creationDate_button"
+        android:layout_alignBottom="@+id/creationDate_button"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/creationDate_button"
+        android:layout_alignTop="@id/creationDate_button"
         android:layout_below="@id/icon_label"
         android:gravity="center_vertical"
         android:text="@string/creationDate" />

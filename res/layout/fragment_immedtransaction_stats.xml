@@ -10,8 +10,8 @@
         android:id="@+id/transaction_type_label"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_alignBottom="@id/transaction_type_spinner"
-        android:layout_alignTop="@+id/transaction_type_spinner"
+        android:layout_alignBottom="@+id/transaction_type_spinner"
+        android:layout_alignTop="@id/transaction_type_spinner"
         android:gravity="center_vertical"
         android:text="@string/transaction_type_label" />
     <Spinner

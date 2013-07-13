@@ -27,9 +27,9 @@
         android:id="@+id/category_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/category_button"
+        android:layout_alignBottom="@+id/category_button"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/category_button"
+        android:layout_alignTop="@id/category_button"
         android:layout_below="@id/description_text"
         android:gravity="center_vertical"
         android:text="@string/category" />
@@ -44,9 +44,9 @@
         android:id="@+id/executionDate_label"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_alignBottom="@id/executionDate_button"
+        android:layout_alignBottom="@+id/executionDate_button"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/executionDate_button"
+        android:layout_alignTop="@id/executionDate_button"
         android:layout_below="@id/category_label"
         android:gravity="center_vertical"
         android:text="@string/executionDate" />
@@ -110,12 +110,39 @@
         android:layout_below="@id/value_label"
         android:layout_marginLeft="5dp"
         android:gravity="center_vertical" />
-    <!-- TODO: Add "Is this a transfer?" checkbox -->
+    <CheckBox
+        android:id="@+id/transfer_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/currency_label"
+        android:layout_alignParentLeft="true"
+        android:text="@string/transfer_check" />
+    <LinearLayout
+        android:id="@+id/transfer_panel"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/transfer_check">
+        <TextView
+            android:id="@+id/transfer_moneynode_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/transfer_moneynode_button"
+            android:layout_alignTop="@id/transfer_moneynode_button"
+            android:text="@string/transfer_moneynode" />
+        <net.alexjf.tmm.views.SelectorButton
+            android:id="@id/transfer_moneynode_button"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/choose" />
+    </LinearLayout>
     <Button
         android:id="@+id/add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/value_text"
+        android:layout_below="@id/transfer_panel"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
         android:text="@string/add" />

@@ -29,8 +29,8 @@ public class Category extends DatabaseObject {
     public static final String COL_NAME = "name";
     public static final String COL_ICON = "icon";
 
-    // Queries
-    private static final String QUERY_CREATETABLE = 
+    //Schema
+    private static final String SCHEMA_CREATETABLE = 
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_NAME + " TEXT NOT NULL," +
@@ -44,7 +44,7 @@ public class Category extends DatabaseObject {
      * @param db Database where to create the schemas.
      */
     public static void onDatabaseCreation(SQLiteDatabase db) {
-        db.execSQL(QUERY_CREATETABLE);
+        db.execSQL(SCHEMA_CREATETABLE);
     }
 
     /**
