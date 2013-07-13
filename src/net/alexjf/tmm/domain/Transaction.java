@@ -177,6 +177,10 @@ public abstract class Transaction extends DatabaseObject {
      * @param moneyNode The moneyNode.
      */
     public void setMoneyNode(MoneyNode moneyNode) {
+        if (moneyNode == this.moneyNode) {
+            return;
+        }
+
         this.moneyNode = moneyNode;
         setChanged(true);
     }

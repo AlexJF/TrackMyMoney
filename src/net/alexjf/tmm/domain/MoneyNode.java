@@ -443,17 +443,30 @@ public class MoneyNode extends DatabaseObject {
             return;
         }
 
+        ImmediateTransaction transferTransaction = transaction.getTransferTransaction();
+
+        if (transferTransaction != null) {
+            transferTransaction.load();
+        }
+
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();
 
-        int result = db.delete(ImmediateTransaction.TABLE_NAME, 
-                ImmediateTransaction.COL_ID + " = ?",
+        int result = db.delete(Transaction.TABLE_NAME, 
+                Transaction.COL_ID + " = ?",
                 new String[]{transaction.getId().toString()});
 
         if (result == 1) {
             notifyBalanceChange(transaction.getValue().multiply(
                         BigDecimal.valueOf(-1)));
+
+            // Since other transaction in transfer is deleted by sqlite due
+            // to cascade, notify other money node of updated balance
+            if (transferTransaction != null) {
+                transferTransaction.getMoneyNode().notifyBalanceChange(
+                        transaction.getValue());
+            }
         }
     }
 

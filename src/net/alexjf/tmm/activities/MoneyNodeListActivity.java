@@ -173,13 +173,6 @@ public class MoneyNodeListActivity extends SherlockActivity {
                     break;
                 case REQCODE_EDIT:
                     break;
-                case REQCODE_PREF:
-                    if (data.getBooleanExtra(
-                                PreferencesActivity.KEY_FORCEDATAREFRESH,
-                                false)) {
-                        updateData();
-                    }
-                    break;
             }
         }
     }
@@ -224,6 +217,10 @@ public class MoneyNodeListActivity extends SherlockActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Money nodes can be added from MoneyNodeList activities started
+        // further down the stack so either we propagate some 'updateData'
+        // flag down the stack or we force update everytime.
+        updateData();
         updateGui();
     }
 }

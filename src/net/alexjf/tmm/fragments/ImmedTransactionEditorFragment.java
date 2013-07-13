@@ -16,6 +16,7 @@ import net.alexjf.tmm.activities.MoneyNodeListActivity;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
 import net.alexjf.tmm.views.SelectorButton;
@@ -419,7 +420,12 @@ public class ImmedTransactionEditorFragment extends Fragment
                 transaction.getTransferTransaction();
 
             if (transferTransaction != null) {
-                selectedTransferMoneyNode = transferTransaction.getMoneyNode();
+                try {
+                    transferTransaction.load();
+                    selectedTransferMoneyNode = transferTransaction.getMoneyNode();
+                } catch (DatabaseException e) {
+                    Log.e("TMM", "Unable to load transfer transaction", e);
+                }
             }
         }
 

@@ -294,6 +294,21 @@ public class ImmediateTransaction extends Transaction {
         };
 
     @Override
+    public void setMoneyNode(MoneyNode moneyNode) {
+        MoneyNode oldMoneyNode = getMoneyNode();
+
+        if (moneyNode == oldMoneyNode) {
+            return;
+        }
+
+        super.setMoneyNode(moneyNode);
+
+        BigDecimal value = getValue();
+        oldMoneyNode.notifyBalanceChange(value.multiply(new BigDecimal("-1")));
+        moneyNode.notifyBalanceChange(value);
+    }
+
+    @Override
     public void setValue(BigDecimal value) {
         super.setValue(value);
         deltaValueFromPrevious = value.subtract(valueOnDatabase);
