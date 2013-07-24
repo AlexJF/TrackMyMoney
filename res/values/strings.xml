@@ -40,6 +40,8 @@
     <string name="value">Value:</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="this_week">This week</string>
+    <string name="last_week">Last week</string>
     <string name="this_month">This month</string>
     <string name="last_month">Last month</string>
     <string name="this_year">This year</string>

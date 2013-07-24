@@ -6,6 +6,8 @@
     <string-array name="date_intervals">
         <item>@string/today</item>
         <item>@string/yesterday</item>
+        <item>@string/this_week</item>
+        <item>@string/last_week</item>
         <item>@string/this_month</item>
         <item>@string/last_month</item>
         <item>@string/this_year</item>

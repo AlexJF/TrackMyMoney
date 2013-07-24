@@ -40,6 +40,8 @@
     <string name="value">Valor:</string>
     <string name="today">Hoje</string>
     <string name="yesterday">Ontem</string>
+    <string name="this_week">Esta semana</string>
+    <string name="last_week">Semana anterior</string>
     <string name="this_month">Este mês</string>
     <string name="last_month">Mês anterior</string>
     <string name="this_year">Este ano</string>

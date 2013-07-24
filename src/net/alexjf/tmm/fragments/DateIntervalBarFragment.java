@@ -270,14 +270,15 @@ public class DateIntervalBarFragment extends Fragment
     }
 
     private void setDateInterval(int position) {
-        // If Custom
-        if (position == 6) {
+        String dateIntervalType = dateIntervalTypes[position];
+
+        if (dateIntervalType.equals("custom")) {
             allTime = false;
             customSelector.setVisibility(View.VISIBLE);
             updateDateButtons();
         } 
         // If all time
-        else if (position == 5) {
+        else if (dateIntervalType.equals("all_time")) {
             allTime = true;
             customSelector.setVisibility(View.GONE);
         }
@@ -285,35 +286,38 @@ public class DateIntervalBarFragment extends Fragment
             allTime = false;
             customSelector.setVisibility(View.GONE);
             resetDates();
-            switch (position) {
-                // Yesterday
-                case 1:
-                    startDate.add(Calendar.DAY_OF_MONTH, -1);
-                    endDate.add(Calendar.DAY_OF_MONTH, -1);
-                    break;
-                // This month
-                case 2:
-                    startDate.set(Calendar.DAY_OF_MONTH, 1);
-                    endDate.set(Calendar.DAY_OF_MONTH, 
-                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                    break;
-                // Last month
-                case 3:
-                    startDate.add(Calendar.MONTH, -1);
-                    endDate.add(Calendar.MONTH, -1);
-                    startDate.set(Calendar.DAY_OF_MONTH, 1);
-                    endDate.set(Calendar.DAY_OF_MONTH, 
-                        endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                    break;
-                // This year
-                case 4:
-                    startDate.set(Calendar.DAY_OF_YEAR, 1);
-                    endDate.set(Calendar.DAY_OF_YEAR, 
-                        endDate.getActualMaximum(Calendar.DAY_OF_YEAR));
-                    break;
-                case 0:
-                default:
-                    break;
+            if (dateIntervalType.equals("yesterday")) {
+                startDate.add(Calendar.DAY_OF_MONTH, -1);
+                endDate.add(Calendar.DAY_OF_MONTH, -1);
+            }
+            else if (dateIntervalType.equals("this_week") ||
+                     dateIntervalType.equals("last_week")) {
+                int positionInWeek = startDate.get(Calendar.DAY_OF_WEEK) - 
+                    startDate.getFirstDayOfWeek();
+                startDate.add(Calendar.DAY_OF_WEEK, -positionInWeek);
+                endDate.add(Calendar.DAY_OF_YEAR, 6 - positionInWeek);
+
+                if (dateIntervalType.equals("last_week")) {
+                    startDate.add(Calendar.DAY_OF_YEAR, -7);
+                    endDate.add(Calendar.DAY_OF_YEAR, -7);
+                }
+            }
+            else if (dateIntervalType.equals("this_month")) {
+                startDate.set(Calendar.DAY_OF_MONTH, 1);
+                endDate.set(Calendar.DAY_OF_MONTH, 
+                    endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            }
+            else if (dateIntervalType.equals("last_month")) {
+                startDate.add(Calendar.MONTH, -1);
+                endDate.add(Calendar.MONTH, -1);
+                startDate.set(Calendar.DAY_OF_MONTH, 1);
+                endDate.set(Calendar.DAY_OF_MONTH, 
+                    endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+            } 
+            else if (dateIntervalType.equals("this_year")) {
+                startDate.set(Calendar.DAY_OF_YEAR, 1);
+                endDate.set(Calendar.DAY_OF_YEAR, 
+                    endDate.getActualMaximum(Calendar.DAY_OF_YEAR));
             }
         }
     }
