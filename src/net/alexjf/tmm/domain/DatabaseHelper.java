@@ -19,7 +19,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String KEY_CURRENTUSER = "activeUser";
 
@@ -133,6 +133,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
 
+        Log.e("TMM", "opened database with version " + db.getVersion());
+
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
             db.execSQL("PRAGMA foreign_keys=ON;");
@@ -161,6 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.e("TMM", "onUpgrade " + oldVersion + " " + newVersion);
         MoneyNode.onDatabaseUpgrade(db, oldVersion, newVersion);
         Transaction.onDatabaseUpgrade(db, oldVersion, newVersion);
         ImmediateTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);

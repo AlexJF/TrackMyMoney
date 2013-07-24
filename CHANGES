@@ -2,6 +2,7 @@ Next version - To be defined
 - Allow transfers between money nodes.
 - Added transaction details activity.
 - Suggest first letter capitalization in name/description boxes.
+- Add 'this week' and 'last week' to the date interval bar.
 - Fix some problems regarding data sync between activities.
 - Misc bug and typo fixes.
 

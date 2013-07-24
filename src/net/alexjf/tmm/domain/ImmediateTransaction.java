@@ -44,9 +44,9 @@ public class ImmediateTransaction extends Transaction {
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE" +
         ");";
     public static final String SCHEMA_ADDTRANSFERTRANS = 
-        "ALTER TABLE " + TABLE_NAME + "ADD COLUMN " +
+        "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " +
             COL_TRANSFERTRANSID + " INTEGER " + 
-                "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE";
+                "REFERENCES " + ImmediateTransaction.TABLE_NAME + " ON DELETE CASCADE";
 
     // Database maintenance
     /**
@@ -69,6 +69,7 @@ public class ImmediateTransaction extends Transaction {
                                         int newVersion) {
         switch (oldVersion) {
             case 0:
+            case 1:
                 db.execSQL(SCHEMA_ADDTRANSFERTRANS);
                 break;
         }

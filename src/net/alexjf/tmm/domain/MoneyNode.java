@@ -519,7 +519,7 @@ public class MoneyNode extends DatabaseObject {
         Cursor cursor = db.rawQuery(QUERY_BALANCE, 
                 new String[] {getId().toString()});
 
-        balance = BigDecimal.valueOf(0).add(initialBalance);
+        balance = new BigDecimal("0.0").add(initialBalance);
 
         while (cursor.moveToNext()) {
             balance = new BigDecimal(cursor.getString(0)).add(balance);

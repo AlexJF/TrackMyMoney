@@ -146,17 +146,20 @@ public class ImmedTransactionDetailsFragment extends Fragment {
         String fromLabel = res.getString(R.string.transfer_moneynode);
         ImmediateTransaction transferTransaction = 
             transaction.getTransferTransaction();
-        try {
-            transferTransaction.load();
-            MoneyNode transferNode = transferTransaction.getMoneyNode();
-            transferNode.load();
-            int drawableId = DrawableResolver.getInstance().getDrawableId(
-                transferNode.getIcon());
-            adapter.add(new TransactionDetails(fromLabel, 
-                transferNode.getName(), drawableId));
-        } catch (DatabaseException e) {
-            Log.e("TMM", "Error loading transfer money node", e);
-            return;
+
+        if (transferTransaction != null) {
+            try {
+                transferTransaction.load();
+                MoneyNode transferNode = transferTransaction.getMoneyNode();
+                transferNode.load();
+                int drawableId = DrawableResolver.getInstance().getDrawableId(
+                    transferNode.getIcon());
+                adapter.add(new TransactionDetails(fromLabel, 
+                    transferNode.getName(), drawableId));
+            } catch (DatabaseException e) {
+                Log.e("TMM", "Error loading transfer money node", e);
+                return;
+            }
         }
 
         adapter.notifyDataSetChanged();
