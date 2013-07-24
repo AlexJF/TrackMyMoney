@@ -53,6 +53,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_PREFS = 1;
+    private static final int REQCODE_DETAILS = 2;
 
     private MoneyNode currentMoneyNode;
     private ImmediateTransactionAdapter immedTransAdapter;
@@ -179,10 +180,12 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     protected void onActivityResult(int requestCode, int resultCode, 
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
+            ImmediateTransaction transaction;
             switch (requestCode) {
                 case REQCODE_ADD:
-                    ImmediateTransaction transaction = (ImmediateTransaction) 
-                    data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
+                    transaction = (ImmediateTransaction) 
+                        data.getParcelableExtra(
+                            ImmediateTransaction.KEY_TRANSACTION);
 
                     try {
                         transaction.load();
@@ -190,7 +193,8 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                         Log.e("TMM", "Error loading transaction after adding.", e);
                     }
 
-                    if (Utils.dateBetween(transaction.getExecutionDate(), startDate, endDate)) {
+                    if (Utils.dateBetween(transaction.getExecutionDate(), 
+                            startDate, endDate)) {
                         immedTransAdapter.add(transaction);
                         BigDecimal value = transaction.getValue();
                         switch(value.signum()) {
@@ -209,6 +213,18 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                                 PreferencesActivity.KEY_FORCEDATAREFRESH,
                                 false)) {
                         updateData();
+                    }
+                    break;
+                case REQCODE_DETAILS:
+                    transaction = (ImmediateTransaction) 
+                        data.getParcelableExtra(
+                            ImmediateTransaction.KEY_TRANSACTION);
+                    ImmedTransactionEditOldInfo oldInfo = 
+                        (ImmedTransactionEditOldInfo) data.getParcelableExtra(
+                            ImmedTransactionEditOldInfo.KEY_OLDINFO);
+
+                    if (oldInfo != null) {
+                        onImmedTransactionEdited(transaction, oldInfo);
                     }
                     break;
             }
@@ -371,6 +387,10 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
     @Override
     public void onImmedTransactionSelected(ImmediateTransaction transaction) {
+        Intent intent = new Intent(this, 
+            ImmedTransactionDetailsActivity.class);
+        intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, transaction);
+        startActivityForResult(intent, REQCODE_DETAILS);
     }
 
     @Override

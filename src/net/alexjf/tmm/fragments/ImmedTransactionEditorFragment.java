@@ -7,6 +7,7 @@ package net.alexjf.tmm.fragments;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -53,6 +54,8 @@ public class ImmedTransactionEditorFragment extends Fragment
     implements OnDateSetListener, OnTimeSetListener {
     private static final String KEY_CURRENTTRANSACTION = "currentTransaction";
     private static final String KEY_SELECTEDCATEGORY = "selectedCategory";
+    private static final String KEY_SELECTEDTRANSFERMONEYNODE =
+        "selectedTransferMoneyNode";
     private static final String TAG_DATEPICKER = "datePicker";
     private static final String TAG_TIMEPICKER = "timePicker";
 
@@ -170,8 +173,15 @@ public class ImmedTransactionEditorFragment extends Fragment
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), 
                     MoneyNodeListActivity.class);
-                intent.putExtra(CategoryListActivity.KEY_INTENTION, 
+                intent.putExtra(MoneyNodeListActivity.KEY_INTENTION, 
                     MoneyNodeListActivity.INTENTION_SELECT);
+
+                ArrayList<MoneyNode> excludedMoneyNodes = 
+                    new ArrayList<MoneyNode>();
+                excludedMoneyNodes.add(currentMoneyNode);
+                intent.putParcelableArrayListExtra(
+                    MoneyNodeListActivity.KEY_EXCLUDE,
+                    excludedMoneyNodes);
                 startActivityForResult(intent, REQCODE_MONEYNODECHOOSE);
             }
         });
@@ -277,6 +287,8 @@ public class ImmedTransactionEditorFragment extends Fragment
         if (savedInstanceState != null) {
             transaction = savedInstanceState.getParcelable(KEY_CURRENTTRANSACTION);
             selectedCategory = savedInstanceState.getParcelable(KEY_SELECTEDCATEGORY);
+            selectedTransferMoneyNode = savedInstanceState.getParcelable(
+                KEY_SELECTEDTRANSFERMONEYNODE);
         }
         
         updateTransactionFields();
@@ -300,6 +312,8 @@ public class ImmedTransactionEditorFragment extends Fragment
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(KEY_CURRENTTRANSACTION, transaction);
         outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
+        outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE, 
+            selectedTransferMoneyNode);
         super.onSaveInstanceState(outState);
     }
 
@@ -552,7 +566,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     return new ImmedTransactionEditOldInfo(description, 
                             category, date, value, transferTransaction);
                 }
-     
+
                 public ImmedTransactionEditOldInfo[] newArray(int size) {
                     return new ImmedTransactionEditOldInfo[size];
                 }

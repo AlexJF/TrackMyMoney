@@ -107,11 +107,13 @@ public class ImmediateTransaction extends Transaction {
     private ImmediateTransaction transferTransaction;
     private BigDecimal deltaValueFromPrevious;
     private BigDecimal valueOnDatabase;
+    private MoneyNode moneyNodeOnDatabase;
 
     private ImmediateTransaction(Long id) {
         super(id);
         deltaValueFromPrevious = BigDecimal.valueOf(0);
         valueOnDatabase = BigDecimal.valueOf(0);
+        moneyNodeOnDatabase = null;
     }
 
     /**
@@ -130,6 +132,7 @@ public class ImmediateTransaction extends Transaction {
         this.transferTransaction = null;
         deltaValueFromPrevious = value;
         valueOnDatabase = BigDecimal.valueOf(0);
+        moneyNodeOnDatabase = null;
     }
 
     /**
@@ -173,12 +176,15 @@ public class ImmediateTransaction extends Transaction {
         try {
             if (cursor.moveToFirst()) {
                 executionDate = new Date(cursor.getLong(1));
-                long transferTransId = cursor.getLong(2);
 
-                if (transferTransaction == null || 
-                    !transferTransaction.getId().equals(transferTransId)) {
-                    transferTransaction = ImmediateTransaction.createFromId(
-                            transferTransId);
+                if (!cursor.isNull(2)) {
+                    long transferTransId = cursor.getLong(2);
+
+                    if (transferTransaction == null || 
+                        !transferTransaction.getId().equals(transferTransId)) {
+                        transferTransaction = ImmediateTransaction.
+                            createFromId(transferTransId);
+                    }
                 }
             } else {
                 throw new DbObjectLoadException("Couldn't find immediate transaction " +
@@ -190,6 +196,7 @@ public class ImmediateTransaction extends Transaction {
 
         super.internalLoad();
         valueOnDatabase = getValue();
+        moneyNodeOnDatabase = getMoneyNode();
     }
 
     @Override
@@ -230,8 +237,39 @@ public class ImmediateTransaction extends Transaction {
 
             if (result >= 0) {
                 db.setTransactionSuccessful();
-                getMoneyNode().notifyBalanceChange(deltaValueFromPrevious);
-                deltaValueFromPrevious = BigDecimal.valueOf(0);
+
+                // If value changed since last save, update balance
+                // caches on the money nodes.
+                if (deltaValueFromPrevious.signum() != 0) {
+                    MoneyNode currentMoneyNode = getMoneyNode();
+
+                    // If transaction was assigned to a different
+                    // money node
+                    if (moneyNodeOnDatabase != null && 
+                        moneyNodeOnDatabase != currentMoneyNode) {
+
+                        // Remove previous value from that money node's
+                        // balance cache.
+                        moneyNodeOnDatabase.notifyBalanceChange(
+                            valueOnDatabase.multiply(BigDecimal.valueOf(-1)));
+
+                        // Add entire new value to new money node's
+                        // balance cache.
+                        currentMoneyNode.notifyBalanceChange(
+                            getValue());
+                    } 
+                    // If new transaction or same money node, only
+                    // update delta.
+                    else {
+                        currentMoneyNode.notifyBalanceChange(
+                            deltaValueFromPrevious);
+                    }
+
+                    deltaValueFromPrevious = BigDecimal.valueOf(0);
+                    valueOnDatabase = getValue();
+                    moneyNodeOnDatabase = getMoneyNode();
+                }
+
                 return id;
             } else {
                 throw new DbObjectSaveException("Couldn't save immediate " +
@@ -278,7 +316,7 @@ public class ImmediateTransaction extends Transaction {
     public void setTransferTransaction(
             ImmediateTransaction transferTransaction) {
         this.transferTransaction = transferTransaction;
-        this.setLoaded(true);
+        setChanged(true);
     }
 
     public static final Parcelable.Creator<ImmediateTransaction> CREATOR =
@@ -292,21 +330,6 @@ public class ImmediateTransaction extends Transaction {
                 return new ImmediateTransaction[size];
             }
         };
-
-    @Override
-    public void setMoneyNode(MoneyNode moneyNode) {
-        MoneyNode oldMoneyNode = getMoneyNode();
-
-        if (moneyNode == oldMoneyNode) {
-            return;
-        }
-
-        super.setMoneyNode(moneyNode);
-
-        BigDecimal value = getValue();
-        oldMoneyNode.notifyBalanceChange(value.multiply(new BigDecimal("-1")));
-        moneyNode.notifyBalanceChange(value);
-    }
 
     @Override
     public void setValue(BigDecimal value) {

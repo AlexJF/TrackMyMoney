@@ -26,6 +26,7 @@
     <string name="title_activity_category_edit">Edit Category</string>
     <string name="title_activity_immedtrans_add">Add Transaction</string>
     <string name="title_activity_immedtrans_edit">Edit Transaction</string>
+    <string name="title_activity_immedtrans_details">Transaction Details</string>
     <string name="title_activity_filechooser">Choose a file</string>
     <!-- General -->
     <string name="add">Add</string>
@@ -66,6 +67,7 @@
     <string name="password_new">New Password:</string>
     <string name="password_old">Old Password:</string>
     <!-- Money Node Related -->
+    <string name="moneyNode">Money node:</string>
     <string name="creationDate">Creation Date:</string>
     <string name="initialBalance">Initial Balance:</string>
     <string name="balance">Balance</string>
@@ -82,6 +84,7 @@
     <string name="total_transactions">Total transactions:</string>
     <string name="transaction_empty">There are no transactions.\nPlease add one via the menu.</string>
     <string name="addTransaction">Add new transaction</string>
+    <string name="editTransaction">Edit transaction</string>
     <string name="executionDate">Execution Date:</string>
     <string name="transfer_check">Is this a transfer?</string>
     <string name="transfer_moneynode">From:</string>

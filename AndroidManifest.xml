@@ -43,6 +43,9 @@
             android:name=".activities.ImmedTransactionEditActivity">
         </activity>
         <activity
+            android:name=".activities.ImmedTransactionDetailsActivity">
+        </activity>
+        <activity
             android:name=".activities.CategoryListActivity"
             android:label="@string/title_activity_category_list" >
         </activity>

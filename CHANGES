@@ -1,8 +1,9 @@
 Next version - To be defined
 - Allow transfers between money nodes.
+- Added transaction details activity.
 - Suggest first letter capitalization in name/description boxes.
 - Fix some problems regarding data sync between activities.
-- Misc bug fixes.
+- Misc bug and typo fixes.
 
 
 1.0.2 - 26 Mar 2013

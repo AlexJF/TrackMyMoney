@@ -38,12 +38,14 @@ public class MoneyNodeListActivity extends SherlockActivity {
     private static final int REQCODE_PREF = 2;
 
     public static final String KEY_INTENTION = "intention";
+    public static final String KEY_EXCLUDE = "exclude";
     public static final String INTENTION_MANAGE = "manage";
     public static final String INTENTION_SELECT = "select";
 
     private MoneyNodeAdapter adapter;
 
     private String intention;
+    private List<MoneyNode> excludedMoneyNodes;
 
     public MoneyNodeListActivity() {
         adapter = null;
@@ -60,6 +62,12 @@ public class MoneyNodeListActivity extends SherlockActivity {
 
         if (intention == null) {
             intention = INTENTION_MANAGE;
+        }
+
+        excludedMoneyNodes = intent.getParcelableArrayListExtra(KEY_EXCLUDE);
+
+        if (excludedMoneyNodes == null) {
+            excludedMoneyNodes = new LinkedList<MoneyNode>();
         }
 
         adapter = new MoneyNodeAdapter(this);
@@ -96,10 +104,12 @@ public class MoneyNodeListActivity extends SherlockActivity {
 
     private void updateData() {
         List<MoneyNode> moneyNodes;
+        adapter.setNotifyOnChange(false);
         adapter.clear();
 
         try {
             moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
+            moneyNodes.removeAll(excludedMoneyNodes);
         } catch (Exception e) {
             Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
                     "\n" + e.getStackTrace());
@@ -109,6 +119,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
         for (MoneyNode node : moneyNodes) {
             adapter.add(node);
         }
+        adapter.notifyDataSetChanged();
     }
 
     private void updateGui() {
