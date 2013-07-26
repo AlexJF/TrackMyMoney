@@ -25,28 +25,14 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/balance_label"
             android:layout_marginLeft="5dp" />
-        <TextView
-            android:id="@+id/total_transactions_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_toRightOf="@id/balance_value"
-            android:layout_toLeftOf="@+id/total_transactions_value"
-            android:gravity="right|center_vertical"
-            android:text="@string/total_transactions" />
-        <TextView
-            android:id="@id/total_transactions_value"
-            android:layout_width="wrap_content"
-            android:layout_toLeftOf="@+id/balance_more_button"
-            android:layout_height="wrap_content" />
         <ImageView
             android:id="@id/balance_more_button"
             android:layout_width="12dp"
             android:layout_height="0dp"
             android:layout_marginLeft="5dp"
             android:layout_alignParentRight="true"
-            android:layout_alignBottom="@id/total_transactions_value"
-            android:layout_alignTop="@id/total_transactions_value"
+            android:layout_alignBottom="@id/balance_value"
+            android:layout_alignTop="@id/balance_value"
             android:scaleType="centerInside"
             android:src="@drawable/toggle_down" />
         <RelativeLayout
@@ -54,10 +40,23 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_below="@id/balance_value">
+            <TextView
+                android:id="@+id/total_transactions_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_alignParentLeft="true"
+                android:text="@string/total_transactions" />
+            <TextView
+                android:id="@+id/total_transactions_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/total_transactions_label" />
             <LinearLayout
                 android:id="@+id/initial_balance_line"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/total_transactions_value"
                 android:orientation="horizontal"
                 android:visibility="gone">
                 <TextView
@@ -89,20 +88,18 @@
                 android:textColor="@color/positive" />
             <TextView
                 android:id="@+id/expense_label"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
-                android:layout_toLeftOf="@+id/expense_value"
-                android:layout_toRightOf="@id/income_value"
-                android:layout_below="@id/initial_balance_line"
-                android:gravity="right|center_vertical"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/income_label"
                 android:text="@string/expense_label" />
             <TextView
                 android:id="@id/expense_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/initial_balance_line"
+                android:layout_toRightOf="@id/expense_label"
+                android:layout_below="@id/income_value"
                 android:textColor="@color/negative" />
         </RelativeLayout>
     </RelativeLayout>

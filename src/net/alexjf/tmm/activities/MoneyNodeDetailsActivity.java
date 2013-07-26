@@ -25,6 +25,8 @@ import net.alexjf.tmm.fragments.ImmedTransactionStatsFragment;
 import net.alexjf.tmm.interfaces.IWithAdapter;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
+
+import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
 
 import android.app.Activity;
@@ -33,6 +35,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,8 +73,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
     private static AsyncTaskWithProgressDialog<Date> transactionTask;
 
+    private ViewGroup balancePanel;
     private TextView balanceTextView;
     private TextView totalTransactionsTextView;
+    private ImageView moreBalanceButton;
+    private ViewGroup balanceDetailsPanel;
+    private ViewGroup initialBalanceRow;
+    private TextView initialBalanceTextView;
     private TextView incomeTextView;
     private TextView expenseTextView;
     private ViewPager viewPager;
@@ -98,7 +110,12 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         setTitle(currentMoneyNode.getName());
 
+        balancePanel = (ViewGroup) findViewById(R.id.balance_panel);
         balanceTextView = (TextView) findViewById(R.id.balance_value);
+        balanceDetailsPanel = (ViewGroup) findViewById(R.id.balance_details_panel);
+        initialBalanceRow = (ViewGroup) findViewById(R.id.initial_balance_line);
+        initialBalanceTextView = (TextView) findViewById(R.id.initial_balance_value);
+        moreBalanceButton = (ImageView) findViewById(R.id.balance_more_button);
         incomeTextView = (TextView) findViewById(R.id.income_value);
         expenseTextView = (TextView) findViewById(R.id.expense_value);
         totalTransactionsTextView = (TextView) 
@@ -123,6 +140,24 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                     (IWithAdapter) fragment;
                 fragmentWithAdapter.setAdapter(immedTransAdapter);
             }
+        });
+
+        balancePanel.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                LayoutParams detailsLayoutParams = 
+                    balanceDetailsPanel.getLayoutParams();
+                if (detailsLayoutParams.height == 0) {
+                    detailsLayoutParams.height = LayoutParams.WRAP_CONTENT;
+                    balanceDetailsPanel.setLayoutParams(detailsLayoutParams);
+                    moreBalanceButton.setImageResource(
+                        DrawableResolver.getInstance().getDrawableId("toggle_up"));
+                } else {
+                    detailsLayoutParams.height = 0;
+                    balanceDetailsPanel.setLayoutParams(detailsLayoutParams);
+                    moreBalanceButton.setImageResource(
+                        DrawableResolver.getInstance().getDrawableId("toggle_down"));
+                }
+            };
         });
 
         if (transactionTask != null) {
@@ -299,12 +334,12 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
             startDate.compareTo(currentMoneyNode.getCreationDate()) <= 0) {
             BigDecimal initialBalance = currentMoneyNode.getInitialBalance();
             balance = balance.add(initialBalance);
-            String strBalance = getResources().getString(
-                    R.string.moneynode_balance_complete);
-            balanceTextView.setText(String.format(strBalance, balance, 
-                        initialBalance, currency));
+            balanceTextView.setText(balance + " " + currency);
+            initialBalanceTextView.setText(initialBalance + " " + currency);
+            initialBalanceRow.setVisibility(View.VISIBLE);
         } else {
             balanceTextView.setText(balance + " " + currency);
+            initialBalanceRow.setVisibility(View.GONE);
         }
 
         totalTransactionsTextView.setText(Integer.toString(immedTransAdapter.getCount()));
