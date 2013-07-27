@@ -1,4 +1,4 @@
-Track My Money (v1.0.2)
+Track My Money (v1.1.0)
 =========================
 
 TrackMyMoney is an Android application that allows you to manage expenses and
