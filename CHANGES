@@ -3,6 +3,7 @@
 - Added transaction details activity.
 - Suggest first letter capitalization in name/description boxes.
 - Add 'this week' and 'last week' to the date interval bar.
+- Made the balance details panel collapsible on the moneynode details activity.
 - Fix some problems regarding data sync between activities.
 - Misc bug and typo fixes.
 

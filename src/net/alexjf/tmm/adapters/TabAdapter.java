@@ -82,7 +82,9 @@ public class TabAdapter extends FragmentPagerAdapter implements
         String tabNavigation = 
             prefManager.readUserStringPreference(KEY_TABNAV, "");
 
-        int navIndex = Arrays.asList(tabNavigationTypes).indexOf(tabNavigation);
+        // Don't consider -1 as valid value, minimum 0
+        int navIndex = Math.max(0, 
+            Arrays.asList(tabNavigationTypes).indexOf(tabNavigation));
 
         tabsShown = navIndex % 2 == 0;
         swipeEnabled = navIndex > 0;
