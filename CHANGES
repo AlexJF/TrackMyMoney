@@ -1,3 +1,7 @@
+1.1.1 - To be determined
+- Added transaction duplication feature (useful for double accounting or
+  tracking between a foreign and a home accounts with different currencies).
+
 1.1.0 - 27 Jul 2013
 - Allow transfers between money nodes.
 - Added transaction details activity.
@@ -6,7 +10,6 @@
 - Made the balance details panel collapsible on the moneynode details activity.
 - Fix some problems regarding data sync between activities.
 - Misc bug and typo fixes.
-
 
 1.0.2 - 26 Mar 2013
 - Fix major crash on icon selection

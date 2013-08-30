@@ -1,0 +1,25 @@
+<!--
+  Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
+  License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+    <TextView
+        android:id="@+id/duplicate_trans_moneynode_label"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/duplicate_trans_moneynode_button"
+        android:layout_alignTop="@id/duplicate_trans_moneynode_button"
+        android:gravity="center_vertical"
+        android:text="@string/duplicate_trans_moneynode" />
+    <net.alexjf.tmm.views.SelectorButton
+        android:id="@id/duplicate_trans_moneynode_button"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/choose" />
+</LinearLayout>

@@ -30,6 +30,7 @@
     <string name="title_activity_filechooser">Escolher um ficheiro</string>
     <!-- General -->
     <string name="add">Adicionar</string>
+    <string name="duplicate">Duplicar</string>
     <string name="remove">Remover</string>
     <string name="edit">Editar</string>
     <string name="name">Nome:</string>
@@ -89,6 +90,8 @@
     <string name="executionDate">Data de execução:</string>
     <string name="transfer_check">É uma transferência?</string>
     <string name="transfer_moneynode">De:</string>
+    <string name="title_fragment_duplicate_trans">Duplicar transacção</string>
+    <string name="duplicate_trans_moneynode">Destino:</string>
     <!-- Category Related -->
     <string name="category">Categoria:</string>
     <string name="manage_categories">Gerir categorias</string>
@@ -159,6 +162,7 @@
     <string name="error_cat_delete">Erro ao eliminar categoria.</string>
     <string name="error_trans_value_unspecified">Tem de especificar um valor para a transacção.</string>
     <string name="error_trans_add">Erro a adicionar transacção.</string>
+    <string name="error_trans_duplicate">Erro a duplicar transacção: %1$s</string>
     <string name="error_trans_edit">Erro a editar transacção: %1$s.</string>
     <string name="error_stat_analysis">Erro a analisar estatísticas: %1$s.</string>
     <string name="error_moneynode_name_already_exists">Um nó de dinheiro com esse nome já existe.</string>

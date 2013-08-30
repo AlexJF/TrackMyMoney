@@ -56,6 +56,8 @@ public class ImmedTransactionEditorFragment extends Fragment
     private static final String KEY_SELECTEDCATEGORY = "selectedCategory";
     private static final String KEY_SELECTEDTRANSFERMONEYNODE =
         "selectedTransferMoneyNode";
+    private static final String KEY_FORCE_ADD = "forceAdd";
+
     private static final String TAG_DATEPICKER = "datePicker";
     private static final String TAG_TIMEPICKER = "timePicker";
 
@@ -65,6 +67,7 @@ public class ImmedTransactionEditorFragment extends Fragment
     private OnImmediateTransactionEditListener listener;
     private Category selectedCategory;
     private MoneyNode selectedTransferMoneyNode;
+    private boolean forceAdd;
 
     private ImmediateTransaction transaction;
     private MoneyNode currentMoneyNode;
@@ -278,8 +281,12 @@ public class ImmedTransactionEditorFragment extends Fragment
                     else if (transaction.getTransferTransaction() != null) {
                         transaction.setTransferTransaction(null);
                     }
-                    listener.onImmediateTransactionEdited(transaction, 
-                            oldInfo);
+                    if (!forceAdd) {
+                        listener.onImmediateTransactionEdited(transaction, 
+                                oldInfo);
+                    } else {
+                        listener.onImmediateTransactionCreated(transaction);
+                    }
                 }
             }
         });
@@ -289,6 +296,7 @@ public class ImmedTransactionEditorFragment extends Fragment
             selectedCategory = savedInstanceState.getParcelable(KEY_SELECTEDCATEGORY);
             selectedTransferMoneyNode = savedInstanceState.getParcelable(
                 KEY_SELECTEDTRANSFERMONEYNODE);
+            forceAdd = savedInstanceState.getParcelable(KEY_FORCE_ADD);
         }
         
         updateTransactionFields();
@@ -314,6 +322,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
         outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE, 
             selectedTransferMoneyNode);
+        outState.putParcelable(KEY_FORCE_ADD, forceAdd);
         super.onSaveInstanceState(outState);
     }
 
@@ -342,6 +351,13 @@ public class ImmedTransactionEditorFragment extends Fragment
                 updateTransferFields();
             }
         }
+    }
+
+    /**
+     * @param forceAdd the forceAdd to set
+     */
+    public void setForceAdd(boolean forceAdd) {
+        this.forceAdd = forceAdd;
     }
 
     /**
@@ -392,15 +408,20 @@ public class ImmedTransactionEditorFragment extends Fragment
             addButton.setText(R.string.add);
         // If we are editing a node, fill fields with current information
         } else {
-            descriptionText.setText(transaction.getDescription());
-            executionDateButton.setText(dateFormat.format(
-                        transaction.getExecutionDate()));
-            executionTimeButton.setText(timeFormat.format(
-                        transaction.getExecutionDate()));
-            BigDecimal value = transaction.getValue();
-            valueText.setText(value.abs().toString());
-            valueSignToggle.setToNumberSign(value);
-            addButton.setText(R.string.edit);
+            try {
+                transaction.load();
+                descriptionText.setText(transaction.getDescription());
+                executionDateButton.setText(dateFormat.format(
+                            transaction.getExecutionDate()));
+                executionTimeButton.setText(timeFormat.format(
+                            transaction.getExecutionDate()));
+                BigDecimal value = transaction.getValue();
+                valueText.setText(value.abs().toString());
+                valueSignToggle.setToNumberSign(value);
+                addButton.setText(R.string.edit);
+            } catch (DatabaseException e) {
+                Log.e("TMM", "Error loading transaction", e);
+            }
         }
 
         if (currentMoneyNode != null) {

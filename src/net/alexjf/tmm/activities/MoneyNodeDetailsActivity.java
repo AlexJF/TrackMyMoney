@@ -222,26 +222,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                         data.getParcelableExtra(
                             ImmediateTransaction.KEY_TRANSACTION);
 
-                    try {
-                        transaction.load();
-                    } catch (DatabaseException e) {
-                        Log.e("TMM", "Error loading transaction after adding.", e);
-                    }
-
-                    if (Utils.dateBetween(transaction.getExecutionDate(), 
-                            startDate, endDate)) {
-                        immedTransAdapter.add(transaction);
-                        BigDecimal value = transaction.getValue();
-                        switch(value.signum()) {
-                            case 1:
-                                income = income.add(value);
-                                break;
-                            case -1:
-                                expense = expense.add(value);
-                                break;
-                        }
-                    }
-
+                    onImmedTransactionAdded(transaction);
                     break;
                 case REQCODE_PREFS:
                     if (data.getBooleanExtra(
@@ -345,6 +326,31 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         totalTransactionsTextView.setText(Integer.toString(immedTransAdapter.getCount()));
         incomeTextView.setText(income + " " + currency);
         expenseTextView.setText(expense + " " + currency);
+    }
+
+    @Override
+    public void onImmedTransactionAdded(ImmediateTransaction transaction) {
+        try {
+            transaction.load();
+            if (transaction.getMoneyNode() == currentMoneyNode) {
+                if (Utils.dateBetween(transaction.getExecutionDate(), 
+                        startDate, endDate)) {
+                    immedTransAdapter.add(transaction);
+                    BigDecimal value = transaction.getValue();
+                    switch(value.signum()) {
+                        case 1:
+                            income = income.add(value);
+                            break;
+                        case -1:
+                            expense = expense.add(value);
+                            break;
+                    }
+                }
+            }
+
+        } catch (DatabaseException e) {
+            Log.e("TMM", "Error loading transaction after adding.", e);
+        }
     }
 
     @Override

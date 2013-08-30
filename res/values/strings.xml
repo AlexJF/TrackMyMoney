@@ -30,6 +30,7 @@
     <string name="title_activity_filechooser">Choose a file</string>
     <!-- General -->
     <string name="add">Add</string>
+    <string name="duplicate">Duplicate</string>
     <string name="remove">Remove</string>
     <string name="edit">Edit</string>
     <string name="name">Name:</string>
@@ -89,6 +90,8 @@
     <string name="executionDate">Execution Date:</string>
     <string name="transfer_check">Is this a transfer?</string>
     <string name="transfer_moneynode">From:</string>
+    <string name="title_fragment_duplicate_trans">Duplicate transaction</string>
+    <string name="duplicate_trans_moneynode">Destination:</string>
     <!-- Category Related -->
     <string name="category">Category:</string>
     <string name="manage_categories">Manage Categories</string>
@@ -159,6 +162,7 @@
     <string name="error_cat_delete">Error deleting category.</string>
     <string name="error_trans_value_unspecified">You have to specify a value for the transaction.</string>
     <string name="error_trans_add">Error adding transaction: %1$s.</string>
+    <string name="error_trans_duplicate">Error duplicating transaction: %1$s</string>
     <string name="error_trans_edit">Error editing transaction: %1$s.</string>
     <string name="error_stat_analysis">Stat analysis error: %1$s.</string>
     <string name="error_moneynode_name_already_exists">A money node with that name already exists.</string>

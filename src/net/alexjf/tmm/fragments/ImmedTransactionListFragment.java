@@ -9,12 +9,14 @@ import net.alexjf.tmm.activities.ImmedTransactionEditActivity;
 import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.fragments.DuplicateTransactionFragment.DuplicateTransactionDialogListener;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
 import net.alexjf.tmm.interfaces.IWithAdapter;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -25,14 +27,21 @@ import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class ImmedTransactionListFragment extends ListFragment 
-    implements IWithAdapter {
+    implements IWithAdapter, DuplicateTransactionDialogListener {
+    private static final String TAG_DUPLICATE = "duplicate";
+
     private static final int REQCODE_EDIT = 0;
+    private static final int REQCODE_EDITDUPLICATE = 1;
 
     private OnImmedTransactionActionListener listener;
 
+    private DuplicateTransactionFragment duplicateFragment;
+
     public interface OnImmedTransactionActionListener {
+        public void onImmedTransactionAdded(ImmediateTransaction transaction);
         public void onImmedTransactionSelected(ImmediateTransaction transaction);
         public void onImmedTransactionRemoved(ImmediateTransaction transaction);
         public void onImmedTransactionEdited(ImmediateTransaction transaction,
@@ -49,6 +58,17 @@ public class ImmedTransactionListFragment extends ListFragment
 
         ListView transactionsListView = (ListView) v.findViewById(android.R.id.list);
         registerForContextMenu(transactionsListView);
+
+        FragmentManager fm = getFragmentManager();
+
+        duplicateFragment = (DuplicateTransactionFragment) 
+            fm.findFragmentByTag(TAG_DUPLICATE);
+
+        if (duplicateFragment == null) {
+            duplicateFragment = new DuplicateTransactionFragment();
+        }
+
+        duplicateFragment.setListener(this);
 
         return v;
     }
@@ -93,6 +113,10 @@ public class ImmedTransactionListFragment extends ListFragment
                 intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, transaction);
                 startActivityForResult(intent, REQCODE_EDIT);
                 return true;
+            case R.id.menu_duplicate:
+                duplicateFragment.setTransaction(transaction);
+                duplicateFragment.show(getFragmentManager(), TAG_DUPLICATE);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -103,16 +127,40 @@ public class ImmedTransactionListFragment extends ListFragment
             Intent data) {
         ImmediateTransactionAdapter adapter = (ImmediateTransactionAdapter) getListAdapter();
         if (resultCode == Activity.RESULT_OK) {
+            ImmediateTransaction transaction;
             switch (requestCode) {
                 case REQCODE_EDIT:
-                    ImmediateTransaction transaction = (ImmediateTransaction)
+                    transaction = (ImmediateTransaction)
                         data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
                     ImmedTransactionEditOldInfo oldInfo = (ImmedTransactionEditOldInfo)
                         data.getParcelableExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO);
                     adapter.notifyDataSetChanged();
                     listener.onImmedTransactionEdited(transaction, oldInfo);
                     break;
+                case REQCODE_EDITDUPLICATE:
+                    transaction = (ImmediateTransaction)
+                        data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
+                    listener.onImmedTransactionAdded(transaction);
+                    break;
             }
+        }
+    }
+
+    @Override
+    public void onDuplicateTransaction(ImmediateTransaction srcTransaction,
+        ImmediateTransaction dstTransaction) {
+        try {
+            dstTransaction.save();
+            Intent intent = new Intent(getActivity(), 
+                ImmedTransactionEditActivity.class);
+            intent.putExtra(ImmedTransactionEditActivity.KEY_FORCE_ADD, true);
+            intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, dstTransaction);
+            startActivityForResult(intent, REQCODE_EDITDUPLICATE);
+        } catch (DatabaseException e) {
+            Log.e("TMM", "Unable to save duplicate transaction", e);
+            Toast.makeText(getActivity(), 
+                R.string.error_trans_duplicate,
+                3).show();
         }
     }
 

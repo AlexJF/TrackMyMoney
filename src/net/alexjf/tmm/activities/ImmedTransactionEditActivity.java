@@ -23,6 +23,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 public class ImmedTransactionEditActivity extends SherlockFragmentActivity 
     implements OnImmediateTransactionEditListener {
 
+    public static final String KEY_FORCE_ADD = "forceAdd";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +41,10 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         editor.setCurrentMoneyNode(moneyNode);
         editor.setTransaction(transaction);
 
-        if (transaction == null) {
+        boolean forceAdd = intent.getBooleanExtra(KEY_FORCE_ADD, false);
+        editor.setForceAdd(forceAdd);
+
+        if (transaction == null || forceAdd) {
             setTitle(R.string.title_activity_immedtrans_add);
         } else {
             setTitle(R.string.title_activity_immedtrans_edit);
