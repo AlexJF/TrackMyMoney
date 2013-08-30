@@ -322,7 +322,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
         outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE, 
             selectedTransferMoneyNode);
-        outState.putParcelable(KEY_FORCE_ADD, forceAdd);
+        outState.putBoolean(KEY_FORCE_ADD, forceAdd);
         super.onSaveInstanceState(outState);
     }
 
