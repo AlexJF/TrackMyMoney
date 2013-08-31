@@ -301,8 +301,8 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     }
 
     private void updateGui() {
-        immedTransAdapter.notifyDataSetChanged();
         immedTransAdapter.sort(new ImmediateTransaction.DateComparator(true));
+        immedTransAdapter.notifyDataSetChanged();
         updateDetailsPanel();
     }
 
@@ -347,7 +347,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                     }
                 }
             }
-
+            updateGui();
         } catch (DatabaseException e) {
             Log.e("TMM", "Error loading transaction after adding.", e);
         }
@@ -370,6 +370,17 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     @Override
     public void onImmedTransactionEdited(ImmediateTransaction transaction,
             ImmedTransactionEditOldInfo oldInfo) {
+        try {
+            transaction.load();
+        } catch (DatabaseException e) {
+            Log.e("TMM", "Error loading transaction after editing.", e);
+            return;
+        }
+
+        if (transaction.getMoneyNode() != currentMoneyNode) {
+            return;
+        }
+
         BigDecimal originalValue = oldInfo.getValue();
         BigDecimal newValue = transaction.getValue();
         BigDecimal delta = newValue.subtract(originalValue);

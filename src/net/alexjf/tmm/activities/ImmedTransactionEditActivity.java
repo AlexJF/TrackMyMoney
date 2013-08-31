@@ -41,10 +41,7 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         editor.setCurrentMoneyNode(moneyNode);
         editor.setTransaction(transaction);
 
-        boolean forceAdd = intent.getBooleanExtra(KEY_FORCE_ADD, false);
-        editor.setForceAdd(forceAdd);
-
-        if (transaction == null || forceAdd) {
+        if (transaction == null) {
             setTitle(R.string.title_activity_immedtrans_add);
         } else {
             setTitle(R.string.title_activity_immedtrans_edit);

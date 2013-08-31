@@ -56,7 +56,6 @@ public class ImmedTransactionEditorFragment extends Fragment
     private static final String KEY_SELECTEDCATEGORY = "selectedCategory";
     private static final String KEY_SELECTEDTRANSFERMONEYNODE =
         "selectedTransferMoneyNode";
-    private static final String KEY_FORCE_ADD = "forceAdd";
 
     private static final String TAG_DATEPICKER = "datePicker";
     private static final String TAG_TIMEPICKER = "timePicker";
@@ -67,7 +66,6 @@ public class ImmedTransactionEditorFragment extends Fragment
     private OnImmediateTransactionEditListener listener;
     private Category selectedCategory;
     private MoneyNode selectedTransferMoneyNode;
-    private boolean forceAdd;
 
     private ImmediateTransaction transaction;
     private MoneyNode currentMoneyNode;
@@ -281,12 +279,8 @@ public class ImmedTransactionEditorFragment extends Fragment
                     else if (transaction.getTransferTransaction() != null) {
                         transaction.setTransferTransaction(null);
                     }
-                    if (!forceAdd) {
-                        listener.onImmediateTransactionEdited(transaction, 
-                                oldInfo);
-                    } else {
-                        listener.onImmediateTransactionCreated(transaction);
-                    }
+                    listener.onImmediateTransactionEdited(transaction, 
+                            oldInfo);
                 }
             }
         });
@@ -296,7 +290,6 @@ public class ImmedTransactionEditorFragment extends Fragment
             selectedCategory = savedInstanceState.getParcelable(KEY_SELECTEDCATEGORY);
             selectedTransferMoneyNode = savedInstanceState.getParcelable(
                 KEY_SELECTEDTRANSFERMONEYNODE);
-            forceAdd = savedInstanceState.getParcelable(KEY_FORCE_ADD);
         }
         
         updateTransactionFields();
@@ -322,7 +315,6 @@ public class ImmedTransactionEditorFragment extends Fragment
         outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
         outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE, 
             selectedTransferMoneyNode);
-        outState.putBoolean(KEY_FORCE_ADD, forceAdd);
         super.onSaveInstanceState(outState);
     }
 
@@ -351,13 +343,6 @@ public class ImmedTransactionEditorFragment extends Fragment
                 updateTransferFields();
             }
         }
-    }
-
-    /**
-     * @param forceAdd the forceAdd to set
-     */
-    public void setForceAdd(boolean forceAdd) {
-        this.forceAdd = forceAdd;
     }
 
     /**

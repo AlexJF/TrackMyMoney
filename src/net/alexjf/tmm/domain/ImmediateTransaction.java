@@ -234,6 +234,8 @@ public class ImmediateTransaction extends Transaction {
                 if (transferTransaction != null) {
                     transferTransaction.setChanged(true);
                 }
+
+                cache.put(result, this);
             }
 
             if (result >= 0) {
@@ -356,6 +358,11 @@ public class ImmediateTransaction extends Transaction {
                 return 1;
             }
             int result = lhs.getExecutionDate().compareTo(rhs.getExecutionDate());
+
+            if (result == 0) {
+                result = lhs.getId().compareTo(rhs.getId());
+            }
+
             if (descending) {
                 result *= -1;
             }

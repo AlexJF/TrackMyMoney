@@ -130,20 +130,16 @@ public class ImmedTransactionListFragment extends ListFragment
             ImmediateTransaction transaction;
             switch (requestCode) {
                 case REQCODE_EDIT:
+                case REQCODE_EDITDUPLICATE:
                     transaction = (ImmediateTransaction)
                         data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
                     ImmedTransactionEditOldInfo oldInfo = (ImmedTransactionEditOldInfo)
                         data.getParcelableExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO);
-                    adapter.notifyDataSetChanged();
+                    //adapter.notifyDataSetChanged();
                     listener.onImmedTransactionEdited(transaction, oldInfo);
                     break;
-                case REQCODE_EDITDUPLICATE:
-                    transaction = (ImmediateTransaction)
-                        data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
-                    listener.onImmedTransactionAdded(transaction);
-                    break;
             }
-        }
+        } 
     }
 
     @Override
@@ -151,9 +147,9 @@ public class ImmedTransactionListFragment extends ListFragment
         ImmediateTransaction dstTransaction) {
         try {
             dstTransaction.save();
+            listener.onImmedTransactionAdded(dstTransaction);
             Intent intent = new Intent(getActivity(), 
                 ImmedTransactionEditActivity.class);
-            intent.putExtra(ImmedTransactionEditActivity.KEY_FORCE_ADD, true);
             intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, dstTransaction);
             startActivityForResult(intent, REQCODE_EDITDUPLICATE);
         } catch (DatabaseException e) {

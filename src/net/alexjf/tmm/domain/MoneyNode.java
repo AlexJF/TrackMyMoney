@@ -203,6 +203,7 @@ public class MoneyNode extends DatabaseObject {
             result = (result == 0 ? -1 : id);
         } else {
             result = getDb().insert(TABLE_NAME, null, contentValues);
+            cache.put(result, this);
         }
 
         if (result >= 0) {
