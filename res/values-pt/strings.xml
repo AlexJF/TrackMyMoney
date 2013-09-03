@@ -161,6 +161,7 @@
     <string name="error_cat_edit">Erro ao editar categoria: %1$s.</string>
     <string name="error_cat_delete">Erro ao eliminar categoria.</string>
     <string name="error_trans_value_unspecified">Tem de especificar um valor para a transacção.</string>
+    <string name="error_trans_value_invalid">Valor inválido. Tem de ser um número ou uma expressão matemática.</string>
     <string name="error_trans_add">Erro a adicionar transacção.</string>
     <string name="error_trans_duplicate">Erro a duplicar transacção: %1$s</string>
     <string name="error_trans_edit">Erro a editar transacção: %1$s.</string>

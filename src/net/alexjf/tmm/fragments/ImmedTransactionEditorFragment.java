@@ -50,6 +50,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import de.congrace.exp4j.Calculable;
+import de.congrace.exp4j.ExpressionBuilder;
+
 public class ImmedTransactionEditorFragment extends Fragment 
     implements OnDateSetListener, OnTimeSetListener {
     private static final String KEY_CURRENTTRANSACTION = "currentTransaction";
@@ -212,8 +215,11 @@ public class ImmedTransactionEditorFragment extends Fragment
 
                 BigDecimal value;
                 try {
-                    value = new BigDecimal(valueText.getText().toString());
-                } catch (NumberFormatException e) {
+                    Calculable calc = new ExpressionBuilder(
+                        valueText.getText().toString()).build();
+                    value = BigDecimal.valueOf(calc.calculate())
+                        .setScale(2, BigDecimal.ROUND_HALF_UP);
+                } catch (Exception e) {
                     value = new BigDecimal(0);
                 }
 
@@ -480,6 +486,15 @@ public class ImmedTransactionEditorFragment extends Fragment
                     res.getString(R.string.error_trans_value_unspecified),
                     errorDrawable);
             error = true;
+        } else {
+            try {
+                new ExpressionBuilder(value).build();
+            } catch (Exception e) {
+                valueText.setError(
+                    res.getString(R.string.error_trans_value_invalid),
+                    errorDrawable);
+                error = true;
+            }
         }
 
         if (selectedCategory == null) {

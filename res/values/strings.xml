@@ -161,6 +161,7 @@
     <string name="error_cat_edit">Error editing category: %1$s.</string>
     <string name="error_cat_delete">Error deleting category.</string>
     <string name="error_trans_value_unspecified">You have to specify a value for the transaction.</string>
+    <string name="error_trans_value_invalid">Invalid value. It must be a number or a mathematical expression.</string>
     <string name="error_trans_add">Error adding transaction: %1$s.</string>
     <string name="error_trans_duplicate">Error duplicating transaction: %1$s</string>
     <string name="error_trans_edit">Error editing transaction: %1$s.</string>

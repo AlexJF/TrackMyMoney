@@ -97,7 +97,6 @@
         android:layout_below="@id/value_label"
         android:layout_toLeftOf="@+id/currency_label"
         android:layout_toRightOf="@id/value_sign"
-        android:inputType="number|numberDecimal"
         android:singleLine="true" >
         <requestFocus />
     </EditText>

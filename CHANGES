@@ -1,4 +1,5 @@
 1.1.1 - To be determined
+- Allow input of math expressions as the value for the transactions.
 - Added transaction duplication feature (useful for double accounting or
   tracking between a foreign and a home accounts with different currencies).
 
