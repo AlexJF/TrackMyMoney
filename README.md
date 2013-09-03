@@ -1,4 +1,4 @@
-Track My Money (v1.1.0)
+Track My Money (v1.1.1)
 =========================
 
 TrackMyMoney is an Android application that allows you to manage expenses and
@@ -14,6 +14,7 @@ Dependencies:
 * Achartengine (http://www.achartengine.org)
 * OpenCSV (http://opencsv.sourceforge.net/)
 * aFileChooser (https://github.com/iPaulPro/aFileChooser)
+* exp4j (http://www.objecthunter.net/exp4j)
 
 Icons:
 * Category and money node icons: "Icons by Glyphish" (http://glyphish.com)
