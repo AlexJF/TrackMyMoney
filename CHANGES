@@ -1,4 +1,4 @@
-1.1.2 - To be determined
+1.1.2 - 6 Sep 2013
 - Add hint to keyboard for numeric input but don't force numeric only text
   (to allow for math signs, etc...).
 - Fix crash on Android 2.2 related to the expression parser.
