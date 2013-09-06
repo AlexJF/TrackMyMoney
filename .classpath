@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="libs/guava-r09.jar"/>
 	<classpathentry kind="lib" path="libs/sqlcipher-2.2.0.jar"/>
 	<classpathentry kind="lib" path="libs/opencsv-2.3.jar"/>
-	<classpathentry kind="lib" path="libs/exp4j-0.3.10.jar"/>
+	<classpathentry kind="lib" path="libs/exp4j-0.3.11-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/achartengine-1.0.0.jar"/>
 	<classpathentry kind="lib" path="extra/aFileChooser/aFileChooser/bin/classes.jar"/>
 	<classpathentry kind="lib" path="extra/actionbarsherlock/library/bin/classes.jar"/>

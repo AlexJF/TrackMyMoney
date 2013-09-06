@@ -34,6 +34,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -114,6 +115,8 @@ public class ImmedTransactionEditorFragment extends Fragment
         transferMoneyNodeButton = (SelectorButton) v.findViewById(
                 R.id.transfer_moneynode_button);
         addButton = (Button) v.findViewById(R.id.add_button);
+
+        valueText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
 
         FragmentManager fm = getFragmentManager();
 
