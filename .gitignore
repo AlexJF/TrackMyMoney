@@ -1,8 +1,8 @@
 *.swp
-gen/*
-bin/*
+gen
+bin
 local.properties
-.settings/*
+.settings
 tags
 .directory
 .gradle
