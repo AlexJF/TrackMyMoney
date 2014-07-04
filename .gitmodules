@@ -1,6 +1,6 @@
-[submodule "libs/actionbarsherlock"]
-	path = libs/actionbarsherlock
+[submodule "libraries/actionbarsherlock"]
+	path = libraries/actionbarsherlock
 	url = git://github.com/JakeWharton/ActionBarSherlock.git
-[submodule "libs/aFileChooser"]
-	path = libs/aFileChooser
-	url = git://github.com/iPaulPro/aFileChooser.git
+[submodule "libraries/aFileChooser"]
+	path = libraries/aFileChooser
+	url = git://github.com/AlexJF/aFileChooser.git

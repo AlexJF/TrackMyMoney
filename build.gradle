@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:0.12.+"
+    }
+}
+
+allprojects {
+    afterEvaluate {
+        if (getPlugins().hasPlugin("android") ||
+            getPlugins().hasPlugin("android-library")) {
+            println name
+
+            android {
+                lintOptions {
+                    abortOnError false
+                }
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "1.10"
+}
