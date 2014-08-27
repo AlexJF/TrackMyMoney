@@ -33,7 +33,7 @@ import android.widget.Toast;
 public class MoneyNodeListActivity extends ActionBarActivity {
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_EDIT = 1;
-    private static final int REQCODE_PREF = 2;
+    private static final int REQCODE_PREFS = 2;
 
     public static final String KEY_INTENTION = "intention";
     public static final String KEY_EXCLUDE = "exclude";
@@ -105,6 +105,8 @@ public class MoneyNodeListActivity extends ActionBarActivity {
         adapter.setNotifyOnChange(false);
         adapter.clear();
 
+        Log.d("TMM", "updateData: empty adapter?=" + adapter.isEmpty());
+
         try {
             moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
             moneyNodes.removeAll(excludedMoneyNodes);
@@ -117,7 +119,8 @@ public class MoneyNodeListActivity extends ActionBarActivity {
         for (MoneyNode node : moneyNodes) {
             adapter.add(node);
         }
-        adapter.notifyDataSetChanged();
+
+        updateGui();
     }
 
     private void updateGui() {
@@ -155,7 +158,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
             case R.id.menu_preferences:
                 intent = new Intent(this,
                     PreferencesActivity.class);
-                startActivityForResult(intent, REQCODE_PREF);
+                startActivityForResult(intent, REQCODE_PREFS);
                 return true;
             case R.id.menu_logout:
                 intent = new Intent(this,
@@ -181,6 +184,15 @@ public class MoneyNodeListActivity extends ActionBarActivity {
                     adapter.add(node);
                     break;
                 case REQCODE_EDIT:
+                    break;
+                case REQCODE_PREFS:
+                	Log.d("TMM", "Return from preferences: " + data.getBooleanExtra(
+                			PreferencesActivity.KEY_FORCEDATAREFRESH, false));
+                    if (data.getBooleanExtra(
+                                PreferencesActivity.KEY_FORCEDATAREFRESH,
+                                false)) {
+                        updateData();
+                    }
                     break;
             }
         }

@@ -5,8 +5,8 @@
 package net.alexjf.tmm.utils;
 
 import java.lang.ref.SoftReference;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +23,7 @@ public class Cache<K,V> {
     private Timer cleanupTimer;
 
     public Cache() {
-        map = new LinkedHashMap<K, SoftReference<V>>();
+        map = new HashMap<K, SoftReference<V>>();
         cleanupTimer = new Timer(true);
         cleanupTimer.schedule(new TimerTask() {
             public void run() {
@@ -43,7 +43,7 @@ public class Cache<K,V> {
 
         if (ref != null) {
             return ref.get();
-        } 
+        }
 
         return null;
     }
@@ -54,5 +54,9 @@ public class Cache<K,V> {
 
     public void remove(K key) {
         map.remove(key);
+    }
+
+    public void clear() {
+    	map.clear();
     }
 }

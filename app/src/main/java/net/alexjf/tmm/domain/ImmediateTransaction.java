@@ -12,8 +12,8 @@ import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.sqlcipher.database.SQLiteDatabase;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
@@ -34,18 +34,18 @@ public class ImmediateTransaction extends Transaction {
     public static final String COL_TRANSFERTRANSID = "transferTransactionId";
 
     // Schema
-    public static final String SCHEMA_CREATETABLE = 
+    public static final String SCHEMA_CREATETABLE =
         "CREATE TABLE " + TABLE_NAME + " (" +
-            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
+            COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " +
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
-            COL_EXECUTIONDATE + " DATETIME " + 
+            COL_EXECUTIONDATE + " DATETIME " +
                 "DEFAULT (DATETIME('now', 'localtime'))," +
-            COL_TRANSFERTRANSID + " INTEGER " + 
+            COL_TRANSFERTRANSID + " INTEGER " +
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE" +
         ");";
-    public static final String SCHEMA_ADDTRANSFERTRANS = 
+    public static final String SCHEMA_ADDTRANSFERTRANS =
         "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " +
-            COL_TRANSFERTRANSID + " INTEGER " + 
+            COL_TRANSFERTRANSID + " INTEGER " +
                 "REFERENCES " + ImmediateTransaction.TABLE_NAME + " ON DELETE CASCADE";
 
     // Database maintenance
@@ -65,7 +65,7 @@ public class ImmediateTransaction extends Transaction {
      * @param oldVersion The old version of the schemas.
      * @param newVersion The new version of the schemas.
      */
-    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
+    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion,
                                         int newVersion) {
         switch (oldVersion) {
             case 0:
@@ -76,8 +76,8 @@ public class ImmediateTransaction extends Transaction {
     }
 
     // Caching
-    private static Cache<Long, ImmediateTransaction> cache = 
-        new Cache<Long, ImmediateTransaction>();
+    private static Cache<Long, ImmediateTransaction> cache =
+    		CacheFactory.getInstance().getCache("ImmediateTransaction");
 
     /**
      * Gets an instance of ImmediateTransaction with the specified id.
@@ -126,7 +126,7 @@ public class ImmediateTransaction extends Transaction {
      * @param category The category of this transaction.
      * @param executionDate The executionDate for this instance.
      */
-    public ImmediateTransaction(MoneyNode moneyNode, BigDecimal value, 
+    public ImmediateTransaction(MoneyNode moneyNode, BigDecimal value,
             String description, Category category, Date executionDate) {
         super(moneyNode, value, description, category);
         this.executionDate = executionDate;
@@ -171,9 +171,9 @@ public class ImmediateTransaction extends Transaction {
 
     @Override
     protected void internalLoad() throws DbObjectLoadException {
-        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?",
                 new String[] {getId().toString()}, null, null, null, null);
-        
+
         try {
             if (cursor.moveToFirst()) {
                 executionDate = new Date(cursor.getLong(1));
@@ -181,7 +181,7 @@ public class ImmediateTransaction extends Transaction {
                 if (!cursor.isNull(2)) {
                     long transferTransId = cursor.getLong(2);
 
-                    if (transferTransaction == null || 
+                    if (transferTransaction == null ||
                         !transferTransaction.getId().equals(transferTransId)) {
                         transferTransaction = ImmediateTransaction.
                             createFromId(transferTransId);
@@ -213,7 +213,7 @@ public class ImmediateTransaction extends Transaction {
             contentValues.put(COL_EXECUTIONDATE, executionDate.getTime());
 
             if (transferTransaction != null) {
-                contentValues.put(COL_TRANSFERTRANSID, 
+                contentValues.put(COL_TRANSFERTRANSID,
                         transferTransaction.getId());
             } else {
                 contentValues.put(COL_TRANSFERTRANSID, (String) null);
@@ -222,7 +222,7 @@ public class ImmediateTransaction extends Transaction {
             long result;
 
             if (existingId != null) {
-                result = getDb().update(TABLE_NAME, contentValues, 
+                result = getDb().update(TABLE_NAME, contentValues,
                          COL_ID + " = ?", new String[] {id.toString()});
                 result = (result == 0 ? -1 : id);
             } else {
@@ -248,7 +248,7 @@ public class ImmediateTransaction extends Transaction {
 
                     // If transaction was assigned to a different
                     // money node
-                    if (moneyNodeOnDatabase != null && 
+                    if (moneyNodeOnDatabase != null &&
                         moneyNodeOnDatabase != currentMoneyNode) {
 
                         // Remove previous value from that money node's
@@ -260,7 +260,7 @@ public class ImmediateTransaction extends Transaction {
                         // balance cache.
                         currentMoneyNode.notifyBalanceChange(
                             getValue());
-                    } 
+                    }
                     // If new transaction or same money node, only
                     // update delta.
                     else {
@@ -328,7 +328,7 @@ public class ImmediateTransaction extends Transaction {
                 Long id = in.readLong();
                 return createFromId(id);
             }
- 
+
             public ImmediateTransaction[] newArray(int size) {
                 return new ImmediateTransaction[size];
             }

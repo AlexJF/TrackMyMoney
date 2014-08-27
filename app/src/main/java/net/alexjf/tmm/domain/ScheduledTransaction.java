@@ -10,8 +10,8 @@ import java.util.Date;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.sqlcipher.database.SQLiteDatabase;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
@@ -37,11 +37,11 @@ public class ScheduledTransaction extends Transaction {
      */
     public static void onDatabaseCreation(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (" +
-                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " + 
+                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " +
                     "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
-                COL_SCHEDULEDDATE + " DATETIME " + 
+                COL_SCHEDULEDDATE + " DATETIME " +
                     "DEFAULT (DATETIME('now', 'localtime'))," +
-                COL_RECURRENCE + " TEXT" + 
+                COL_RECURRENCE + " TEXT" +
             ");");
     }
 
@@ -52,13 +52,13 @@ public class ScheduledTransaction extends Transaction {
      * @param oldVersion The old version of the schemas.
      * @param newVersion The new version of the schemas.
      */
-    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
+    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion,
                                         int newVersion) {
     }
 
     // Caching
-    private static Cache<Long, ScheduledTransaction> cache = 
-        new Cache<Long, ScheduledTransaction>();
+    private static Cache<Long, ScheduledTransaction> cache =
+    		CacheFactory.getInstance().getCache("ScheduledTransaction");
 
     /**
      * Gets an instance of ScheduledTransaction with the specified id.
@@ -102,7 +102,7 @@ public class ScheduledTransaction extends Transaction {
      * @param category The category of this transaction.
      * @param executionDate The executionDate for this instance.
      */
-    public ScheduledTransaction(MoneyNode moneyNode, BigDecimal value, 
+    public ScheduledTransaction(MoneyNode moneyNode, BigDecimal value,
             String description, Category category, Date scheduledDate,
             String recurrence) {
         super(moneyNode, value, description, category);
@@ -112,9 +112,9 @@ public class ScheduledTransaction extends Transaction {
 
     @Override
     protected void internalLoad() throws DbObjectLoadException {
-        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?",
                 new String[] {getId().toString()}, null, null, null, null);
-        
+
         try {
             if (cursor.moveToFirst()) {
                 scheduledDate = new Date(cursor.getLong(1));
@@ -145,7 +145,7 @@ public class ScheduledTransaction extends Transaction {
             long result;
 
             if (existingId != null) {
-                result = getDb().update(TABLE_NAME, contentValues, 
+                result = getDb().update(TABLE_NAME, contentValues,
                          COL_ID + " = ?", new String[] {id.toString()});
                 result = (result == 0 ? -1 : id);
             } else {
@@ -213,7 +213,7 @@ public class ScheduledTransaction extends Transaction {
                 Long id = in.readLong();
                 return createFromId(id);
             }
- 
+
             public ScheduledTransaction[] newArray(int size) {
                 return new ScheduledTransaction[size];
             }

@@ -20,8 +20,8 @@ import net.alexjf.tmm.activities.PreferencesActivity.OnFileChosenListener;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.alexjf.tmm.utils.PreferenceManager;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;

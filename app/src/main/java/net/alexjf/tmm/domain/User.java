@@ -5,7 +5,6 @@
 package net.alexjf.tmm.domain;
 
 import net.alexjf.tmm.utils.Utils;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -26,6 +25,11 @@ public class User implements Parcelable {
     User(String name, String password) {
         this(name);
         setPassword(password);
+    }
+
+    User(User user) {
+    	this(user.getName());
+    	setPasswordHash(user.getPassword());
     }
 
     User(Parcel in) {
@@ -70,7 +74,29 @@ public class User implements Parcelable {
         return this.password;
     }
 
-    public String toString() {
+    @Override
+	public boolean equals(Object o) {
+		if (!(o instanceof User))
+            return false;
+
+        if (o == this)
+            return true;
+
+        User rhs = (User) o;
+        return getName().equals(rhs.getName()) &&
+        	   getPassword().equals(rhs.getPassword());
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+        hash = 31 * hash + name.hashCode();
+        hash = 31 * hash + password.hashCode();
+
+        return hash;
+	}
+
+	public String toString() {
         return getName();
     };
 
@@ -93,7 +119,7 @@ public class User implements Parcelable {
             public User createFromParcel(Parcel in) {
                 return new User(in);
             }
- 
+
             public User[] newArray(int size) {
                 return new User[size];
             }

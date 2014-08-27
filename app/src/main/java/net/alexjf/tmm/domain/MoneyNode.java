@@ -13,8 +13,8 @@ import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.sqlcipher.database.SQLiteDatabase;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
@@ -96,7 +96,7 @@ public class MoneyNode extends DatabaseObject {
     }
 
     // Caching
-    private static Cache<Long, MoneyNode> cache = new Cache<Long, MoneyNode>();
+    private static Cache<Long, MoneyNode> cache = CacheFactory.getInstance().getCache("MoneyNode");
 
     /**
      * Gets an instance of MoneyNode with the specified id.

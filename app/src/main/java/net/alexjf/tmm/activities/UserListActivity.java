@@ -9,6 +9,7 @@ import net.alexjf.tmm.adapters.SelectedAdapter;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.alexjf.tmm.utils.PreferenceManager;
 import android.app.Activity;
 import android.content.Context;

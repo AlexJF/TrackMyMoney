@@ -16,10 +16,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-public abstract class AsyncTaskWithProgressDialog<Params> 
+public abstract class AsyncTaskWithProgressDialog<Params>
     extends AsyncTask<Params, Void, Bundle> {
 
-    private static Map<Context, ProgressDialogInfo> progressDialogs = 
+    private static Map<Context, ProgressDialogInfo> progressDialogs =
         new HashMap<Context, ProgressDialogInfo>();
 
     private Context context;
@@ -35,11 +35,12 @@ public abstract class AsyncTaskWithProgressDialog<Params>
         this(null, taskId, progressMessage);
     }
 
-    public AsyncTaskWithProgressDialog(Context context, String taskId, 
+    public AsyncTaskWithProgressDialog(Context context, String taskId,
             String progressMessage) {
         this.context = context;
         this.taskId = taskId;
         this.progressMessage = progressMessage;
+        this.ensureDatabaseOpen = false;
         running = false;
     }
 
@@ -96,7 +97,7 @@ public abstract class AsyncTaskWithProgressDialog<Params>
         }
 
         progInfo.progressMessages.add(progressMessage);
-        
+
         if (progInfo.progressDialog == null) {
             progInfo.progressDialog = new ProgressDialog(context);
             progInfo.progressDialog.setIndeterminate(true);

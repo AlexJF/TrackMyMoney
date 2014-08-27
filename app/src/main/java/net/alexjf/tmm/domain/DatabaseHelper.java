@@ -9,11 +9,11 @@ import java.util.List;
 
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DatabaseUnknownUserException;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteException;
 import net.sqlcipher.database.SQLiteOpenHelper;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
@@ -24,7 +24,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_CURRENTUSER = "activeUser";
 
     private User currentUser;
-    private boolean preventClose = false;
+    private boolean closed = false;
+	private boolean preventClose = false;
 
     private static DatabaseHelper instance = null;
     private static Context context = null;
@@ -34,26 +35,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public static DatabaseHelper getInstance(User user) {
-        if (instance == null || instance.currentUser != user) {
-            instance = new DatabaseHelper(context, user);
+    	if (user == null) {
+    		return null;
+    	}
+
+        if (instance == null || !instance.currentUser.equals(user) || instance.isClosed()) {
+        	Log.d("TMM", "Rebuilding DatabaseHelper instance");
+
+        	if (instance != null) {
+        		if (!instance.isClosed()) {
+		        	Log.d("TMM", "Closing previous instance");
+	        		instance.close();
+        		}
+
+        		Log.d("TMM", "Cleaning caches");
+	            CacheFactory.getInstance().clearCaches();
+        	}
+
+            instance = new DatabaseHelper(context, new User(user));
         }
+
+        Log.d("TMM", "Returning instance associated with " + instance.getCurrentUser());
 
         return instance;
     }
 
     public static DatabaseHelper getInstance() {
-        if (instance == null) {
-            PreferenceManager prefManager = PreferenceManager.getInstance();
-            String activeUserStr = prefManager.readGlobalStringPreference(
-                    KEY_CURRENTUSER, null);
-            if (activeUserStr != null) {
-                String[] activeUserInfo = activeUserStr.split(":");
-                User user = new User(activeUserInfo[0]);
-                user.setPasswordHash(activeUserInfo[1]);
-                instance = new DatabaseHelper(context, user);
-            }
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        String activeUserStr = prefManager.readGlobalStringPreference(
+                KEY_CURRENTUSER, null);
+
+        User user = null;
+
+        if (activeUserStr != null) {
+            String[] activeUserInfo = activeUserStr.split(":");
+            user = new User(activeUserInfo[0]);
+            user.setPasswordHash(activeUserInfo[1]);
         }
-        return instance;
+
+	    return getInstance(user);
     }
 
     private DatabaseHelper(Context context, User user) {
@@ -87,6 +107,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         userDefinedOrThrow();
         return getWritableDatabase(currentUser.getPassword());
     }
+
+    public boolean isClosed() {
+		return closed;
+	}
 
     public boolean login() {
         SQLiteDatabase db = null;
@@ -312,7 +336,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public synchronized void close() {
-        if (preventClose) return;
+        if (closed || preventClose) return;
         super.close();
+        closed = true;
     }
 }

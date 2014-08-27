@@ -8,8 +8,8 @@ import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
+import net.alexjf.tmm.utils.CacheFactory;
 import net.sqlcipher.database.SQLiteDatabase;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
@@ -30,7 +30,7 @@ public class Category extends DatabaseObject {
     public static final String COL_ICON = "icon";
 
     //Schema
-    private static final String SCHEMA_CREATETABLE = 
+    private static final String SCHEMA_CREATETABLE =
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_NAME + " TEXT NOT NULL," +
@@ -54,12 +54,12 @@ public class Category extends DatabaseObject {
      * @param oldVersion The old version of the schemas.
      * @param newVersion The new version of the schemas.
      */
-    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
+    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion,
                                         int newVersion) {
     }
 
     // Caching
-    private static Cache<Long, Category> cache = new Cache<Long, Category>();
+    private static Cache<Long, Category> cache = CacheFactory.getInstance().getCache("Category");
 
     /**
      * Gets an instance of Category with the specified id.
@@ -115,15 +115,15 @@ public class Category extends DatabaseObject {
 
     @Override
     protected void internalLoad() throws DbObjectLoadException {
-        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?",
                 new String[] {getId().toString()}, null, null, null, null);
-        
+
         try {
             if (cursor.moveToFirst()) {
                 name = cursor.getString(1);
                 icon = cursor.getString(2);
             } else {
-                throw new DbObjectLoadException("Couldn't find category " + 
+                throw new DbObjectLoadException("Couldn't find category " +
                         "associated with id " + getId());
             }
         } finally {
@@ -142,7 +142,7 @@ public class Category extends DatabaseObject {
         long result;
 
         if (id != null) {
-            result = getDb().update(TABLE_NAME, contentValues, 
+            result = getDb().update(TABLE_NAME, contentValues,
                      COL_ID + " = ?", new String[] {id.toString()});
             result = (result == 0 ? -1 : id);
         } else {
@@ -154,7 +154,7 @@ public class Category extends DatabaseObject {
             cache.put(result, this);
             return result;
         } else {
-            throw new DbObjectSaveException("Couldn't save category " + 
+            throw new DbObjectSaveException("Couldn't save category " +
                     "associated with id " + getId());
         }
     }
@@ -200,7 +200,7 @@ public class Category extends DatabaseObject {
                 Long id = in.readLong();
                 return createFromId(id);
             }
- 
+
             public Category[] newArray(int size) {
                 return new Category[size];
             }
