@@ -105,8 +105,6 @@ public class MoneyNodeListActivity extends ActionBarActivity {
         adapter.setNotifyOnChange(false);
         adapter.clear();
 
-        Log.d("TMM", "updateData: empty adapter?=" + adapter.isEmpty());
-
         try {
             moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
             moneyNodes.removeAll(excludedMoneyNodes);

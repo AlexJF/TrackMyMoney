@@ -18,7 +18,6 @@ import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.alexjf.tmm.views.SelectorButton;
-
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.res.Resources;
@@ -26,7 +25,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,8 +37,10 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import de.congrace.exp4j.Calculable;
+import de.congrace.exp4j.ExpressionBuilder;
 
-public class MoneyNodeEditorFragment extends Fragment 
+public class MoneyNodeEditorFragment extends Fragment
     implements OnDateSetListener, OnIconPickedListener {
     private static final String KEY_CURRENTNODE = "currentNode";
     private static final String KEY_SELECTEDICON = "selectedIcon";
@@ -86,9 +89,11 @@ public class MoneyNodeEditorFragment extends Fragment
         currencySpinner = (Spinner) v.findViewById(R.id.currency_spinner);
         addButton = (Button) v.findViewById(R.id.add_button);
 
+        initialBalanceText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+
         FragmentManager fm = getFragmentManager();
         datePicker = (DatePickerFragment) fm.findFragmentByTag(TAG_DATEPICKER);
-        iconPicker = (IconPickerFragment) 
+        iconPicker = (IconPickerFragment)
             fm.findFragmentByTag(TAG_DRAWABLEPICKER);
 
         if (datePicker == null) {
@@ -137,10 +142,12 @@ public class MoneyNodeEditorFragment extends Fragment
 
                 BigDecimal initialBalance;
                 try {
-                    initialBalance = new BigDecimal(
-                        initialBalanceText.getText().toString());
-                } catch (NumberFormatException e) {
-                    initialBalance = new BigDecimal(0);
+                    Calculable calc = new ExpressionBuilder(
+                        initialBalanceText.getText().toString()).build();
+                    initialBalance = BigDecimal.valueOf(calc.calculate())
+                    		.setScale(2, BigDecimal.ROUND_HALF_UP);
+                } catch (Exception e) {
+                    initialBalance = BigDecimal.valueOf(0);
                 }
 
                 String currency = currencySpinner.getSelectedItem().toString().trim();
@@ -165,7 +172,7 @@ public class MoneyNodeEditorFragment extends Fragment
             node = savedInstanceState.getParcelable(KEY_CURRENTNODE);
         } else {
         }
-        
+
         updateNodeFields();
 
         if (savedInstanceState != null) {
@@ -201,7 +208,7 @@ public class MoneyNodeEditorFragment extends Fragment
         try {
             listener = (OnMoneyNodeEditListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + 
+            throw new ClassCastException(activity.toString() +
                     " must implement OnMoneyNodeEditListener");
         }
     }
@@ -242,7 +249,7 @@ public class MoneyNodeEditorFragment extends Fragment
 
             if (prefCurrency != null) {
                 @SuppressWarnings("unchecked")
-                ArrayAdapter<String> adapter = (ArrayAdapter<String>) 
+                ArrayAdapter<String> adapter = (ArrayAdapter<String>)
                     currencySpinner.getAdapter();
                 positionInSpinner = adapter.getPosition(prefCurrency);
             }
@@ -251,18 +258,24 @@ public class MoneyNodeEditorFragment extends Fragment
             addButton.setText(R.string.add);
         // If we are editing a node, fill fields with current information
         } else {
-            nameText.setText(node.getName());
-            descriptionText.setText(node.getDescription());
-            selectedDrawableName = node.getIcon();
-            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconSelectorButton.setDrawableId(iconId);
-            creationDateButton.setText(dateFormat.format(node.getCreationDate()));
-            initialBalanceText.setText(node.getInitialBalance().toString());
-            @SuppressWarnings("unchecked")
-            ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
-            int positionInSpinner = adapter.getPosition(node.getCurrency());
-            currencySpinner.setSelection(positionInSpinner);
-            addButton.setText(R.string.edit);
+        	try {
+	        	node.load();
+	            nameText.setText(node.getName());
+	            descriptionText.setText(node.getDescription());
+	            selectedDrawableName = node.getIcon();
+	            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
+	            iconSelectorButton.setDrawableId(iconId);
+	            creationDateButton.setText(dateFormat.format(node.getCreationDate()));
+	            initialBalanceText.setText(node.getInitialBalance().toString());
+	            @SuppressWarnings("unchecked")
+	            ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
+	            int positionInSpinner = adapter.getPosition(node.getCurrency());
+	            currencySpinner.setSelection(positionInSpinner);
+	        } catch (DatabaseException e) {
+	            Log.e("TMM", e.getMessage(), e);
+	        }
+
+	        addButton.setText(R.string.edit);
         }
     }
 
@@ -270,10 +283,10 @@ public class MoneyNodeEditorFragment extends Fragment
         boolean error = false;
 
         Resources res = getResources();
-        Drawable errorDrawable = 
+        Drawable errorDrawable =
             res.getDrawable(R.drawable.indicator_input_error);
-        errorDrawable.setBounds(0, 0, 
-                errorDrawable.getIntrinsicWidth(), 
+        errorDrawable.setBounds(0, 0,
+                errorDrawable.getIntrinsicWidth(),
                 errorDrawable.getIntrinsicHeight());
         String name = nameText.getText().toString();
 
@@ -283,7 +296,7 @@ public class MoneyNodeEditorFragment extends Fragment
         } else {
             try {
                 // If we are adding a new node and name already exists
-                if (node == null && 
+                if (node == null &&
                     DatabaseHelper.getInstance().hasMoneyNodeWithName(name)) {
                     nameError = res.getString(
                             R.string.error_moneynode_name_already_exists);

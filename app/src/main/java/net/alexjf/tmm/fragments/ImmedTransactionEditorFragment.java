@@ -54,7 +54,7 @@ import android.widget.TimePicker;
 import de.congrace.exp4j.Calculable;
 import de.congrace.exp4j.ExpressionBuilder;
 
-public class ImmedTransactionEditorFragment extends Fragment 
+public class ImmedTransactionEditorFragment extends Fragment
     implements OnDateSetListener, OnTimeSetListener {
     private static final String KEY_CURRENTTRANSACTION = "currentTransaction";
     private static final String KEY_SELECTEDCATEGORY = "selectedCategory";
@@ -100,7 +100,7 @@ public class ImmedTransactionEditorFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_immedtransaction_editor, 
+        View v = inflater.inflate(R.layout.fragment_immedtransaction_editor,
                 container, false);
 
         descriptionText = (EditText) v.findViewById(R.id.description_text);
@@ -136,9 +136,9 @@ public class ImmedTransactionEditorFragment extends Fragment
 
         categoryButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), 
+                Intent intent = new Intent(view.getContext(),
                     CategoryListActivity.class);
-                intent.putExtra(CategoryListActivity.KEY_INTENTION, 
+                intent.putExtra(CategoryListActivity.KEY_INTENTION,
                     CategoryListActivity.INTENTION_SELECT);
                 startActivityForResult(intent, REQCODE_CATEGORYCHOOSE);
             }
@@ -178,12 +178,12 @@ public class ImmedTransactionEditorFragment extends Fragment
 
         transferMoneyNodeButton.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), 
+                Intent intent = new Intent(view.getContext(),
                     MoneyNodeListActivity.class);
-                intent.putExtra(MoneyNodeListActivity.KEY_INTENTION, 
+                intent.putExtra(MoneyNodeListActivity.KEY_INTENTION,
                     MoneyNodeListActivity.INTENTION_SELECT);
 
-                ArrayList<MoneyNode> excludedMoneyNodes = 
+                ArrayList<MoneyNode> excludedMoneyNodes =
                     new ArrayList<MoneyNode>();
                 excludedMoneyNodes.add(currentMoneyNode);
                 intent.putParcelableArrayListExtra(
@@ -213,7 +213,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     executionTime = executionDate = new Date();
                 }
 
-                executionDateTime = Utils.combineDateTime(executionDate, 
+                executionDateTime = Utils.combineDateTime(executionDate,
                     executionTime);
 
                 BigDecimal value;
@@ -223,7 +223,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     value = BigDecimal.valueOf(calc.calculate())
                         .setScale(2, BigDecimal.ROUND_HALF_UP);
                 } catch (Exception e) {
-                    value = new BigDecimal(0);
+                    value = BigDecimal.valueOf(0);
                 }
 
                 if (valueSignToggle.isNegative()) {
@@ -232,13 +232,13 @@ public class ImmedTransactionEditorFragment extends Fragment
 
                 // If we are creating a new transaction
                 if (transaction == null) {
-                    ImmediateTransaction newTransaction = 
-                        new ImmediateTransaction(currentMoneyNode, value, 
+                    ImmediateTransaction newTransaction =
+                        new ImmediateTransaction(currentMoneyNode, value,
                                 description, selectedCategory, executionDateTime);
 
                     // If this new transaction is a transfer
                     if (selectedTransferMoneyNode != null) {
-                        ImmediateTransaction otherTransaction = 
+                        ImmediateTransaction otherTransaction =
                             new ImmediateTransaction(newTransaction,
                                     selectedTransferMoneyNode);
                         newTransaction.setTransferTransaction(otherTransaction);
@@ -246,10 +246,10 @@ public class ImmedTransactionEditorFragment extends Fragment
                     }
 
                     listener.onImmediateTransactionCreated(newTransaction);
-                } 
+                }
                 // If we are updating an existing transaction
                 else {
-                    ImmedTransactionEditOldInfo oldInfo = 
+                    ImmedTransactionEditOldInfo oldInfo =
                         new ImmedTransactionEditOldInfo(transaction);
                     transaction.setDescription(description);
                     transaction.setCategory(selectedCategory);
@@ -260,7 +260,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                         // If edited transaction wasn't part of a transfer and
                         // now is, create transfer transaction
                         if (transaction.getTransferTransaction() == null) {
-                            ImmediateTransaction otherTransaction = 
+                            ImmediateTransaction otherTransaction =
                                 new ImmediateTransaction(transaction,
                                         selectedTransferMoneyNode);
                             transaction.setTransferTransaction(
@@ -268,7 +268,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                             otherTransaction.setTransferTransaction(
                                     transaction);
                         }
-                        // If edited transaction was already part of a 
+                        // If edited transaction was already part of a
                         // transfer, update transfer transaction
                         else {
                             ImmediateTransaction otherTransaction =
@@ -288,7 +288,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     else if (transaction.getTransferTransaction() != null) {
                         transaction.setTransferTransaction(null);
                     }
-                    listener.onImmediateTransactionEdited(transaction, 
+                    listener.onImmediateTransactionEdited(transaction,
                             oldInfo);
                 }
             }
@@ -300,7 +300,7 @@ public class ImmedTransactionEditorFragment extends Fragment
             selectedTransferMoneyNode = savedInstanceState.getParcelable(
                 KEY_SELECTEDTRANSFERMONEYNODE);
         }
-        
+
         updateTransactionFields();
 
         return v;
@@ -322,7 +322,7 @@ public class ImmedTransactionEditorFragment extends Fragment
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(KEY_CURRENTTRANSACTION, transaction);
         outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
-        outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE, 
+        outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE,
             selectedTransferMoneyNode);
         super.onSaveInstanceState(outState);
     }
@@ -333,7 +333,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         try {
             listener = (OnImmediateTransactionEditListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + 
+            throw new ClassCastException(activity.toString() +
                     " must implement OnImmediateTransactionEditListener");
         }
     }
@@ -345,9 +345,9 @@ public class ImmedTransactionEditorFragment extends Fragment
                 selectedCategory = (Category) data.getParcelableExtra(
                         Category.KEY_CATEGORY);
                 updateCategoryFields();
-            } 
+            }
             else if (requestCode == REQCODE_MONEYNODECHOOSE) {
-                selectedTransferMoneyNode = (MoneyNode) 
+                selectedTransferMoneyNode = (MoneyNode)
                     data.getParcelableExtra(MoneyNode.KEY_MONEYNODE);
                 updateTransferFields();
             }
@@ -445,7 +445,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 
     private void updateTransferFields() {
         if (selectedTransferMoneyNode == null && transaction != null) {
-            ImmediateTransaction transferTransaction = 
+            ImmediateTransaction transferTransaction =
                 transaction.getTransferTransaction();
 
             if (transferTransaction != null) {
@@ -477,10 +477,10 @@ public class ImmedTransactionEditorFragment extends Fragment
         boolean error = false;
 
         Resources res = getResources();
-        Drawable errorDrawable = 
+        Drawable errorDrawable =
             res.getDrawable(R.drawable.indicator_input_error);
-        errorDrawable.setBounds(0, 0, 
-                errorDrawable.getIntrinsicWidth(), 
+        errorDrawable.setBounds(0, 0,
+                errorDrawable.getIntrinsicWidth(),
                 errorDrawable.getIntrinsicHeight());
         String value = valueText.getText().toString();
 
@@ -587,7 +587,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     ImmediateTransaction transferTransaction =
                         (ImmediateTransaction) in.readParcelable(
                                 ImmediateTransaction.class.getClassLoader());
-                    return new ImmedTransactionEditOldInfo(description, 
+                    return new ImmedTransactionEditOldInfo(description,
                             category, date, value, transferTransaction);
                 }
 
@@ -599,7 +599,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 
     public interface OnImmediateTransactionEditListener {
         public void onImmediateTransactionCreated(ImmediateTransaction transaction);
-        public void onImmediateTransactionEdited(ImmediateTransaction transaction, 
+        public void onImmediateTransactionEdited(ImmediateTransaction transaction,
                 ImmedTransactionEditOldInfo oldInfo);
     }
 }

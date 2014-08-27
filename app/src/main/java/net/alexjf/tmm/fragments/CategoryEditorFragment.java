@@ -11,13 +11,13 @@ import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.views.SelectorButton;
-
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,11 +25,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class CategoryEditorFragment extends Fragment 
+public class CategoryEditorFragment extends Fragment
     implements OnIconPickedListener {
     private static final String KEY_CURRENTCATEGORY = "currentCategory";
     private static final String KEY_SELECTEDICON = "selectedIcon";
-    
+
     private static final String TAG_DRAWABLEPICKER = "drawablePicker";
 
     private OnCategoryEditListener listener;
@@ -57,7 +57,7 @@ public class CategoryEditorFragment extends Fragment
         iconImageButton = (SelectorButton) v.findViewById(R.id.icon_button);
         addButton = (Button) v.findViewById(R.id.add_button);
 
-        iconPicker = (IconPickerFragment) 
+        iconPicker = (IconPickerFragment)
             getFragmentManager().findFragmentByTag(TAG_DRAWABLEPICKER);
 
         if (iconPicker == null) {
@@ -95,7 +95,7 @@ public class CategoryEditorFragment extends Fragment
         if (savedInstanceState != null) {
             category = savedInstanceState.getParcelable(KEY_CURRENTCATEGORY);
         }
-        
+
         updateCategoryFields();
 
         if (savedInstanceState != null) {
@@ -126,7 +126,7 @@ public class CategoryEditorFragment extends Fragment
         try {
             listener = (OnCategoryEditListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + 
+            throw new ClassCastException(activity.toString() +
                     " must implement OnCategoryEditListener");
         }
     }
@@ -158,11 +158,17 @@ public class CategoryEditorFragment extends Fragment
             addButton.setText(R.string.add);
         // If we are editing a category, fill fields with current information
         } else {
-            nameText.setText(category.getName());
-            selectedDrawableName = category.getIcon();
-            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconImageButton.setDrawableId(iconId);
-            addButton.setText(R.string.edit);
+        	try {
+        		category.load();
+
+	            nameText.setText(category.getName());
+	            selectedDrawableName = category.getIcon();
+	            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
+	            iconImageButton.setDrawableId(iconId);
+	            addButton.setText(R.string.edit);
+	        } catch (DatabaseException e) {
+	            Log.e("TMM", e.getMessage(), e);
+	        }
         }
     }
 
@@ -170,10 +176,10 @@ public class CategoryEditorFragment extends Fragment
         boolean error = false;
 
         Resources res = getResources();
-        Drawable errorDrawable = 
+        Drawable errorDrawable =
             res.getDrawable(R.drawable.indicator_input_error);
-        errorDrawable.setBounds(0, 0, 
-                errorDrawable.getIntrinsicWidth(), 
+        errorDrawable.setBounds(0, 0,
+                errorDrawable.getIntrinsicWidth(),
                 errorDrawable.getIntrinsicHeight());
         String name = nameText.getText().toString();
 
@@ -184,9 +190,9 @@ public class CategoryEditorFragment extends Fragment
         else {
             try {
                 // If we are adding a new category and the name already exists
-                if (category == null && 
+                if (category == null &&
                     DatabaseHelper.getInstance().hasCategoryWithName(name)) {
-                    nameError = 
+                    nameError =
                         res.getString(R.string.error_cat_name_already_exists);
                 }
             } catch (DatabaseException e) {

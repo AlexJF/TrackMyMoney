@@ -101,7 +101,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/initialBalance_label"
         android:layout_toLeftOf="@id/currency_spinner"
-        android:inputType="number|numberSigned|numberDecimal"
         android:singleLine="true" />
     <Spinner
         android:id="@id/currency_spinner"
