@@ -42,35 +42,35 @@ public class MoneyNode extends DatabaseObject {
     public static final String COL_INITIALBALANCE = "initialBalance";
 
     // Schema
-    private static final String SCHEMA_CREATETABLE = 
+    private static final String SCHEMA_CREATETABLE =
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COL_NAME + " TEXT NOT NULL," +
             COL_DESCRIPTION + " TEXT," +
-            COL_ICON + " TEXT," + 
-            COL_CURRENCY + " TEXT," + 
-            COL_CREATIONDATE + " DATETIME " + 
+            COL_ICON + " TEXT," +
+            COL_CURRENCY + " TEXT," +
+            COL_CREATIONDATE + " DATETIME " +
                 "DEFAULT (DATETIME('now', 'localtime'))," +
             COL_INITIALBALANCE + " NUMERIC DEFAULT 0" +
         ");";
 
     // Queries
-    private static final String QUERY_BALANCE = 
-        "SELECT " + Transaction.COL_VALUE + 
+    private static final String QUERY_BALANCE =
+        "SELECT " + Transaction.COL_VALUE +
         " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + 
+        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME +
         "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
     private static final String QUERY_IMMEDIATETRANSACTIONS =
-        "SELECT " + ImmediateTransaction.COL_ID + 
+        "SELECT " + ImmediateTransaction.COL_ID +
         " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME + 
+        "  INNER JOIN " + ImmediateTransaction.TABLE_NAME +
         "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
     private static final String QUERY_SCHEDULEDTRANSACTIONS =
-        "SELECT " + ScheduledTransaction.COL_ID + 
+        "SELECT " + ScheduledTransaction.COL_ID +
         " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ScheduledTransaction.TABLE_NAME + 
+        "  INNER JOIN " + ScheduledTransaction.TABLE_NAME +
         "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
 
@@ -91,7 +91,7 @@ public class MoneyNode extends DatabaseObject {
      * @param oldVersion The old version of the schemas.
      * @param newVersion The new version of the schemas.
      */
-    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
+    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion,
                                         int newVersion) {
     }
 
@@ -146,7 +146,7 @@ public class MoneyNode extends DatabaseObject {
      * @param currency The currency for this instance.
      */
     public MoneyNode(String name, String description,
-            String icon, Date creationDate, BigDecimal initialBalance, 
+            String icon, Date creationDate, BigDecimal initialBalance,
             String currency) {
         this.name = name;
         this.description = description;
@@ -160,7 +160,7 @@ public class MoneyNode extends DatabaseObject {
 
     @Override
     protected void internalLoad() throws DbObjectLoadException {
-        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?",
                 new String[] {getId().toString()}, null, null, null, null);
 
         try {
@@ -174,7 +174,7 @@ public class MoneyNode extends DatabaseObject {
                 // Update balance
                 getBalance();
             } else {
-                throw new DbObjectLoadException("Couldn't find money node" + 
+                throw new DbObjectLoadException("Couldn't find money node" +
                         "associated with id " + getId());
             }
         } finally {
@@ -198,7 +198,7 @@ public class MoneyNode extends DatabaseObject {
         long result;
 
         if (id != null) {
-            result = getDb().update(TABLE_NAME, contentValues, 
+            result = getDb().update(TABLE_NAME, contentValues,
                     COL_ID + " = ?", new String[] {id.toString()});
             result = (result == 0 ? -1 : id);
         } else {
@@ -346,7 +346,7 @@ public class MoneyNode extends DatabaseObject {
         return balance;
     }
 
-    public ImmediateTransaction getImmediateTransaction(Date executionDate, 
+    public ImmediateTransaction getImmediateTransaction(Date executionDate,
             BigDecimal value, String description, Category category)
         throws DatabaseException {
         dbReadyOrThrow();
@@ -354,7 +354,7 @@ public class MoneyNode extends DatabaseObject {
         SQLiteDatabase db = getDb();
         Long id = null;
 
-        StringBuilder queryBuilder = 
+        StringBuilder queryBuilder =
             new StringBuilder(QUERY_IMMEDIATETRANSACTIONS);
         queryBuilder.append(" AND ");
         queryBuilder.append(ImmediateTransaction.COL_EXECUTIONDATE);
@@ -366,7 +366,7 @@ public class MoneyNode extends DatabaseObject {
         queryBuilder.append(ImmediateTransaction.COL_CATEGORYID);
         queryBuilder.append(" = ?");
 
-        Cursor cursor = db.rawQuery(queryBuilder.toString(), 
+        Cursor cursor = db.rawQuery(queryBuilder.toString(),
                 new String[] {
                     getId().toString(),
                     Long.toString(executionDate.getTime()),
@@ -385,7 +385,7 @@ public class MoneyNode extends DatabaseObject {
         return ImmediateTransaction.createFromId(id);
     }
 
-    public List<ImmediateTransaction> getImmediateTransactions() 
+    public List<ImmediateTransaction> getImmediateTransactions()
         throws DatabaseException {
         return getImmediateTransactions(null, null);
     }
@@ -400,13 +400,13 @@ public class MoneyNode extends DatabaseObject {
      * @return List of ImmediateTransactions executed inside this interval and
      * associated with this money node.
      */
-    public List<ImmediateTransaction> getImmediateTransactions(Date startDate, 
+    public List<ImmediateTransaction> getImmediateTransactions(Date startDate,
             Date endDate) throws DatabaseException {
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();
 
-        List<ImmediateTransaction> immediateTransactions = 
+        List<ImmediateTransaction> immediateTransactions =
             new LinkedList<ImmediateTransaction>();
 
         String query = QUERY_IMMEDIATETRANSACTIONS;
@@ -423,11 +423,11 @@ public class MoneyNode extends DatabaseObject {
 
         Log.d("TMM", "ImmediateTransactin query: \n" + query);
 
-        Cursor cursor = db.rawQuery(query, 
+        Cursor cursor = db.rawQuery(query,
                 new String[] {getId().toString()});
 
         while (cursor.moveToNext()) {
-            ImmediateTransaction immediateTransaction = 
+            ImmediateTransaction immediateTransaction =
                 ImmediateTransaction.createFromId(cursor.getLong(0));
             immediateTransaction.setDb(db);
             immediateTransactions.add(immediateTransaction);
@@ -454,7 +454,7 @@ public class MoneyNode extends DatabaseObject {
 
         SQLiteDatabase db = getDb();
 
-        int result = db.delete(Transaction.TABLE_NAME, 
+        int result = db.delete(Transaction.TABLE_NAME,
                 Transaction.COL_ID + " = ?",
                 new String[]{transaction.getId().toString()});
 
@@ -471,25 +471,25 @@ public class MoneyNode extends DatabaseObject {
         }
     }
 
-    public List<ScheduledTransaction> getScheduledTransactions() 
+    public List<ScheduledTransaction> getScheduledTransactions()
         throws DatabaseException {
         dbReadyOrThrow();
 
         SQLiteDatabase db = getDb();
 
-        List<ScheduledTransaction> immediateTransactions = 
+        List<ScheduledTransaction> immediateTransactions =
             new LinkedList<ScheduledTransaction>();
 
-        Cursor cursor = db.rawQuery(QUERY_SCHEDULEDTRANSACTIONS, 
+        Cursor cursor = db.rawQuery(QUERY_SCHEDULEDTRANSACTIONS,
                 new String[] {getId().toString()});
 
         while (cursor.moveToNext()) {
-            ScheduledTransaction immediateTransaction = 
+            ScheduledTransaction immediateTransaction =
                 new ScheduledTransaction(cursor.getLong(0));
             immediateTransaction.setDb(db);
             immediateTransactions.add(immediateTransaction);
         }
-        
+
         cursor.close();
 
         return immediateTransactions;
@@ -505,7 +505,7 @@ public class MoneyNode extends DatabaseObject {
                 Long id = in.readLong();
                 return createFromId(id);
             }
- 
+
             public MoneyNode[] newArray(int size) {
                 return new MoneyNode[size];
             }
@@ -517,10 +517,10 @@ public class MoneyNode extends DatabaseObject {
 
         SQLiteDatabase db = getDb();
 
-        Cursor cursor = db.rawQuery(QUERY_BALANCE, 
+        Cursor cursor = db.rawQuery(QUERY_BALANCE,
                 new String[] {getId().toString()});
 
-        balance = new BigDecimal("0.0").add(initialBalance);
+        balance = new BigDecimal("0.00").add(initialBalance);
 
         while (cursor.moveToNext()) {
             balance = new BigDecimal(cursor.getString(0)).add(balance);
