@@ -2,11 +2,12 @@
   Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_editTransaction"
         android:icon="@android:drawable/ic_menu_edit"
         android:orderInCategory="100"
-        android:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/editTransaction"/>
 </menu>

@@ -22,17 +22,19 @@ dependencies {
     compile fileTree(dir: "libs", include: "*.jar")
     compile project(":libraries:actionbarsherlock:actionbarsherlock")
     compile project(":libraries:aFileChooser:aFileChooser")
+    compile 'com.android.support:support-v4:18.0+'
+    compile 'com.android.support:support-v7:18.0+'
     //compile "com.nineoldandroids:library:2.4.0"
 }
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 17
     buildToolsVersion "20.0.0"
 
     defaultConfig {
         versionCode 8
         minSdkVersion 8
-        targetSdkVersion 19
+        targetSdkVersion 17
         applicationId "net.alexjf.tmm"
     }
 

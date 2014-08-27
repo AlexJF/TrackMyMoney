@@ -13,13 +13,16 @@ import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.domain.UserList;
 import net.alexjf.tmm.exceptions.DatabaseException;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -27,12 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-
-public class MoneyNodeListActivity extends SherlockActivity {
+public class MoneyNodeListActivity extends ActionBarActivity {
     private static final int REQCODE_ADD = 0;
     private static final int REQCODE_EDIT = 1;
     private static final int REQCODE_PREF = 2;
@@ -80,19 +78,19 @@ public class MoneyNodeListActivity extends SherlockActivity {
         moneyNodesListView.setEmptyView(emptyView);
         moneyNodesListView.setAdapter(adapter);
         moneyNodesListView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, 
+            public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
                 MoneyNode selectedNode = adapter.getItem(position);
 
                 if (intention.equals(INTENTION_MANAGE)) {
-                    Intent intent = new Intent(MoneyNodeListActivity.this, 
+                    Intent intent = new Intent(MoneyNodeListActivity.this,
                         MoneyNodeDetailsActivity.class);
                     intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
                     startActivity(intent);
                 } else {
                     Intent data = new Intent();
                     data.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
-                    setResult(SherlockActivity.RESULT_OK, data);
+                    setResult(ActionBarActivity.RESULT_OK, data);
                     finish();
                 }
             }
@@ -111,7 +109,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
             moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
             moneyNodes.removeAll(excludedMoneyNodes);
         } catch (Exception e) {
-            Log.e("TMM", "Failed to get money nodes: " + e.getMessage() + 
+            Log.e("TMM", "Failed to get money nodes: " + e.getMessage() +
                     "\n" + e.getStackTrace());
             moneyNodes = new LinkedList<MoneyNode>();
         }
@@ -134,7 +132,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_moneynode_list, menu);
         return true;
     }
@@ -144,7 +142,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
         Intent intent;
         switch (item.getItemId()) {
             case R.id.menu_add:
-                intent = new Intent(this, 
+                intent = new Intent(this,
                     MoneyNodeEditActivity.class);
                 startActivityForResult(intent, REQCODE_ADD);
                 return true;
@@ -173,7 +171,7 @@ public class MoneyNodeListActivity extends SherlockActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
+    protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -208,14 +206,14 @@ public class MoneyNodeListActivity extends SherlockActivity {
                 } catch (DatabaseException e) {
                     Log.e("TMM", "Unable to delete money node", e);
                     Toast.makeText(
-                        this, 
+                        this,
                         getResources().getString(
-                            R.string.error_moneynode_delete), 
-                        3).show();
+                            R.string.error_moneynode_delete),
+                        Toast.LENGTH_LONG).show();
                 }
                 return true;
             case R.id.menu_edit:
-                Intent intent = new Intent(this, 
+                Intent intent = new Intent(this,
                     MoneyNodeEditActivity.class);
                 intent.putExtra(MoneyNode.KEY_MONEYNODE, node);
                 startActivityForResult(intent, REQCODE_EDIT);

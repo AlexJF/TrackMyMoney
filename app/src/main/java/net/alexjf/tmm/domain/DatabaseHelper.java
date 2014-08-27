@@ -60,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, user.getName() + ".db", null, DATABASE_VERSION);
         currentUser = user;
         PreferenceManager prefManager = PreferenceManager.getInstance();
-        prefManager.writeGlobalStringPreference(KEY_CURRENTUSER, 
+        prefManager.writeGlobalStringPreference(KEY_CURRENTUSER,
                 user.getName() + ":" + user.getPassword());
     }
 
@@ -76,7 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         this.preventClose = preventClose;
     }
 
-    public SQLiteDatabase getReadableDatabase() 
+    public SQLiteDatabase getReadableDatabase()
         throws DatabaseUnknownUserException {
         userDefinedOrThrow();
         return getReadableDatabase(currentUser.getPassword());
@@ -93,7 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             db = getReadableDatabase();
-            db.query("sqlite_master", new String[] { "count(*)" }, null, null, 
+            db.query("sqlite_master", new String[] { "count(*)" }, null, null,
                     null, null, null, null);
             return true;
         } catch (SQLiteException e) {
@@ -133,7 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
 
-        Log.e("TMM", "opened database with version " + db.getVersion());
+        Log.d("TMM", "opened database with version " + db.getVersion());
 
         if (!db.isReadOnly()) {
             // Enable foreign key constraints
@@ -152,8 +152,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /*
         sqlStatements.add(
             "CREATE TABLE ScheduledToImmediate (" +
-                "scheduledId INTEGER NOT NULL REFERENCES ScheduledTransactions ON DELETE CASCADE," + 
-                "immediateId INTEGER NOT NULL REFERENCES ImmediateTransactions ON DELETE CASCADE" + 
+                "scheduledId INTEGER NOT NULL REFERENCES ScheduledTransactions ON DELETE CASCADE," +
+                "immediateId INTEGER NOT NULL REFERENCES ImmediateTransactions ON DELETE CASCADE" +
             ");");
 
         for (String sql : sqlStatements) {
@@ -174,8 +174,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<MoneyNode> getMoneyNodes() throws DatabaseException {
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
-                new String[] {MoneyNode.COL_ID}, 
+        Cursor cursor = db.query(MoneyNode.TABLE_NAME,
+                new String[] {MoneyNode.COL_ID},
                 null, null, null, null, null, null);
 
         List<MoneyNode> moneyNodes = new ArrayList<MoneyNode>(cursor.getCount());
@@ -195,8 +195,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Long id = null;
 
-        Cursor cursor = db.query(MoneyNode.TABLE_NAME, 
-                new String[] {MoneyNode.COL_ID}, 
+        Cursor cursor = db.query(MoneyNode.TABLE_NAME,
+                new String[] {MoneyNode.COL_ID},
                 MoneyNode.COL_NAME + " = ?",
                 new String[] {name},
                 null, null, null, null);
@@ -229,8 +229,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Category> getCategories() throws DatabaseException {
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.query(Category.TABLE_NAME, 
-                new String[] {Category.COL_ID}, 
+        Cursor cursor = db.query(Category.TABLE_NAME,
+                new String[] {Category.COL_ID},
                 null, null, null, null, null, null);
 
         List<Category> categories = new ArrayList<Category>(cursor.getCount());
@@ -256,8 +256,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Long id = null;
         SQLiteDatabase db = getReadableDatabase();
 
-        Cursor cursor = db.query(Category.TABLE_NAME, 
-                new String[] {Category.COL_ID}, 
+        Cursor cursor = db.query(Category.TABLE_NAME,
+                new String[] {Category.COL_ID},
                 Category.COL_NAME + " = ?",
                 new String[] {name},
                 null, null, null, null);
@@ -303,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         context.deleteDatabase(user.getName() + ".db");
     }
 
-    private void userDefinedOrThrow() 
+    private void userDefinedOrThrow()
         throws DatabaseUnknownUserException {
         if (currentUser == null) {
             throw new DatabaseUnknownUserException();

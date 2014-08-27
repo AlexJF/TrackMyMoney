@@ -10,12 +10,12 @@ import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
 import net.alexjf.tmm.utils.PreferenceManager;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,9 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-
-public class UserListActivity extends SherlockActivity {
+public class UserListActivity extends ActionBarActivity {
     private static final String KEY_CURUSERINDEX = "curUserIdx";
 
     private static final int REQCODE_ADD = 0;
@@ -59,19 +57,9 @@ public class UserListActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
 
-        adapter = new SelectedAdapter<User>(this, 
-                R.layout.list_row_user, R.id.user_label, 
+        adapter = new SelectedAdapter<User>(this,
+                R.layout.list_row_user, R.id.user_label,
                 R.color.user_bg_normal, R.color.user_bg_selected);
-
-        View footer = (View) getLayoutInflater().inflate(
-                R.layout.list_footer_user, null);
-        footer.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(UserListActivity.this, 
-                    UserEditActivity.class);
-                startActivityForResult(intent, REQCODE_ADD);
-            };
-        });
 
         userPasswordLayout = findViewById(R.id.userpassword_layout);
         userPasswordText = (EditText) findViewById(R.id.userpassword_text);
@@ -79,25 +67,35 @@ public class UserListActivity extends SherlockActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    InputMethodManager imm = (InputMethodManager) 
+                    InputMethodManager imm = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.showSoftInput(v, 0);
                 }
             }
         });
-        
+
         rememberLoginCheck = (CheckBox) findViewById(R.id.remember_login);
 
         ListView userListView = (ListView) findViewById(R.id.user_list);
 
+        View footer = (View) getLayoutInflater().inflate(
+                R.layout.list_footer_user, userListView, false);
+        footer.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(UserListActivity.this,
+                    UserEditActivity.class);
+                startActivityForResult(intent, REQCODE_ADD);
+            };
+        });
+
         userListView.addFooterView(footer);
         userListView.setAdapter(adapter);
         userListView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, 
+            public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Log.d("TTM", "Item selected at position " + position);
                 userPasswordLayout.setLayoutParams(
-                    new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 
+                    new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                                                   LayoutParams.WRAP_CONTENT));
                 userPasswordText.setText("");
                 selectUser(position);
@@ -135,7 +133,7 @@ public class UserListActivity extends SherlockActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
+    protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -171,14 +169,14 @@ public class UserListActivity extends SherlockActivity {
                 UserList userList = new UserList(this);
                 userList.removeUser(user);
                 PreferenceManager prefManager = PreferenceManager.getInstance();
-                SharedPreferences.Editor editor = 
+                SharedPreferences.Editor editor =
                     prefManager.getUserPreferences(user).edit();
                 editor.clear();
                 editor.commit();
                 refreshUserList();
                 return true;
             case R.id.menu_edit:
-                Intent intent = new Intent(UserListActivity.this, 
+                Intent intent = new Intent(UserListActivity.this,
                     UserEditActivity.class);
                 intent.putExtra(User.KEY_USER, user);
                 startActivityForResult(intent, REQCODE_EDIT);
@@ -218,7 +216,7 @@ public class UserListActivity extends SherlockActivity {
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
         if (dbHelper.login()) {
             if (rememberLoginCheck.isChecked()) {
-                UserList.setRememberedLogin(UserListActivity.this, 
+                UserList.setRememberedLogin(UserListActivity.this,
                     user);
                 finish = true;
             }
@@ -233,9 +231,9 @@ public class UserListActivity extends SherlockActivity {
         } else {
             userPasswordText.setText("");
             String strError = getResources().getString(R.string.error_login_failed);
-            Toast.makeText(UserListActivity.this, 
-                String.format(strError, user.getName()), 
-                3).show();
+            Toast.makeText(UserListActivity.this,
+                String.format(strError, user.getName()),
+                Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -8,14 +8,12 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.fragments.UserEditorFragment;
 import net.alexjf.tmm.fragments.UserEditorFragment.OnUserEditListener;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class UserEditActivity extends SherlockFragmentActivity 
+public class UserEditActivity extends ActionBarActivity
     implements OnUserEditListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +44,7 @@ public class UserEditActivity extends SherlockFragmentActivity
     public void onUserEdited(User user) {
         Intent data = new Intent();
         Log.d("TMM", "Editing user " + user.getName());
-        setResult(SherlockFragmentActivity.RESULT_OK, data);
+        setResult(ActionBarActivity.RESULT_OK, data);
         finish();
     }
 
@@ -54,7 +52,7 @@ public class UserEditActivity extends SherlockFragmentActivity
         Intent data = new Intent();
         Log.d("TMM", "Adding user " + user.getName());
         data.putExtra(User.KEY_USER, user);
-        setResult(SherlockFragmentActivity.RESULT_OK, data);
+        setResult(ActionBarActivity.RESULT_OK, data);
         finish();
     }
 }

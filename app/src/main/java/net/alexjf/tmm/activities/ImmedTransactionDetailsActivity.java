@@ -9,18 +9,16 @@ import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.ImmedTransactionDetailsFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-
-public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
+public class ImmedTransactionDetailsActivity extends ActionBarActivity {
     private static final int REQCODE_EDIT = 0;
 
     private static final String KEY_OLDTRANSACTIONINFO = "oldTransInfo";
@@ -36,7 +34,7 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
         setContentView(R.layout.activity_immedtransaction_details);
 
         Intent intent = getIntent();
-        currentImmedTransaction = (ImmediateTransaction) 
+        currentImmedTransaction = (ImmediateTransaction)
             intent.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
         try {
             currentImmedTransaction.load();
@@ -44,7 +42,7 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
             Log.e("TMM", e.getMessage(), e);
         }
 
-        detailsFragment = (ImmedTransactionDetailsFragment) 
+        detailsFragment = (ImmedTransactionDetailsFragment)
             getSupportFragmentManager().findFragmentById(
                 R.id.immedtransaction_details);
         detailsFragment.setTransaction(currentImmedTransaction);
@@ -62,7 +60,7 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
         Intent result = new Intent();
         result.putExtra(ImmediateTransaction.KEY_TRANSACTION,
             currentImmedTransaction);
-        result.putExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO, 
+        result.putExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO,
             oldTransactionInfo);
         setResult(RESULT_OK, result);
         super.finish();
@@ -70,7 +68,7 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_immedtrans_details, menu);
         return true;
     }
@@ -79,9 +77,9 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_editTransaction:
-                Intent intent = new Intent(this, 
+                Intent intent = new Intent(this,
                     ImmedTransactionEditActivity.class);
-                intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, 
+                intent.putExtra(ImmediateTransaction.KEY_TRANSACTION,
                     currentImmedTransaction);
                 startActivityForResult(intent, REQCODE_EDIT);
                 return true;
@@ -91,7 +89,7 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
+    protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -109,9 +107,9 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (oldTransactionInfo != null) {
-            outState.putParcelable(KEY_OLDTRANSACTIONINFO, 
+            outState.putParcelable(KEY_OLDTRANSACTIONINFO,
                     oldTransactionInfo);
-        } 
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -120,7 +118,7 @@ public class ImmedTransactionDetailsActivity extends SherlockFragmentActivity {
         super.onRestoreInstanceState(state);
 
         if (state != null) {
-            oldTransactionInfo = (ImmedTransactionEditOldInfo) 
+            oldTransactionInfo = (ImmedTransactionEditOldInfo)
                 state.getParcelable(KEY_OLDTRANSACTIONINFO);
         }
     }

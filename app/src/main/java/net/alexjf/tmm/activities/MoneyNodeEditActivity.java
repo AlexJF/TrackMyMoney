@@ -10,15 +10,13 @@ import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment.OnMoneyNodeEditListener;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class MoneyNodeEditActivity extends SherlockFragmentActivity 
+public class MoneyNodeEditActivity extends ActionBarActivity
     implements OnMoneyNodeEditListener {
 
     @Override
@@ -52,14 +50,14 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
             Intent data = new Intent();
             Log.d("TMM", "Editing moneynode " + node.getName());
             node.save();
-            setResult(SherlockFragmentActivity.RESULT_OK, data);
+            setResult(ActionBarActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure editing money node", e);
             String strError = getResources().getString(
                     R.string.error_moneynode_edit);
             Toast.makeText(MoneyNodeEditActivity.this,
-                String.format(strError, e.getMessage()), 3).show();
+                String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -69,14 +67,14 @@ public class MoneyNodeEditActivity extends SherlockFragmentActivity
             Log.d("TMM", "Adding moneynode " + node.getName());
             node.save();
             data.putExtra(MoneyNode.KEY_MONEYNODE, node);
-            setResult(SherlockFragmentActivity.RESULT_OK, data);
+            setResult(ActionBarActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure adding money node", e);
             String strError = getResources().getString(
                     R.string.error_moneynode_add);
             Toast.makeText(MoneyNodeEditActivity.this,
-                String.format(strError, e.getMessage()), 3).show();
+                String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -25,16 +25,19 @@ import net.alexjf.tmm.fragments.ImmedTransactionStatsFragment;
 import net.alexjf.tmm.interfaces.IWithAdapter;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
-
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -43,13 +46,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-
-public class MoneyNodeDetailsActivity extends SherlockFragmentActivity 
+public class MoneyNodeDetailsActivity extends ActionBarActivity
     implements OnDateIntervalChangedListener, OnImmedTransactionActionListener,
            AsyncTaskResultListener {
     private static String KEY_IMMEDIATETRANSACTIONS = "immediateTransactions";
@@ -118,7 +115,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         moreBalanceButton = (ImageView) findViewById(R.id.balance_more_button);
         incomeTextView = (TextView) findViewById(R.id.income_value);
         expenseTextView = (TextView) findViewById(R.id.expense_value);
-        totalTransactionsTextView = (TextView) 
+        totalTransactionsTextView = (TextView)
             findViewById(R.id.total_transactions_value);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
 
@@ -136,7 +133,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         tabAdapter.setOnTabFragmentCreateListener(new OnTabFragmentCreateListener() {
             public void onTabFragmentCreated(Fragment fragment, int position) {
                 Log.d("TMM", "Tab fragment created");
-                IWithAdapter fragmentWithAdapter = 
+                IWithAdapter fragmentWithAdapter =
                     (IWithAdapter) fragment;
                 fragmentWithAdapter.setAdapter(immedTransAdapter);
             }
@@ -144,7 +141,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         balancePanel.setOnClickListener(new OnClickListener() {
             public void onClick(View view) {
-                LayoutParams detailsLayoutParams = 
+                LayoutParams detailsLayoutParams =
                     balanceDetailsPanel.getLayoutParams();
                 if (detailsLayoutParams.height == 0) {
                     detailsLayoutParams.height = LayoutParams.WRAP_CONTENT;
@@ -169,11 +166,11 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     @Override
     public void onSaveInstanceState(Bundle outState) {
         if (startDate != null) {
-            outState.putString(KEY_CURRENTSTARTDATE, 
+            outState.putString(KEY_CURRENTSTARTDATE,
                     dateTimeFormat.format(startDate));
-        } 
+        }
         if (endDate != null) {
-            outState.putString(KEY_CURRENTENDDATE, 
+            outState.putString(KEY_CURRENTENDDATE,
                     dateTimeFormat.format(endDate));
         }
         super.onSaveInstanceState(outState);
@@ -187,7 +184,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_moneynode_details, menu);
         return true;
     }
@@ -196,7 +193,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_addTransaction:
-                Intent intent = new Intent(this, 
+                Intent intent = new Intent(this,
                     ImmedTransactionEditActivity.class);
                 intent.putExtra(MoneyNode.KEY_MONEYNODE, currentMoneyNode);
                 startActivityForResult(intent, REQCODE_ADD);
@@ -212,13 +209,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
+    protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             ImmediateTransaction transaction;
             switch (requestCode) {
                 case REQCODE_ADD:
-                    transaction = (ImmediateTransaction) 
+                    transaction = (ImmediateTransaction)
                         data.getParcelableExtra(
                             ImmediateTransaction.KEY_TRANSACTION);
 
@@ -232,10 +229,10 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                     }
                     break;
                 case REQCODE_DETAILS:
-                    transaction = (ImmediateTransaction) 
+                    transaction = (ImmediateTransaction)
                         data.getParcelableExtra(
                             ImmediateTransaction.KEY_TRANSACTION);
-                    ImmedTransactionEditOldInfo oldInfo = 
+                    ImmedTransactionEditOldInfo oldInfo =
                         (ImmedTransactionEditOldInfo) data.getParcelableExtra(
                             ImmedTransactionEditOldInfo.KEY_OLDINFO);
 
@@ -273,13 +270,13 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         String strLoading = getResources().getString(
                 R.string.loading);
 
-        transactionTask = 
-            new AsyncTaskWithProgressDialog<Date> 
+        transactionTask =
+            new AsyncTaskWithProgressDialog<Date>
             (this, TASK_TRANSACTIONS, strLoading) {
                 @Override
                 protected Bundle doInBackground(Date... args) {
                     try {
-                        List<ImmediateTransaction> immediateTransactions = 
+                        List<ImmediateTransaction> immediateTransactions =
                             currentMoneyNode.getImmediateTransactions(
                                 args[0], args[1]);
                         Bundle bundle = new Bundle();
@@ -311,7 +308,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         // If we are not limiting the start date or it is less than or equal to
         // money node creationDate, add initialBalance
-        if (startDate == null || 
+        if (startDate == null ||
             startDate.compareTo(currentMoneyNode.getCreationDate()) <= 0) {
             BigDecimal initialBalance = currentMoneyNode.getInitialBalance();
             balance = balance.add(initialBalance);
@@ -333,7 +330,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
         try {
             transaction.load();
             if (transaction.getMoneyNode() == currentMoneyNode) {
-                if (Utils.dateBetween(transaction.getExecutionDate(), 
+                if (Utils.dateBetween(transaction.getExecutionDate(),
                         startDate, endDate)) {
                     immedTransAdapter.add(transaction);
                     BigDecimal value = transaction.getValue();
@@ -389,7 +386,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         // If immediate transaction is no longer on the period being considered,
         // remove it
-        if (!Utils.dateBetween(transaction.getExecutionDate(), 
+        if (!Utils.dateBetween(transaction.getExecutionDate(),
                     startDate, endDate)) {
             immedTransAdapter.remove(transaction);
             onImmedTransactionRemoved(transaction);
@@ -414,7 +411,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
                     expenseDelta = expenseDelta.add(delta);
                     break;
             }
-        } 
+        }
         // Else we need to modify both income and expense
         else {
             switch (originalValue.signum()) {
@@ -439,7 +436,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
     @Override
     public void onImmedTransactionSelected(ImmediateTransaction transaction) {
-        Intent intent = new Intent(this, 
+        Intent intent = new Intent(this,
             ImmedTransactionDetailsActivity.class);
         intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, transaction);
         startActivityForResult(intent, REQCODE_DETAILS);
@@ -462,7 +459,7 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
 
         income = BigDecimal.valueOf(0);
         expense = BigDecimal.valueOf(0);
-        ImmediateTransaction[] immediateTransactions = 
+        ImmediateTransaction[] immediateTransactions =
             (ImmediateTransaction[])
             result.getParcelableArray(KEY_IMMEDIATETRANSACTIONS);
         for (ImmediateTransaction transaction : immediateTransactions) {
@@ -492,8 +489,8 @@ public class MoneyNodeDetailsActivity extends SherlockFragmentActivity
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
         String strError = getResources().getString(
                 R.string.error_moneynode_load_transactions);
-        Toast.makeText(this, 
-            String.format(strError, e.getMessage()), 3).show();
+        Toast.makeText(this,
+            String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         Log.e("TMM", e.getMessage(), e);
         transactionTask = null;
         Utils.allowOrientationChanges(this);

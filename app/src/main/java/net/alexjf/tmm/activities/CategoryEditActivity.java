@@ -7,19 +7,16 @@ package net.alexjf.tmm.activities;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.CategoryEditorFragment;
 import net.alexjf.tmm.fragments.CategoryEditorFragment.OnCategoryEditListener;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class CategoryEditActivity extends SherlockFragmentActivity 
+public class CategoryEditActivity extends ActionBarActivity
     implements OnCategoryEditListener {
 
     @Override
@@ -53,13 +50,13 @@ public class CategoryEditActivity extends SherlockFragmentActivity
             Intent data = new Intent();
             Log.d("TMM", "Editing category " + category.getName());
             category.save();
-            setResult(SherlockFragmentActivity.RESULT_OK, data);
+            setResult(ActionBarActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure editing category", e);
             String strError = getResources().getString(R.string.error_cat_edit);
             Toast.makeText(CategoryEditActivity.this,
-                String.format(strError, e.getMessage()), 3).show();
+                String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -69,13 +66,13 @@ public class CategoryEditActivity extends SherlockFragmentActivity
             Log.d("TMM", "Adding category " + category.getName());
             category.save();
             data.putExtra(Category.KEY_CATEGORY, category);
-            setResult(SherlockFragmentActivity.RESULT_OK, data);
+            setResult(ActionBarActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure adding category", e);
             String strError = getResources().getString(R.string.error_cat_add);
             Toast.makeText(CategoryEditActivity.this,
-                String.format(strError, e.getMessage()), 3).show();
+                String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 }

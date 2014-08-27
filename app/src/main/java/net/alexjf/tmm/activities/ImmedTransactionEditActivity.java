@@ -12,15 +12,13 @@ import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.OnImmediateTransactionEditListener;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class ImmedTransactionEditActivity extends SherlockFragmentActivity 
+public class ImmedTransactionEditActivity extends ActionBarActivity
     implements OnImmediateTransactionEditListener {
 
     public static final String KEY_FORCE_ADD = "forceAdd";
@@ -31,9 +29,9 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         setContentView(R.layout.activity_immedtransaction_edit);
 
         Intent intent = getIntent();
-        MoneyNode moneyNode = (MoneyNode) 
+        MoneyNode moneyNode = (MoneyNode)
             intent.getParcelableExtra(MoneyNode.KEY_MONEYNODE);
-        ImmediateTransaction transaction = (ImmediateTransaction) 
+        ImmediateTransaction transaction = (ImmediateTransaction)
             intent.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
 
         ImmedTransactionEditorFragment editor = (ImmedTransactionEditorFragment)
@@ -54,7 +52,7 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
         DatabaseHelper.getInstance().close();
     }
 
-    public void onImmediateTransactionEdited(ImmediateTransaction trans, 
+    public void onImmediateTransactionEdited(ImmediateTransaction trans,
             ImmedTransactionEditOldInfo oldInfo) {
         try {
             Intent data = new Intent();
@@ -70,21 +68,21 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
             // If this is not a transfer transaction but was one before,
             // remove the other one
             else if (oldInfo.getTransferTransaction() != null) {
-                ImmediateTransaction otherTransaction = 
+                ImmediateTransaction otherTransaction =
                     oldInfo.getTransferTransaction();
                 MoneyNode otherNode = otherTransaction.getMoneyNode();
                 otherNode.removeImmediateTransaction(otherTransaction);
             }
             data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
             data.putExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO, oldInfo);
-            setResult(SherlockFragmentActivity.RESULT_OK, data);
+            setResult(ActionBarActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure editing immediate transaction", e);
-            String strError = 
+            String strError =
                 getResources().getString(R.string.error_trans_edit);
             Toast.makeText(ImmedTransactionEditActivity.this,
-                String.format(strError, e.getMessage()), 3).show();
+                String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -101,14 +99,14 @@ public class ImmedTransactionEditActivity extends SherlockFragmentActivity
                 trans.save();
             }
             data.putExtra(ImmediateTransaction.KEY_TRANSACTION, trans);
-            setResult(SherlockFragmentActivity.RESULT_OK, data);
+            setResult(ActionBarActivity.RESULT_OK, data);
             finish();
         } catch (DatabaseException e) {
             Log.e("TMM", "Failure adding immediate transaction", e);
-            String strError = 
+            String strError =
                 getResources().getString(R.string.error_trans_add);
             Toast.makeText(ImmedTransactionEditActivity.this,
-                String.format(strError, e.getMessage()), 3).show();
+                String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         }
     }
 }

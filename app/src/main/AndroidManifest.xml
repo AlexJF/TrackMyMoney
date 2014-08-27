@@ -8,16 +8,17 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="17" />
 
     <application
         android:name="TrackMyMoneyApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name_value"
-        android:theme="@style/Theme.Sherlock" >
+        android:theme="@style/AppTheme"
+        android:allowBackup="true">
         <activity
             android:name=".activities.UserListActivity"
-            android:theme="@style/Theme.Sherlock.NoActionBar"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/title_activity_user_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -35,7 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class RestorePreference 
+public class RestorePreference
     extends DialogWithAsyncTaskProgressPreference<String>
     implements OnFileChosenListener {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_restore;
@@ -82,7 +82,7 @@ public class RestorePreference
     protected AsyncTaskWithProgressDialog<String> createTask() {
         String strLoading = getActivity().getResources().getString(
                 R.string.restoring);
-        return new AsyncTaskWithProgressDialog<String> 
+        return new AsyncTaskWithProgressDialog<String>
             (TASK_RESTORE, strLoading) {
                 @Override
                 protected Bundle doInBackground(String... args) {
@@ -97,7 +97,7 @@ public class RestorePreference
                         dbHelper.close();
                         User currentUser = dbHelper.getCurrentUser();
                         File filesDir = getActivity().getFilesDir();
-                        File dbFile = new File(filesDir, "../databases/" + 
+                        File dbFile = new File(filesDir, "../databases/" +
                                 currentUser.getName() + ".db");
                         FileOutputStream fos = new FileOutputStream(dbFile);
 
@@ -116,7 +116,7 @@ public class RestorePreference
                         is = backupZip.getInputStream(prefEntry);
                         ObjectInputStream ois = new ObjectInputStream(is);
 
-                        PreferenceManager prefManager = 
+                        PreferenceManager prefManager =
                             PreferenceManager.getInstance();
                         SharedPreferences.Editor prefEdit = prefManager.
                             getCurrentUserPreferences().edit();
@@ -143,6 +143,7 @@ public class RestorePreference
                             prefEdit.commit();
                         } finally {
                             ois.close();
+                            backupZip.close();
                         }
                     } catch (Exception e) {
                         setThrowable(e);
@@ -167,9 +168,9 @@ public class RestorePreference
     public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
         super.onAsyncTaskResultSuccess(taskId, resultData);
         PreferencesActivity activity = getActivity();
-        Toast.makeText(activity, 
-            getActivity().getResources().getString(R.string.restore_success), 
-            3).show();
+        Toast.makeText(activity,
+            getActivity().getResources().getString(R.string.restore_success),
+            Toast.LENGTH_LONG).show();
         activity.setForceDataRefresh(true);
         activity.refreshPreferenceScreen();
     }
@@ -179,8 +180,8 @@ public class RestorePreference
         super.onAsyncTaskResultFailure(taskId, e);
         String strError = getActivity().getResources().getString(
                 R.string.error_restore);
-        Toast.makeText(getActivity(), 
-            String.format(strError, e.getMessage()), 3).show();
+        Toast.makeText(getActivity(),
+            String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         Log.e("TMM", e.getMessage(), e);
     }
 }

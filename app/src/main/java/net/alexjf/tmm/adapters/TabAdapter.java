@@ -9,21 +9,19 @@ import java.util.Arrays;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.utils.PreferenceManager;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
  * Based on http://stackoverflow.com/a/10082836/441265
@@ -63,7 +61,7 @@ public class TabAdapter extends FragmentPagerAdapter implements
         }
     }
 
-    public TabAdapter(SherlockFragmentActivity activity, ViewPager pager) {
+    public TabAdapter(ActionBarActivity activity, ViewPager pager) {
         super(activity.getSupportFragmentManager());
         this.activity = activity;
         actionBar = activity.getSupportActionBar();
@@ -76,10 +74,10 @@ public class TabAdapter extends FragmentPagerAdapter implements
 
     public void refreshPreferences() {
         PreferenceManager prefManager = PreferenceManager.getInstance();
-        
-        String[] tabNavigationTypes = 
+
+        String[] tabNavigationTypes =
             activity.getResources().getStringArray(R.array.pref_tab_navigation_values);
-        String tabNavigation = 
+        String tabNavigation =
             prefManager.readUserStringPreference(KEY_TABNAV, "");
 
         int navIndex = Arrays.asList(tabNavigationTypes).indexOf(tabNavigation);
@@ -101,6 +99,7 @@ public class TabAdapter extends FragmentPagerAdapter implements
         if (!swipeEnabled) {
             viewPager.setOnTouchListener(new OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
+                	v.performClick();
                     return true;
                 }
             });
@@ -134,7 +133,7 @@ public class TabAdapter extends FragmentPagerAdapter implements
     @Override
     public Fragment getItem(int position) {
         TabInfo info = tabs.get(position);
-        Fragment fragment = Fragment.instantiate(activity, info.clss.getName(), 
+        Fragment fragment = Fragment.instantiate(activity, info.clss.getName(),
                 info.args);
         return fragment;
     }

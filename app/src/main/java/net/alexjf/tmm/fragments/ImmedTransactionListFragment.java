@@ -29,7 +29,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ImmedTransactionListFragment extends ListFragment 
+public class ImmedTransactionListFragment extends ListFragment
     implements IWithAdapter, DuplicateTransactionDialogListener {
     private static final String TAG_DUPLICATE = "duplicate";
 
@@ -61,7 +61,7 @@ public class ImmedTransactionListFragment extends ListFragment
 
         FragmentManager fm = getFragmentManager();
 
-        duplicateFragment = (DuplicateTransactionFragment) 
+        duplicateFragment = (DuplicateTransactionFragment)
             fm.findFragmentByTag(TAG_DUPLICATE);
 
         if (duplicateFragment == null) {
@@ -79,7 +79,7 @@ public class ImmedTransactionListFragment extends ListFragment
         try {
             listener = (OnImmedTransactionActionListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + 
+            throw new ClassCastException(activity.toString() +
                     " must implement OnImmedTransactionActionListener");
         }
     }
@@ -108,7 +108,7 @@ public class ImmedTransactionListFragment extends ListFragment
                 }
                 return true;
             case R.id.menu_edit:
-                Intent intent = new Intent(getListView().getContext(), 
+                Intent intent = new Intent(getListView().getContext(),
                     ImmedTransactionEditActivity.class);
                 intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, transaction);
                 startActivityForResult(intent, REQCODE_EDIT);
@@ -123,9 +123,8 @@ public class ImmedTransactionListFragment extends ListFragment
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, 
+    public void onActivityResult(int requestCode, int resultCode,
             Intent data) {
-        ImmediateTransactionAdapter adapter = (ImmediateTransactionAdapter) getListAdapter();
         if (resultCode == Activity.RESULT_OK) {
             ImmediateTransaction transaction;
             switch (requestCode) {
@@ -135,11 +134,10 @@ public class ImmedTransactionListFragment extends ListFragment
                         data.getParcelableExtra(ImmediateTransaction.KEY_TRANSACTION);
                     ImmedTransactionEditOldInfo oldInfo = (ImmedTransactionEditOldInfo)
                         data.getParcelableExtra(ImmedTransactionEditOldInfo.KEY_OLDINFO);
-                    //adapter.notifyDataSetChanged();
                     listener.onImmedTransactionEdited(transaction, oldInfo);
                     break;
             }
-        } 
+        }
     }
 
     @Override
@@ -148,21 +146,21 @@ public class ImmedTransactionListFragment extends ListFragment
         try {
             dstTransaction.save();
             listener.onImmedTransactionAdded(dstTransaction);
-            Intent intent = new Intent(getActivity(), 
+            Intent intent = new Intent(getActivity(),
                 ImmedTransactionEditActivity.class);
             intent.putExtra(ImmediateTransaction.KEY_TRANSACTION, dstTransaction);
             startActivityForResult(intent, REQCODE_EDITDUPLICATE);
         } catch (DatabaseException e) {
             Log.e("TMM", "Unable to save duplicate transaction", e);
-            Toast.makeText(getActivity(), 
+            Toast.makeText(getActivity(),
                 R.string.error_trans_duplicate,
-                3).show();
+                Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        ImmediateTransaction selectedTransaction = (ImmediateTransaction) 
+        ImmediateTransaction selectedTransaction = (ImmediateTransaction)
             getListAdapter().getItem(position);
         listener.onImmedTransactionSelected(selectedTransaction);
     }

@@ -12,13 +12,16 @@ import net.alexjf.tmm.adapters.CategoryAdapter;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.exceptions.DatabaseException;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -26,12 +29,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-
-public class CategoryListActivity extends SherlockActivity {
+public class CategoryListActivity extends ActionBarActivity {
     public static final String KEY_INTENTION = "intention";
     public static final String INTENTION_MANAGE = "manage";
     public static final String INTENTION_SELECT = "select";
@@ -70,7 +68,7 @@ public class CategoryListActivity extends SherlockActivity {
         categoriesListView.setAdapter(adapter);
 
         categoriesListView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, 
+            public void onItemClick(AdapterView<?> parent, View view,
                 int position, long id) {
                 Category selectedCategory = adapter.getItem(position);
                 Log.d("TMM", "Selected category " + selectedCategory.getName());
@@ -78,9 +76,9 @@ public class CategoryListActivity extends SherlockActivity {
                 if (intention.equals(INTENTION_SELECT)) {
                     Intent data = new Intent();
                     data.putExtra(Category.KEY_CATEGORY, selectedCategory);
-                    setResult(SherlockActivity.RESULT_OK, data);
+                    setResult(ActionBarActivity.RESULT_OK, data);
                     finish();
-                } 
+                }
                 else if (intention.equals(INTENTION_MANAGE)) {
                     // TODO: Browse by category on all money nodes
                 }
@@ -97,7 +95,7 @@ public class CategoryListActivity extends SherlockActivity {
         try {
             categories = DatabaseHelper.getInstance().getCategories();
         } catch (Exception e) {
-            Log.e("TMM", "Failed to get categories: " + e.getMessage() + 
+            Log.e("TMM", "Failed to get categories: " + e.getMessage() +
                     "\n" + e.getStackTrace());
             categories = new ArrayList<Category>();
         }
@@ -120,7 +118,7 @@ public class CategoryListActivity extends SherlockActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_category_list, menu);
         return true;
     }
@@ -129,7 +127,7 @@ public class CategoryListActivity extends SherlockActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add:
-                Intent intent = new Intent(this, 
+                Intent intent = new Intent(this,
                     CategoryEditActivity.class);
                 startActivityForResult(intent, REQCODE_ADD);
                 return true;
@@ -139,7 +137,7 @@ public class CategoryListActivity extends SherlockActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
+    protected void onActivityResult(int requestCode, int resultCode,
             Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -175,12 +173,12 @@ public class CategoryListActivity extends SherlockActivity {
                     Log.e("TMM", "Unable to delete category", e);
                     String strError = getResources().getString(
                             R.string.error_cat_delete);
-                    Toast.makeText(this, 
-                        strError, 3).show();
+                    Toast.makeText(this,
+                        strError, Toast.LENGTH_LONG).show();
                 }
                 return true;
             case R.id.menu_edit:
-                Intent intent = new Intent(this, 
+                Intent intent = new Intent(this,
                     CategoryEditActivity.class);
                 intent.putExtra(Category.KEY_CATEGORY, category);
                 startActivityForResult(intent, REQCODE_EDIT);
