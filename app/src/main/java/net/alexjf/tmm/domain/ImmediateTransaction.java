@@ -41,12 +41,17 @@ public class ImmediateTransaction extends Transaction {
             COL_EXECUTIONDATE + " DATETIME " +
                 "DEFAULT (DATETIME('now', 'localtime'))," +
             COL_TRANSFERTRANSID + " INTEGER " +
-                "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE" +
+                "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE SET NULL" +
         ");";
     public static final String SCHEMA_ADDTRANSFERTRANS =
         "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " +
             COL_TRANSFERTRANSID + " INTEGER " +
-                "REFERENCES " + ImmediateTransaction.TABLE_NAME + " ON DELETE CASCADE";
+                "REFERENCES " + ImmediateTransaction.TABLE_NAME + " ON DELETE SET NULL;";
+    public static final String SCHEMA_RENAME_TO_TMP =
+    	"ALTER TABLE " + TABLE_NAME + " RENAME TO tmp;";
+    public static final String SCHEMA_COPY_FROM_TMP =
+    	"INSERT INTO " + TABLE_NAME + " SELECT * FROM tmp;" +
+    	"DROP TABLE tmp;";
 
     // Database maintenance
     /**
@@ -71,6 +76,11 @@ public class ImmediateTransaction extends Transaction {
             case 0:
             case 1:
                 db.execSQL(SCHEMA_ADDTRANSFERTRANS);
+                break;
+            case 2:
+            	db.execSQL(SCHEMA_RENAME_TO_TMP);
+            	db.execSQL(SCHEMA_CREATETABLE);
+            	db.execSQL(SCHEMA_COPY_FROM_TMP);
                 break;
         }
     }

@@ -19,7 +19,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static final String KEY_CURRENTUSER = "activeUser";
 
