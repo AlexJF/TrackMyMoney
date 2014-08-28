@@ -4,12 +4,13 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.joda.money.Money;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.CategoryListActivity;
@@ -22,7 +23,6 @@ import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
 import net.alexjf.tmm.views.SelectorButton;
 import net.alexjf.tmm.views.SignToggleButton;
-
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -50,7 +50,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
 import de.congrace.exp4j.Calculable;
 import de.congrace.exp4j.ExpressionBuilder;
 
@@ -216,18 +215,18 @@ public class ImmedTransactionEditorFragment extends Fragment
                 executionDateTime = Utils.combineDateTime(executionDate,
                     executionTime);
 
-                BigDecimal value;
+                Money value;
+
                 try {
                     Calculable calc = new ExpressionBuilder(
                         valueText.getText().toString()).build();
-                    value = BigDecimal.valueOf(calc.calculate())
-                        .setScale(2, BigDecimal.ROUND_HALF_UP);
+                    value = Money.of(currentMoneyNode.getCurrency(), calc.calculate());
                 } catch (Exception e) {
-                    value = BigDecimal.valueOf(0);
+                    value = Money.zero(currentMoneyNode.getCurrency());
                 }
 
                 if (valueSignToggle.isNegative()) {
-                    value = value.multiply(BigDecimal.valueOf(-1));
+                    value = value.negated();
                 }
 
                 // If we are creating a new transaction
@@ -279,7 +278,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                             otherTransaction.setCategory(selectedCategory);
                             otherTransaction.setExecutionDate(executionDateTime);
                             otherTransaction.setValue(
-                                    value.multiply(new BigDecimal("-1")));
+                                    value.negated());
                         }
                     }
                     // If edited transaction no longer is a transfer but
@@ -409,9 +408,9 @@ public class ImmedTransactionEditorFragment extends Fragment
                             transaction.getExecutionDate()));
                 executionTimeButton.setText(timeFormat.format(
                             transaction.getExecutionDate()));
-                BigDecimal value = transaction.getValue();
-                valueText.setText(value.abs().toString());
-                valueSignToggle.setToNumberSign(value);
+                Money value = transaction.getValue();
+                valueText.setText(value.abs().getAmount().toString());
+                valueSignToggle.setToNumberSign(value.getAmount());
                 addButton.setText(R.string.edit);
             } catch (DatabaseException e) {
                 Log.e("TMM", "Error loading transaction", e);
@@ -419,7 +418,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         }
 
         if (currentMoneyNode != null) {
-            currencyTextView.setText(currentMoneyNode.getCurrency());
+            currencyTextView.setText(currentMoneyNode.getCurrency().getCurrencyCode());
         }
 
         updateCategoryFields();
@@ -435,11 +434,16 @@ public class ImmedTransactionEditorFragment extends Fragment
             categoryButton.setText(R.string.category_nonselected);
             categoryButton.setDrawableId(0);
         } else {
-            categoryButton.setText(selectedCategory.getName());
-            int drawableId = DrawableResolver.getInstance().getDrawableId(
-                    selectedCategory.getIcon());
-            categoryButton.setDrawableId(drawableId);
-            categoryButton.setError(false);
+        	try {
+	        	selectedCategory.load();
+	            categoryButton.setText(selectedCategory.getName());
+	            int drawableId = DrawableResolver.getInstance().getDrawableId(
+	                    selectedCategory.getIcon());
+	            categoryButton.setDrawableId(drawableId);
+	            categoryButton.setError(false);
+        	} catch (DatabaseException e) {
+        		Log.e("TMM", e.getMessage(), e);
+        	}
         }
     }
 
@@ -520,7 +524,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         private String description;
         private Category category;
         private Date executionDate;
-        private BigDecimal value;
+        private Money value;
         private ImmediateTransaction transferTransaction;
 
         public ImmedTransactionEditOldInfo(ImmediateTransaction trans) {
@@ -530,7 +534,7 @@ public class ImmedTransactionEditorFragment extends Fragment
         }
 
         public ImmedTransactionEditOldInfo(String description,
-                Category category, Date executionDate, BigDecimal value,
+                Category category, Date executionDate, Money value,
                 ImmediateTransaction transferTransaction) {
             this.description = description;
             this.category = category;
@@ -551,7 +555,7 @@ public class ImmedTransactionEditorFragment extends Fragment
             return executionDate;
         }
 
-        public BigDecimal getValue() {
+        public Money getValue() {
             return value;
         }
 
@@ -583,7 +587,7 @@ public class ImmedTransactionEditorFragment extends Fragment
                     } catch (ParseException e) {
                         Log.e("TMM", e.getMessage(), e);
                     }
-                    BigDecimal value = new BigDecimal(in.readString());
+                    Money value = Money.parse(in.readString());
                     ImmediateTransaction transferTransaction =
                         (ImmediateTransaction) in.readParcelable(
                                 ImmediateTransaction.class.getClassLoader());

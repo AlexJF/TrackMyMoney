@@ -4,9 +4,11 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
-import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
+
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
@@ -34,7 +36,7 @@ public class ImmediateTransaction extends Transaction {
     public static final String COL_TRANSFERTRANSID = "transferTransactionId";
 
     // Schema
-    public static final String SCHEMA_CREATETABLE =
+    private static final String SCHEMA_CREATETABLE =
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT " +
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE CASCADE," +
@@ -43,15 +45,18 @@ public class ImmediateTransaction extends Transaction {
             COL_TRANSFERTRANSID + " INTEGER " +
                 "REFERENCES " + Transaction.TABLE_NAME + " ON DELETE SET NULL" +
         ");";
-    public static final String SCHEMA_ADDTRANSFERTRANS =
-        "ALTER TABLE " + TABLE_NAME + " ADD COLUMN " +
-            COL_TRANSFERTRANSID + " INTEGER " +
-                "REFERENCES " + ImmediateTransaction.TABLE_NAME + " ON DELETE SET NULL;";
-    public static final String SCHEMA_RENAME_TO_TMP =
-    	"ALTER TABLE " + TABLE_NAME + " RENAME TO tmp;";
-    public static final String SCHEMA_COPY_FROM_TMP =
-    	"INSERT INTO " + TABLE_NAME + " SELECT * FROM tmp;" +
-    	"DROP TABLE tmp;";
+    private static final String SCHEMA_TRANSFER_TO_TMP =
+    	"INSERT INTO " + TABLE_NAME + "_tmp SELECT * FROM " + TABLE_NAME + ";";
+    private static final String SCHEMA_FK_DISABLE =
+    	"PRAGMA foreign_keys=OFF;";
+    private static final String SCHEMA_DROP_TABLE =
+    	"DROP TABLE " + TABLE_NAME + ";";
+    private static final String SCHEMA_TMP_TO_NEW =
+    	"ALTER TABLE " + TABLE_NAME + "_tmp RENAME TO " + TABLE_NAME + ";";
+    private static final String SCHEMA_FK_CHECK =
+    	"PRAGMA foreign_key_check;";
+    private static final String SCHEMA_FK_ENABLE =
+    	"PRAGMA foreign_keys=ON;";
 
     // Database maintenance
     /**
@@ -75,12 +80,14 @@ public class ImmediateTransaction extends Transaction {
         switch (oldVersion) {
             case 0:
             case 1:
-                db.execSQL(SCHEMA_ADDTRANSFERTRANS);
-                break;
             case 2:
-            	db.execSQL(SCHEMA_RENAME_TO_TMP);
-            	db.execSQL(SCHEMA_CREATETABLE);
-            	db.execSQL(SCHEMA_COPY_FROM_TMP);
+            	db.execSQL(SCHEMA_CREATETABLE.replaceFirst(TABLE_NAME, TABLE_NAME + "_tmp"));
+            	db.execSQL(SCHEMA_TRANSFER_TO_TMP);
+            	db.execSQL(SCHEMA_FK_DISABLE);
+            	db.execSQL(SCHEMA_DROP_TABLE);
+            	db.execSQL(SCHEMA_TMP_TO_NEW);
+            	db.execSQL(SCHEMA_FK_CHECK);
+            	db.execSQL(SCHEMA_FK_ENABLE);
                 break;
         }
     }
@@ -116,14 +123,14 @@ public class ImmediateTransaction extends Transaction {
     // Private fields
     private Date executionDate;
     private ImmediateTransaction transferTransaction;
-    private BigDecimal deltaValueFromPrevious;
-    private BigDecimal valueOnDatabase;
+    private Money deltaValueFromPrevious;
+    private Money valueOnDatabase;
     private MoneyNode moneyNodeOnDatabase;
 
     private ImmediateTransaction(Long id) {
         super(id);
-        deltaValueFromPrevious = BigDecimal.valueOf(0);
-        valueOnDatabase = BigDecimal.valueOf(0);
+        deltaValueFromPrevious = Money.zero(CurrencyUnit.EUR);
+        valueOnDatabase = Money.zero(CurrencyUnit.EUR);
         moneyNodeOnDatabase = null;
     }
 
@@ -136,13 +143,13 @@ public class ImmediateTransaction extends Transaction {
      * @param category The category of this transaction.
      * @param executionDate The executionDate for this instance.
      */
-    public ImmediateTransaction(MoneyNode moneyNode, BigDecimal value,
+    public ImmediateTransaction(MoneyNode moneyNode, Money value,
             String description, Category category, Date executionDate) {
         super(moneyNode, value, description, category);
         this.executionDate = executionDate;
         this.transferTransaction = null;
         deltaValueFromPrevious = value;
-        valueOnDatabase = BigDecimal.valueOf(0);
+        valueOnDatabase = Money.zero(value.getCurrencyUnit());
         moneyNodeOnDatabase = null;
     }
 
@@ -174,7 +181,7 @@ public class ImmediateTransaction extends Transaction {
     public ImmediateTransaction(ImmediateTransaction transferTransaction,
             MoneyNode moneyNode) {
         this(transferTransaction);
-        this.setValue(this.getValue().multiply(new BigDecimal("-1")));
+        this.setValue(this.getValue().negated());
         this.setMoneyNode(moneyNode);
         this.transferTransaction = transferTransaction;
     }
@@ -208,6 +215,7 @@ public class ImmediateTransaction extends Transaction {
         super.internalLoad();
         valueOnDatabase = getValue();
         moneyNodeOnDatabase = getMoneyNode();
+        deltaValueFromPrevious = Money.zero(moneyNodeOnDatabase.getCurrency());
     }
 
     @Override
@@ -253,7 +261,7 @@ public class ImmediateTransaction extends Transaction {
 
                 // If value changed since last save, update balance
                 // caches on the money nodes.
-                if (deltaValueFromPrevious.signum() != 0) {
+                if (!deltaValueFromPrevious.isZero()) {
                     MoneyNode currentMoneyNode = getMoneyNode();
 
                     // If transaction was assigned to a different
@@ -264,7 +272,7 @@ public class ImmediateTransaction extends Transaction {
                         // Remove previous value from that money node's
                         // balance cache.
                         moneyNodeOnDatabase.notifyBalanceChange(
-                            valueOnDatabase.multiply(BigDecimal.valueOf(-1)));
+                            valueOnDatabase.negated());
 
                         // Add entire new value to new money node's
                         // balance cache.
@@ -278,7 +286,7 @@ public class ImmediateTransaction extends Transaction {
                             deltaValueFromPrevious);
                     }
 
-                    deltaValueFromPrevious = BigDecimal.valueOf(0);
+                    deltaValueFromPrevious = Money.zero(currentMoneyNode.getCurrency());
                     valueOnDatabase = getValue();
                     moneyNodeOnDatabase = getMoneyNode();
                 }
@@ -345,9 +353,9 @@ public class ImmediateTransaction extends Transaction {
         };
 
     @Override
-    public void setValue(BigDecimal value) {
+    public void setValue(Money value) {
         super.setValue(value);
-        deltaValueFromPrevious = value.subtract(valueOnDatabase);
+        deltaValueFromPrevious = value.minus(valueOnDatabase);
     }
 
     public ImmediateTransaction clone() throws CloneNotSupportedException {

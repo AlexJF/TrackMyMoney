@@ -4,11 +4,13 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.DatabaseHelper;
@@ -140,17 +142,17 @@ public class MoneyNodeEditorFragment extends Fragment
                     creationDate = new Date();
                 }
 
-                BigDecimal initialBalance;
+                CurrencyUnit currency = CurrencyUnit.getInstance(
+                		currencySpinner.getSelectedItem().toString().trim());
+
+                Money initialBalance;
                 try {
                     Calculable calc = new ExpressionBuilder(
                         initialBalanceText.getText().toString()).build();
-                    initialBalance = BigDecimal.valueOf(calc.calculate())
-                    		.setScale(2, BigDecimal.ROUND_HALF_UP);
+                    initialBalance = Money.of(currency, calc.calculate());
                 } catch (Exception e) {
-                    initialBalance = BigDecimal.valueOf(0);
+                    initialBalance = Money.zero(currency);
                 }
-
-                String currency = currencySpinner.getSelectedItem().toString().trim();
 
                 if (node == null) {
                     MoneyNode newNode = new MoneyNode(name, description, selectedDrawableName,
@@ -269,7 +271,7 @@ public class MoneyNodeEditorFragment extends Fragment
 	            initialBalanceText.setText(node.getInitialBalance().toString());
 	            @SuppressWarnings("unchecked")
 	            ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
-	            int positionInSpinner = adapter.getPosition(node.getCurrency());
+	            int positionInSpinner = adapter.getPosition(node.getCurrency().getCurrencyCode());
 	            currencySpinner.setSelection(positionInSpinner);
 	        } catch (DatabaseException e) {
 	            Log.e("TMM", e.getMessage(), e);

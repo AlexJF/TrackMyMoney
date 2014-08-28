@@ -4,16 +4,16 @@
  ******************************************************************************/
 package net.alexjf.tmm.adapters;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
+
+import org.joda.money.Money;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.CategoryPercentageAdapter.CategoryPercentageInfo;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,26 +28,20 @@ public class CategoryPercentageAdapter extends ArrayAdapter<CategoryPercentageIn
     private static final int ROW_VIEW_RESID = R.layout.list_row_category_percentage;
     private static final int ROW_VIEW_NAMETEXTID = R.id.category_name;
 
-    private DecimalFormat currencyFormat;
     private NumberFormat percentageFormat;
 
-    public CategoryPercentageAdapter(Context context, String currency) {
+    public CategoryPercentageAdapter(Context context) {
         super(context, ROW_VIEW_RESID, ROW_VIEW_NAMETEXTID);
-        init(currency);
+        init();
     }
 
-    public CategoryPercentageAdapter(Context context, 
-            List<CategoryPercentageInfo> objects, String currency) {
+    public CategoryPercentageAdapter(Context context,
+            List<CategoryPercentageInfo> objects) {
         super(context, ROW_VIEW_RESID, ROW_VIEW_NAMETEXTID, objects);
-        init(currency);
+        init();
     }
 
-    private void init(String currency) {
-        if (currency == null) {
-            currency = "";
-        }
-
-        currencyFormat = new DecimalFormat("0.00' " + currency + "'");
+    private void init() {
         percentageFormat = NumberFormat.getPercentInstance();
     }
 
@@ -87,7 +81,7 @@ public class CategoryPercentageAdapter extends ArrayAdapter<CategoryPercentageIn
             nameLabel.setText(cat.getName());
 
             TextView valueLabel = (TextView) view.findViewById(R.id.category_value);
-            valueLabel.setText(currencyFormat.format(catPercInfo.getValue()));
+            valueLabel.setText(catPercInfo.getValue().toString());
 
             TextView percentageLabel = (TextView) view.findViewById(R.id.category_percentage_text);
             percentageLabel.setText(percentageFormat.format(catPercInfo.getPercentage()));
@@ -104,10 +98,10 @@ public class CategoryPercentageAdapter extends ArrayAdapter<CategoryPercentageIn
     public static class CategoryPercentageInfo {
         private Category category;
         private double percentage;
-        private double value;
+        private Money value;
         private int color;
 
-        public CategoryPercentageInfo(Category category, double value, 
+        public CategoryPercentageInfo(Category category, Money value,
                 double percentage, int color) {
             this.category = category;
             this.percentage = percentage;
@@ -123,7 +117,7 @@ public class CategoryPercentageAdapter extends ArrayAdapter<CategoryPercentageIn
             return percentage;
         }
 
-        public double getValue() {
+        public Money getValue() {
             return value;
         }
 
@@ -131,17 +125,17 @@ public class CategoryPercentageAdapter extends ArrayAdapter<CategoryPercentageIn
             return color;
         }
 
-        public static class PercentageComparator 
+        public static class PercentageComparator
                 implements java.util.Comparator<CategoryPercentageInfo> {
             int modifier;
-            
+
             public PercentageComparator(boolean reverse) {
                 modifier = reverse ? -1 : 1;
             }
 
-            public int compare(CategoryPercentageInfo lhs, 
+            public int compare(CategoryPercentageInfo lhs,
                                CategoryPercentageInfo rhs) {
-                return modifier * 
+                return modifier *
                     Double.compare(lhs.getPercentage(), rhs.getPercentage());
             }
         }

@@ -6,11 +6,12 @@ package net.alexjf.tmm.adapters;
 
 import java.util.List;
 
+import org.joda.money.Money;
+
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
         initialize();
     }
 
-    public MoneyNodeAdapter(Context context,  
+    public MoneyNodeAdapter(Context context,
             List<MoneyNode> objects) {
         super(context, ROW_VIEW_RESID, objects);
         initialize();
@@ -69,20 +70,20 @@ public class MoneyNodeAdapter extends ArrayAdapter<MoneyNode> {
 
             TextView balanceLabel = (TextView) view.findViewById(
                     R.id.moneynode_balance_value);
-            balanceLabel.setText(node.getBalance().toString() + " " + 
-                    node.getCurrency());
+            Money balance = node.getBalance();
+
+            balanceLabel.setText(balance.toString());
 
             if (colorBalanceDefault == null) {
                 colorBalanceDefault = balanceLabel.getTextColors().getDefaultColor();
             }
 
-            int signum = node.getBalance().signum();
             // If balance is positive
-            if (signum == 1) {
+            if (balance.isPositive()) {
                 balanceLabel.setTextColor(colorBalancePositive);
-            } 
+            }
             // If balance is neutral
-            else if (signum == 0) {
+            else if (balance.isZero()) {
                 balanceLabel.setTextColor(colorBalanceDefault);
             }
             // If balance is negative

@@ -4,10 +4,12 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
@@ -63,9 +65,9 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
     private ImmediateTransactionAdapter immedTransAdapter;
     private Date startDate;
     private Date endDate;
-    private BigDecimal income;
-    private BigDecimal expense;
-    private String currency;
+    private Money income;
+    private Money expense;
+    private CurrencyUnit currency;
 
     private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
     private static AsyncTaskWithProgressDialog<Date> transactionTask;
@@ -88,8 +90,6 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        income = BigDecimal.valueOf(0);
-        expense = BigDecimal.valueOf(0);
         setContentView(R.layout.activity_moneynode_details);
 
         Intent intent = getIntent();
@@ -101,6 +101,9 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
             Log.e("TMM", e.getMessage(), e);
         }
         currency = currentMoneyNode.getCurrency();
+
+        income = Money.zero(currency);
+        expense = Money.zero(currency);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayUseLogoEnabled(true);
@@ -122,7 +125,7 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
         immedTransAdapter = new ImmediateTransactionAdapter(this);
 
         Bundle args = new Bundle();
-        args.putString(MoneyNode.KEY_CURRENCY, currency);
+        args.putString(MoneyNode.KEY_CURRENCY, currency.getCurrencyCode());
 
         tabAdapter = new TabAdapter(this, viewPager);
         tabAdapter.addTab(actionBar.newTab().setText(R.string.list),
@@ -304,25 +307,25 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
     }
 
     private void updateDetailsPanel() {
-        BigDecimal balance = income.add(expense);
+        Money balance = income.plus(expense);
 
         // If we are not limiting the start date or it is less than or equal to
         // money node creationDate, add initialBalance
         if (startDate == null ||
             startDate.compareTo(currentMoneyNode.getCreationDate()) <= 0) {
-            BigDecimal initialBalance = currentMoneyNode.getInitialBalance();
-            balance = balance.add(initialBalance);
-            balanceTextView.setText(balance + " " + currency);
-            initialBalanceTextView.setText(initialBalance + " " + currency);
+            Money initialBalance = currentMoneyNode.getInitialBalance();
+            balance = balance.plus(initialBalance);
+            balanceTextView.setText(balance.toString());
+            initialBalanceTextView.setText(initialBalance.toString());
             initialBalanceRow.setVisibility(View.VISIBLE);
         } else {
-            balanceTextView.setText(balance + " " + currency);
+            balanceTextView.setText(balance.toString());
             initialBalanceRow.setVisibility(View.GONE);
         }
 
         totalTransactionsTextView.setText(Integer.toString(immedTransAdapter.getCount()));
-        incomeTextView.setText(income + " " + currency);
-        expenseTextView.setText(expense + " " + currency);
+        incomeTextView.setText(income.toString());
+        expenseTextView.setText(expense.toString());
     }
 
     @Override
@@ -333,14 +336,13 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
                 if (Utils.dateBetween(transaction.getExecutionDate(),
                         startDate, endDate)) {
                     immedTransAdapter.add(transaction);
-                    BigDecimal value = transaction.getValue();
-                    switch(value.signum()) {
-                        case 1:
-                            income = income.add(value);
-                            break;
-                        case -1:
-                            expense = expense.add(value);
-                            break;
+                    Money value = transaction.getValue();
+
+                    if (value.isPositive()) {
+	                    income = income.plus(value);
+                    }
+                    else if (value.isNegative()) {
+	                    expense = expense.plus(value);
                     }
                 }
             }
@@ -352,14 +354,13 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 
     @Override
     public void onImmedTransactionRemoved(ImmediateTransaction transaction) {
-        BigDecimal value = transaction.getValue();
-        switch (value.signum()) {
-            case 1:
-                income = income.subtract(value);
-                break;
-            case -1:
-                expense = expense.subtract(value);
-                break;
+        Money value = transaction.getValue();
+
+        if (value.isPositive()) {
+	        income = income.minus(value);
+        }
+        else if (value.isNegative()) {
+            expense = expense.minus(value);
         }
         updateGui();
     }
@@ -378,11 +379,11 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
             return;
         }
 
-        BigDecimal originalValue = oldInfo.getValue();
-        BigDecimal newValue = transaction.getValue();
-        BigDecimal delta = newValue.subtract(originalValue);
-        BigDecimal incomeDelta = BigDecimal.valueOf(0);
-        BigDecimal expenseDelta = BigDecimal.valueOf(0);
+        Money originalValue = oldInfo.getValue();
+        Money newValue = transaction.getValue();
+        Money delta = newValue.minus(originalValue);
+        Money incomeDelta = Money.zero(currency);
+        Money expenseDelta = Money.zero(currency);
 
         // If immediate transaction is no longer on the period being considered,
         // remove it
@@ -394,43 +395,32 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
         }
 
         // If values didn't change, quit
-        if (delta.signum() == 0) {
+        if (delta.isZero()) {
             return;
         }
 
         // If the 2 values share the same signal, we only need to modify either
         // the income or expense
-        if (originalValue.signum() == newValue.signum()) {
-            switch (originalValue.signum()) {
-                // Case bigger than 0
-                case 1:
-                    incomeDelta = incomeDelta.add(delta);
-                    break;
-                // Case smaller than 0
-                case -1:
-                    expenseDelta = expenseDelta.add(delta);
-                    break;
-            }
+        if (originalValue.isPositive() && newValue.isPositive()) {
+            incomeDelta = incomeDelta.plus(delta);
+        }
+        else if (originalValue.isNegative() && newValue.isNegative()) {
+            expenseDelta = expenseDelta.plus(delta);
         }
         // Else we need to modify both income and expense
         else {
-            switch (originalValue.signum()) {
-                // Case bigger than 0
-                case 1:
-                    incomeDelta = incomeDelta.subtract(originalValue);
-                    expenseDelta = expenseDelta.add(newValue);
-                    break;
-
-                // Case smaller than 0
-                case -1:
-                    expenseDelta = expenseDelta.subtract(originalValue);
-                    incomeDelta = incomeDelta.add(newValue);
-                    break;
+        	if (originalValue.isPositive()) {
+                incomeDelta = incomeDelta.minus(originalValue);
+                expenseDelta = expenseDelta.plus(newValue);
+        	}
+        	else if (originalValue.isNegative()) {
+                expenseDelta = expenseDelta.minus(originalValue);
+                incomeDelta = incomeDelta.plus(newValue);
             }
         }
 
-        income = income.add(incomeDelta);
-        expense = expense.add(expenseDelta);
+        income = income.plus(incomeDelta);
+        expense = expense.plus(expenseDelta);
         updateGui();
     }
 
@@ -457,8 +447,8 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
         immedTransAdapter.setNotifyOnChange(false);
         immedTransAdapter.clear();
 
-        income = BigDecimal.valueOf(0);
-        expense = BigDecimal.valueOf(0);
+        income = Money.zero(currency);
+        expense = Money.zero(currency);
         ImmediateTransaction[] immediateTransactions =
             (ImmediateTransaction[])
             result.getParcelableArray(KEY_IMMEDIATETRANSACTIONS);
@@ -469,12 +459,14 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
                 Log.e("TMM", "Error loading transaction " + transaction.getId(), e);
                 continue;
             }
-            BigDecimal value = transaction.getValue();
 
-            if (value.signum() > 0) {
-                income = income.add(value);
-            } else {
-                expense = expense.add(value);
+            Money value = transaction.getValue();
+
+            if (value.isPositive()) {
+                income = income.plus(value);
+            }
+            else if (value.isNegative()) {
+                expense = expense.plus(value);
             }
 
             immedTransAdapter.add(transaction);

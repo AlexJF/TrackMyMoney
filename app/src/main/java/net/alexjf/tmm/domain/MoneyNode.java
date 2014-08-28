@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
+
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
@@ -51,8 +54,20 @@ public class MoneyNode extends DatabaseObject {
             COL_CURRENCY + " TEXT," +
             COL_CREATIONDATE + " DATETIME " +
                 "DEFAULT (DATETIME('now', 'localtime'))," +
-            COL_INITIALBALANCE + " NUMERIC DEFAULT 0" +
+            COL_INITIALBALANCE + " TEXT DEFAULT 0" +
         ");";
+    private static final String SCHEMA_TRANSFER_TO_TMP =
+    	"INSERT INTO " + TABLE_NAME + "_tmp SELECT * FROM " + TABLE_NAME + ";";
+    private static final String SCHEMA_FK_DISABLE =
+    	"PRAGMA foreign_keys=OFF;";
+    private static final String SCHEMA_DROP_TABLE =
+    	"DROP TABLE " + TABLE_NAME + ";";
+    private static final String SCHEMA_TMP_TO_NEW =
+    	"ALTER TABLE " + TABLE_NAME + "_tmp RENAME TO " + TABLE_NAME + ";";
+    private static final String SCHEMA_FK_CHECK =
+    	"PRAGMA foreign_key_check;";
+    private static final String SCHEMA_FK_ENABLE =
+    	"PRAGMA foreign_keys=ON;";
 
     // Queries
     private static final String QUERY_BALANCE =
@@ -65,12 +80,6 @@ public class MoneyNode extends DatabaseObject {
         "SELECT " + ImmediateTransaction.COL_ID +
         " FROM " + Transaction.TABLE_NAME +
         "  INNER JOIN " + ImmediateTransaction.TABLE_NAME +
-        "  USING (" + Transaction.COL_ID + ") " +
-        " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
-    private static final String QUERY_SCHEDULEDTRANSACTIONS =
-        "SELECT " + ScheduledTransaction.COL_ID +
-        " FROM " + Transaction.TABLE_NAME +
-        "  INNER JOIN " + ScheduledTransaction.TABLE_NAME +
         "  USING (" + Transaction.COL_ID + ") " +
         " WHERE " + Transaction.COL_MONEYNODEID + " = ?";
 
@@ -93,6 +102,19 @@ public class MoneyNode extends DatabaseObject {
      */
     public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion,
                                         int newVersion) {
+        switch (oldVersion) {
+            case 0:
+            case 1:
+            case 2:
+            	db.execSQL(SCHEMA_CREATETABLE.replaceFirst(TABLE_NAME, TABLE_NAME + "_tmp"));
+            	db.execSQL(SCHEMA_TRANSFER_TO_TMP);
+            	db.execSQL(SCHEMA_FK_DISABLE);
+            	db.execSQL(SCHEMA_DROP_TABLE);
+            	db.execSQL(SCHEMA_TMP_TO_NEW);
+            	db.execSQL(SCHEMA_FK_CHECK);
+            	db.execSQL(SCHEMA_FK_ENABLE);
+                break;
+        }
     }
 
     // Caching
@@ -126,10 +148,10 @@ public class MoneyNode extends DatabaseObject {
     private String name;
     private String description;
     private String icon;
-    private String currency;
+    private CurrencyUnit currency;
     private Date creationDate;
-    private BigDecimal initialBalance;
-    private BigDecimal balance;
+    private Money initialBalance;
+    private Money balance;
 
     private MoneyNode(Long id) {
         setId(id);
@@ -146,8 +168,8 @@ public class MoneyNode extends DatabaseObject {
      * @param currency The currency for this instance.
      */
     public MoneyNode(String name, String description,
-            String icon, Date creationDate, BigDecimal initialBalance,
-            String currency) {
+            String icon, Date creationDate, Money initialBalance,
+            CurrencyUnit currency) {
         this.name = name;
         this.description = description;
         this.icon = icon;
@@ -168,9 +190,9 @@ public class MoneyNode extends DatabaseObject {
                 name = cursor.getString(1);
                 description = cursor.getString(2);
                 icon = cursor.getString(3);
-                currency = cursor.getString(4);
+                currency = CurrencyUnit.getInstance(cursor.getString(4));
                 creationDate = new Date(cursor.getLong(5));
-                initialBalance = new BigDecimal(cursor.getString(6));
+                initialBalance = Money.of(currency, new BigDecimal(cursor.getString(6)));
                 // Update balance
                 getBalance();
             } else {
@@ -191,9 +213,10 @@ public class MoneyNode extends DatabaseObject {
         contentValues.put(COL_NAME, name);
         contentValues.put(COL_DESCRIPTION, description);
         contentValues.put(COL_ICON, icon);
-        contentValues.put(COL_CURRENCY, currency);
+        contentValues.put(COL_CURRENCY, currency.getCurrencyCode());
         contentValues.put(COL_CREATIONDATE, creationDate.getTime());
-        contentValues.put(COL_INITIALBALANCE, initialBalance.toString());
+        contentValues.put(COL_INITIALBALANCE, initialBalance.getAmount().toString());
+        Log.d("TMM", "Money Node - Save initial balance: " + initialBalance);
 
         long result;
 
@@ -249,7 +272,7 @@ public class MoneyNode extends DatabaseObject {
      *
      * @param currency The currency.
      */
-    public void setCurrency(String currency) {
+    public void setCurrency(CurrencyUnit currency) {
         this.currency = currency;
         setChanged(true);
     }
@@ -269,7 +292,7 @@ public class MoneyNode extends DatabaseObject {
      *
      * @param initialBalance The initialBalance.
      */
-    public void setInitialBalance(BigDecimal initialBalance) {
+    public void setInitialBalance(Money initialBalance) {
         this.initialBalance = initialBalance;
         this.balance = null;
         setChanged(true);
@@ -307,7 +330,7 @@ public class MoneyNode extends DatabaseObject {
      *
      * @return The currency.
      */
-    public String getCurrency() {
+    public CurrencyUnit getCurrency() {
         return this.currency;
     }
 
@@ -325,7 +348,7 @@ public class MoneyNode extends DatabaseObject {
      *
      * @return The initialBalance.
      */
-    public BigDecimal getInitialBalance() {
+    public Money getInitialBalance() {
         return this.initialBalance;
     }
 
@@ -334,7 +357,7 @@ public class MoneyNode extends DatabaseObject {
      *
      * @return The balance.
      */
-    public BigDecimal getBalance() {
+    public Money getBalance() {
         if (balance == null) {
             try {
                 updateBalance();
@@ -347,7 +370,7 @@ public class MoneyNode extends DatabaseObject {
     }
 
     public ImmediateTransaction getImmediateTransaction(Date executionDate,
-            BigDecimal value, String description, Category category)
+            Money value, String description, Category category)
         throws DatabaseException {
         dbReadyOrThrow();
 
@@ -370,7 +393,7 @@ public class MoneyNode extends DatabaseObject {
                 new String[] {
                     getId().toString(),
                     Long.toString(executionDate.getTime()),
-                    value.toString(),
+                    value.getAmount().toString(),
                     description,
                     category.getId().toString()
                 });
@@ -459,8 +482,7 @@ public class MoneyNode extends DatabaseObject {
                 new String[]{transaction.getId().toString()});
 
         if (result == 1) {
-            notifyBalanceChange(transaction.getValue().multiply(
-                        BigDecimal.valueOf(-1)));
+            notifyBalanceChange(transaction.getValue().negated());
 
             // Since other transaction in transfer is deleted by sqlite due
             // to cascade, notify other money node of updated balance
@@ -469,30 +491,6 @@ public class MoneyNode extends DatabaseObject {
                         transaction.getValue());
             }
         }
-    }
-
-    public List<ScheduledTransaction> getScheduledTransactions()
-        throws DatabaseException {
-        dbReadyOrThrow();
-
-        SQLiteDatabase db = getDb();
-
-        List<ScheduledTransaction> immediateTransactions =
-            new LinkedList<ScheduledTransaction>();
-
-        Cursor cursor = db.rawQuery(QUERY_SCHEDULEDTRANSACTIONS,
-                new String[] {getId().toString()});
-
-        while (cursor.moveToNext()) {
-            ScheduledTransaction immediateTransaction =
-                new ScheduledTransaction(cursor.getLong(0));
-            immediateTransaction.setDb(db);
-            immediateTransactions.add(immediateTransaction);
-        }
-
-        cursor.close();
-
-        return immediateTransactions;
     }
 
     public String toString() {
@@ -520,20 +518,20 @@ public class MoneyNode extends DatabaseObject {
         Cursor cursor = db.rawQuery(QUERY_BALANCE,
                 new String[] {getId().toString()});
 
-        balance = new BigDecimal("0.00").add(initialBalance);
+        balance = initialBalance;
 
         while (cursor.moveToNext()) {
-            balance = new BigDecimal(cursor.getString(0)).add(balance);
+            balance = Money.of(currency, new BigDecimal(cursor.getString(0))).plus(balance);
         }
 
         cursor.close();
     }
 
-    void notifyBalanceChange(BigDecimal delta) {
+    void notifyBalanceChange(Money delta) {
         if (balance == null || delta == null) {
             return;
         }
 
-        balance = balance.add(delta);
+        balance = balance.plus(delta);
     }
 }

@@ -4,8 +4,9 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
-import java.math.BigDecimal;
 import java.text.DateFormat;
+
+import org.joda.money.Money;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.TwoLineTextAdapter;
@@ -14,7 +15,6 @@ import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
-
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,19 +36,19 @@ public class ImmedTransactionDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_immedtransaction_details, 
+        View v = inflater.inflate(R.layout.fragment_immedtransaction_details,
                 container, false);
 
         detailsListView = (ListView) v.findViewById(android.R.id.list);
 
         adapter = new TwoLineTextAdapter<TransactionDetails>(
             getActivity()) {
-                public void setTitleText(TextView titleTextView, 
+                public void setTitleText(TextView titleTextView,
                     TransactionDetails item) {
                     titleTextView.setText(item.label);
                 };
 
-                public void setValueText(TextView valueTextView, 
+                public void setValueText(TextView valueTextView,
                     TransactionDetails item) {
                     valueTextView.setText(item.value);
                     valueTextView.setCompoundDrawablesWithIntrinsicBounds(
@@ -109,7 +109,7 @@ public class ImmedTransactionDetailsFragment extends Fragment {
             descriptionValue = "None";
         }
 
-        adapter.add(new TransactionDetails(descriptionLabel, 
+        adapter.add(new TransactionDetails(descriptionLabel,
             descriptionValue));
 
         String categoryLabel = res.getString(R.string.category);
@@ -118,7 +118,7 @@ public class ImmedTransactionDetailsFragment extends Fragment {
             category.load();
             int drawableId = DrawableResolver.getInstance().getDrawableId(
                 category.getIcon());
-            adapter.add(new TransactionDetails(categoryLabel, 
+            adapter.add(new TransactionDetails(categoryLabel,
                 category.getName(), drawableId));
         } catch (DatabaseException e) {
             Log.e("TMM", "Error loading category", e);
@@ -130,21 +130,21 @@ public class ImmedTransactionDetailsFragment extends Fragment {
             dateTimeFormat.format(transaction.getExecutionDate())));
 
         String valueLabel = res.getString(R.string.value);
-        BigDecimal value = transaction.getValue();
+        Money value = transaction.getValue();
         TransactionDetails valueDetails = new TransactionDetails(valueLabel,
-            value.toString() + " " + node.getCurrency());
+            value.toString());
 
-        if (value.signum() > 0) {
+        if (value.isPositive()) {
             valueDetails.valueColor = res.getColor(R.color.positive);
-        } 
-        else if (value.signum() < 0) {
+        }
+        else if (value.isNegative()) {
             valueDetails.valueColor = res.getColor(R.color.negative);
         }
 
         adapter.add(valueDetails);
 
         String fromLabel = res.getString(R.string.transfer_moneynode);
-        ImmediateTransaction transferTransaction = 
+        ImmediateTransaction transferTransaction =
             transaction.getTransferTransaction();
 
         if (transferTransaction != null) {
@@ -154,7 +154,7 @@ public class ImmedTransactionDetailsFragment extends Fragment {
                 transferNode.load();
                 int drawableId = DrawableResolver.getInstance().getDrawableId(
                     transferNode.getIcon());
-                adapter.add(new TransactionDetails(fromLabel, 
+                adapter.add(new TransactionDetails(fromLabel,
                     transferNode.getName(), drawableId));
             } catch (DatabaseException e) {
                 Log.e("TMM", "Error loading transfer money node", e);
@@ -180,7 +180,7 @@ public class ImmedTransactionDetailsFragment extends Fragment {
             this(label, value, leftDrawableId, null);
         }
 
-        public TransactionDetails(String label, String value, 
+        public TransactionDetails(String label, String value,
             int leftDrawableId, Integer valueColor) {
             this.label = label;
             this.value = value;

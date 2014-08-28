@@ -32,6 +32,8 @@ import org.achartengine.GraphicalView;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
@@ -50,7 +52,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class ImmedTransactionStatsFragment extends Fragment 
+public class ImmedTransactionStatsFragment extends Fragment
     implements IWithAdapter, AsyncTaskResultListener {
     private final static String KEY_SPINNERSELECTION = "spinnerSelection";
     private final static String KEY_CATEGORIES = "categories";
@@ -60,8 +62,10 @@ public class ImmedTransactionStatsFragment extends Fragment
     private final static String TASK_CATEGORYSTATS = "categoryStats";
 
     private static int[] colors = null;
-    private static AsyncTaskWithProgressDialog<ImmediateTransactionAdapter> 
+    private static AsyncTaskWithProgressDialog<ImmediateTransactionAdapter>
         categoryStatsTask;
+
+    private CurrencyUnit currency;
 
     private ImmediateTransactionAdapter adapter;
     private CategoryPercentageAdapter catPercentageAdapter;
@@ -73,7 +77,7 @@ public class ImmedTransactionStatsFragment extends Fragment
     private ListView percentagesListView;
     private Spinner transactionTypeSpinner;
 
-    private static Filter<ImmediateTransaction> incomeFilter = 
+    private static Filter<ImmediateTransaction> incomeFilter =
         new Filter<ImmediateTransaction>(new Filter.Condition<ImmediateTransaction>() {
             public boolean applies(ImmediateTransaction transaction) {
                 try {
@@ -81,11 +85,11 @@ public class ImmedTransactionStatsFragment extends Fragment
                 } catch (DatabaseException e) {
                     Log.e("TMM", e.getMessage(), e);
                 }
-                return transaction.getValue().signum() > 0;
+                return transaction.getValue().isPositive();
             }
         });
 
-    private static Filter<ImmediateTransaction> expenseFilter = 
+    private static Filter<ImmediateTransaction> expenseFilter =
         new Filter<ImmediateTransaction>(new Filter.Condition<ImmediateTransaction>() {
             public boolean applies(ImmediateTransaction transaction) {
                 try {
@@ -93,7 +97,7 @@ public class ImmedTransactionStatsFragment extends Fragment
                 } catch (DatabaseException e) {
                     Log.e("TMM", e.getMessage(), e);
                 }
-                return transaction.getValue().signum() < 0;
+                return transaction.getValue().isNegative();
             }
         });
 
@@ -121,9 +125,9 @@ public class ImmedTransactionStatsFragment extends Fragment
             };
         }
 
-        View v = inflater.inflate(R.layout.fragment_immedtransaction_stats, 
+        View v = inflater.inflate(R.layout.fragment_immedtransaction_stats,
                 container, false);
-        transactionTypeSpinner = (Spinner) 
+        transactionTypeSpinner = (Spinner)
             v.findViewById(R.id.transaction_type_spinner);
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.stats);
 
@@ -144,27 +148,26 @@ public class ImmedTransactionStatsFragment extends Fragment
         chartView = ChartFactory.getPieChartView(
                 this.getActivity(), dataSet, renderer);
         chartView.setLayoutParams(new ListView.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.MATCH_PARENT,
             Utils.displayPixelsToPixels(getActivity(), 250)));
 
         percentagesListView = new ListView(getActivity());
 
-        String currency = null;
+        currency = null;
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            currency = bundle.getString(MoneyNode.KEY_CURRENCY);
+            currency = CurrencyUnit.getInstance(bundle.getString(MoneyNode.KEY_CURRENCY));
         }
 
-        catPercentageAdapter = new CategoryPercentageAdapter(getActivity(), 
-                currency);
+        catPercentageAdapter = new CategoryPercentageAdapter(getActivity());
         percentagesListView.addHeaderView(chartView);
         percentagesListView.setAdapter(catPercentageAdapter);
         layout.addView(percentagesListView, new LayoutParams(
             LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 1));
 
         if (savedInstanceState != null) {
-            int selectedSpinnerPosition = 
+            int selectedSpinnerPosition =
                 savedInstanceState.getInt(KEY_SPINNERSELECTION);
             transactionTypeSpinner.setOnItemSelectedListener(null);
             transactionTypeSpinner.setSelection(selectedSpinnerPosition);
@@ -172,7 +175,7 @@ public class ImmedTransactionStatsFragment extends Fragment
 
         transactionTypeSpinner.setOnItemSelectedListener(
                 new OnItemSelectedListener() {
-                    public void onItemSelected(AdapterView<?> parent, View view, 
+                    public void onItemSelected(AdapterView<?> parent, View view,
                         int position, long id) {
 
                         switch (position) {
@@ -217,14 +220,14 @@ public class ImmedTransactionStatsFragment extends Fragment
         String strLoading = getActivity().getResources().getString(
                 R.string.analyzing_stats);
 
-        categoryStatsTask = 
-            new AsyncTaskWithProgressDialog<ImmediateTransactionAdapter> 
+        categoryStatsTask =
+            new AsyncTaskWithProgressDialog<ImmediateTransactionAdapter>
             (getActivity(), TASK_CATEGORYSTATS, strLoading) {
                 // TODO: Make this more efficient by already getting all the
                 // data from the database
                 @Override
                 protected Bundle doInBackground(ImmediateTransactionAdapter... args) {
-                    List<ImmediateTransaction> currentTransactionSet = 
+                    List<ImmediateTransaction> currentTransactionSet =
                         new LinkedList<ImmediateTransaction>();
                     Utils.fromAdapterToList(adapter, currentTransactionSet);
                     currentFilter.applyInPlace(currentTransactionSet);
@@ -239,8 +242,8 @@ public class ImmedTransactionStatsFragment extends Fragment
                             Category cat = transaction.getCategory();
                             cat.load();
 
-                            double transactionValue = 
-                                transaction.getValue().abs().doubleValue();
+                            double transactionValue =
+                                transaction.getValue().abs().getAmount().doubleValue();
                             Double existingValue = perCategoryValues.get(cat);
 
                             totalValue += transactionValue;
@@ -261,13 +264,13 @@ public class ImmedTransactionStatsFragment extends Fragment
                     Category[] categories = new Category[size];
                     double[] values = new double[size];
 
-                    List<Entry<Category, Double>> catValues = 
+                    List<Entry<Category, Double>> catValues =
                         new ArrayList<Entry<Category, Double>> (
                             perCategoryValues.entrySet());
-                    Collections.sort(catValues, 
+                    Collections.sort(catValues,
                         new Comparator<Entry<Category, Double>> () {
                             @Override
-                            public int compare(Map.Entry<Category,Double> arg0, 
+                            public int compare(Map.Entry<Category,Double> arg0,
                                 Map.Entry<Category,Double> arg1) {
                                 return arg0.getValue().compareTo(arg1.getValue());
                             };
@@ -319,7 +322,7 @@ public class ImmedTransactionStatsFragment extends Fragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(KEY_SPINNERSELECTION, 
+        outState.putInt(KEY_SPINNERSELECTION,
                 transactionTypeSpinner.getSelectedItemPosition());
         super.onSaveInstanceState(outState);
     }
@@ -334,7 +337,7 @@ public class ImmedTransactionStatsFragment extends Fragment
         catPercentageAdapter.clear();
         catPercentageAdapter.setNotifyOnChange(false);
 
-        Category[] categories = (Category[]) 
+        Category[] categories = (Category[])
             resultData.getParcelableArray(KEY_CATEGORIES);
         double[] values = resultData.getDoubleArray(KEY_VALUES);
         double totalValue = resultData.getDouble(KEY_TOTALVALUE);
@@ -344,8 +347,8 @@ public class ImmedTransactionStatsFragment extends Fragment
             double categoryTotalValue = values[i];
             int color = colors[(categories.length - i - 1) % colors.length];
             dataSet.add(category.getName(), categoryTotalValue);
-            catPercentageAdapter.add(new CategoryPercentageInfo(category, 
-                        categoryTotalValue, categoryTotalValue / totalValue,
+            catPercentageAdapter.add(new CategoryPercentageInfo(category,
+                        Money.of(currency, categoryTotalValue), categoryTotalValue / totalValue,
                         color));
             SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
             seriesRenderer.setColor(color);
@@ -371,9 +374,9 @@ public class ImmedTransactionStatsFragment extends Fragment
 
     @Override
     public void onAsyncTaskResultFailure(String taskId, Throwable e) {
-        String strError = getResources().getString(R.string.error_stat_analysis); 
-        Toast.makeText(getActivity(), 
-            String.format(strError, e.getMessage()), 3).show();
+        String strError = getResources().getString(R.string.error_stat_analysis);
+        Toast.makeText(getActivity(),
+            String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         Log.e("TMM", e.getMessage(), e);
         categoryStatsTask = null;
         Utils.allowOrientationChanges(getActivity());

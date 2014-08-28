@@ -17,6 +17,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
+
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
@@ -24,9 +27,7 @@ import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.ExportException;
 import net.alexjf.tmm.exceptions.ImportException;
-
 import android.util.Log;
-
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -50,7 +51,7 @@ public class CSVImportExport extends ImportExport {
     }
 
     @Override
-    public void importData(String location, boolean replace) 
+    public void importData(String location, boolean replace)
         throws ImportException {
         CSVReader reader = null;
         try {
@@ -88,7 +89,7 @@ public class CSVImportExport extends ImportExport {
                         categories.add(parseCategory(nextLine, replace));
                         break;
                     case ELEM_IMMEDTRANSACTION:
-                        parseImmedTransaction(nextLine, replace, 
+                        parseImmedTransaction(nextLine, replace,
                                 moneyNodes, categories);
                         break;
                     default:
@@ -109,7 +110,7 @@ public class CSVImportExport extends ImportExport {
     }
 
     @Override
-    public void exportData(String location, Date startDate, Date endDate) 
+    public void exportData(String location, Date startDate, Date endDate)
         throws ExportException {
         CSVWriter writer = null;
         try {
@@ -136,7 +137,7 @@ public class CSVImportExport extends ImportExport {
                         writeCategories(writer, categories);
                         break;
                     case ELEM_IMMEDTRANSACTION:
-                        writeImmediateTransactions(writer, moneyNodes, 
+                        writeImmediateTransactions(writer, moneyNodes,
                                 categories, startDate, endDate);
                         break;
                 }
@@ -154,14 +155,14 @@ public class CSVImportExport extends ImportExport {
         }
     }
 
-    protected MoneyNode parseMoneyNode(String[] data, boolean replace) 
+    protected MoneyNode parseMoneyNode(String[] data, boolean replace)
         throws DatabaseException, ParseException {
         String name = data[0];
         String description = data[1];
         String icon = data[2];
-        String currency = data[3];
+        CurrencyUnit currency = CurrencyUnit.getInstance(data[3]);
         Date creationDate = dateFormat.parse(data[4]);
-        BigDecimal initialBalance = new BigDecimal(data[5]);
+        Money initialBalance = Money.of(currency, new BigDecimal(data[5]));
 
         Log.d("TMM", "Parsed money node");
         Log.d("TMM", "Name: " + name);
@@ -182,26 +183,26 @@ public class CSVImportExport extends ImportExport {
                 createNode = false;
             } else {
                 name = getCopyName(name, new ExistenceChecker() {
-                    public boolean exists(String name) 
+                    public boolean exists(String name)
                         throws DatabaseException {
                         return dbHelper.hasMoneyNodeWithName(name);
                     }
                 });
             }
-        } 
+        }
 
         if (createNode) {
             Log.d("TMM", "Creating money node with name: " + name);
-            node = new MoneyNode(name, description, icon, 
+            node = new MoneyNode(name, description, icon,
                     creationDate, initialBalance, currency);
         }
 
         node.save();
         return node;
     }
-    
-    protected void writeMoneyNodes(CSVWriter writer, 
-            List<MoneyNode> moneyNodes) 
+
+    protected void writeMoneyNodes(CSVWriter writer,
+            List<MoneyNode> moneyNodes)
         throws DatabaseException {
         writer.writeNext(new String[] {
             "Name",
@@ -217,15 +218,15 @@ public class CSVImportExport extends ImportExport {
                 node.getName(),
                 node.getDescription(),
                 node.getIcon(),
-                node.getCurrency(),
+                node.getCurrency().getCurrencyCode(),
                 dateFormat.format(node.getCreationDate()),
-                node.getInitialBalance().toString()
+                node.getInitialBalance().getAmount().toString()
             });
         }
     }
 
-    protected void writeCategories(CSVWriter writer, 
-            List<Category> categories) 
+    protected void writeCategories(CSVWriter writer,
+            List<Category> categories)
         throws DatabaseException {
         writer.writeNext(new String[] {
             "Name",
@@ -240,9 +241,9 @@ public class CSVImportExport extends ImportExport {
         }
     }
 
-    protected void writeImmediateTransactions(CSVWriter writer, 
+    protected void writeImmediateTransactions(CSVWriter writer,
             List<MoneyNode> moneyNodes,
-            List<Category> categories, Date startDate, Date endDate) 
+            List<Category> categories, Date startDate, Date endDate)
         throws DatabaseException {
         writer.writeNext(new String[] {
             "Money Node",
@@ -254,7 +255,7 @@ public class CSVImportExport extends ImportExport {
 
         int nodeIdx = 0;
         for (MoneyNode node : moneyNodes) {
-            for (ImmediateTransaction trans : 
+            for (ImmediateTransaction trans :
                     node.getImmediateTransactions(startDate, endDate)) {
                 trans.load();
                 writer.writeNext(new String[] {
@@ -290,7 +291,7 @@ public class CSVImportExport extends ImportExport {
                 createCategory = false;
             } else {
                 name = getCopyName(name, new ExistenceChecker() {
-                    public boolean exists(String name) 
+                    public boolean exists(String name)
                         throws DatabaseException {
                         return dbHelper.hasCategoryWithName(name);
                     }
@@ -307,12 +308,14 @@ public class CSVImportExport extends ImportExport {
         return category;
     }
 
-    protected ImmediateTransaction parseImmedTransaction(String[] data, 
-            boolean replace, List<MoneyNode> moneyNodes, 
-            List<Category> categories) 
+    protected ImmediateTransaction parseImmedTransaction(String[] data,
+            boolean replace, List<MoneyNode> moneyNodes,
+            List<Category> categories)
         throws DatabaseException, ParseException {
         Integer moneyNodeIdx = Integer.parseInt(data[0]);
-        BigDecimal value = new BigDecimal(data[1]);
+        MoneyNode node = moneyNodes.get(moneyNodeIdx);
+
+        Money value = Money.of(node.getCurrency(), new BigDecimal(data[1]));
         String description = data[2];
         Integer categoryIdx = Integer.parseInt(data[3]);
         Date executionDate = dateTimeFormat.parse(data[4]);
@@ -321,7 +324,6 @@ public class CSVImportExport extends ImportExport {
         Log.d("TMM", "Value: " + value);
 
         ImmediateTransaction immedTransaction = null;
-        MoneyNode node = moneyNodes.get(moneyNodeIdx);
         Category cat = categories.get(categoryIdx);
 
         immedTransaction = node.getImmediateTransaction(
@@ -331,15 +333,15 @@ public class CSVImportExport extends ImportExport {
             // Do nothing
             return immedTransaction;
         } else {
-            immedTransaction = new ImmediateTransaction(node, value, 
+            immedTransaction = new ImmediateTransaction(node, value,
                     description, cat, executionDate);
             immedTransaction.save();
             return immedTransaction;
         }
     }
 
-    protected String getCopyName(String originalName, 
-        ExistenceChecker existenceChecker) 
+    protected String getCopyName(String originalName,
+        ExistenceChecker existenceChecker)
         throws DatabaseException {
         int i = 1;
         String name;

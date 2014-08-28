@@ -6,10 +6,11 @@ package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
 
+import org.joda.money.Money;
+
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.sqlcipher.database.SQLiteDatabase;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -28,15 +29,27 @@ public abstract class Transaction extends DatabaseObject {
     public static final String COL_CATEGORYID = "categoryId";
 
     // Schema
-    private static final String SCHEMA_CREATETABLE = 
+    private static final String SCHEMA_CREATETABLE =
         "CREATE TABLE " + TABLE_NAME + " (" +
             COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " + 
-                MoneyNode.TABLE_NAME + " ON DELETE CASCADE," + 
-            COL_VALUE + " NUMERIC NOT NULL," +
+            COL_MONEYNODEID + " INTEGER NOT NULL REFERENCES " +
+                MoneyNode.TABLE_NAME + " ON DELETE CASCADE," +
+            COL_VALUE + " TEXT NOT NULL," +
             COL_DESCRIPTION + " TEXT," +
             COL_CATEGORYID + " INTEGER REFERENCES Categories" +
         ");";
+    private static final String SCHEMA_TRANSFER_TO_TMP =
+    	"INSERT INTO " + TABLE_NAME + "_tmp SELECT * FROM " + TABLE_NAME + ";";
+    private static final String SCHEMA_FK_DISABLE =
+    	"PRAGMA foreign_keys=OFF;";
+    private static final String SCHEMA_DROP_TABLE =
+    	"DROP TABLE " + TABLE_NAME + ";";
+    private static final String SCHEMA_TMP_TO_NEW =
+    	"ALTER TABLE " + TABLE_NAME + "_tmp RENAME TO " + TABLE_NAME + ";";
+    private static final String SCHEMA_FK_CHECK =
+    	"PRAGMA foreign_key_check;";
+    private static final String SCHEMA_FK_ENABLE =
+    	"PRAGMA foreign_keys=ON;";
 
     // Database maintenance
     /**
@@ -55,13 +68,26 @@ public abstract class Transaction extends DatabaseObject {
      * @param oldVersion The old version of the schemas.
      * @param newVersion The new version of the schemas.
      */
-    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion, 
+    public static void onDatabaseUpgrade(SQLiteDatabase db, int oldVersion,
                                         int newVersion) {
+        switch (oldVersion) {
+            case 0:
+            case 1:
+            case 2:
+            	db.execSQL(SCHEMA_CREATETABLE.replaceFirst(TABLE_NAME, TABLE_NAME + "_tmp"));
+            	db.execSQL(SCHEMA_TRANSFER_TO_TMP);
+            	db.execSQL(SCHEMA_FK_DISABLE);
+            	db.execSQL(SCHEMA_DROP_TABLE);
+            	db.execSQL(SCHEMA_TMP_TO_NEW);
+            	db.execSQL(SCHEMA_FK_CHECK);
+            	db.execSQL(SCHEMA_FK_ENABLE);
+                break;
+        }
     }
 
     // Private members
     private MoneyNode moneyNode;
-    private BigDecimal value;
+    private Money value;
     private String description;
     private Category category;
 
@@ -77,7 +103,7 @@ public abstract class Transaction extends DatabaseObject {
      * @param description The description for this instance.
      * @param categoryId The categoryId for this instance.
      */
-    public Transaction(MoneyNode moneyNode, BigDecimal value,
+    public Transaction(MoneyNode moneyNode, Money value,
             String description, Category category) {
         this.moneyNode = moneyNode;
         this.value = value;
@@ -88,9 +114,9 @@ public abstract class Transaction extends DatabaseObject {
 
     @Override
     protected void internalLoad() throws DbObjectLoadException {
-        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?", 
+        Cursor cursor = getDb().query(TABLE_NAME, null, COL_ID + " = ?",
                 new String[] {getId().toString()}, null, null, null, null);
-        
+
         try {
             if (cursor.moveToFirst()) {
                 long moneyNodeId = cursor.getLong(1);
@@ -99,7 +125,7 @@ public abstract class Transaction extends DatabaseObject {
                     moneyNode = MoneyNode.createFromId(moneyNodeId);
                 }
 
-                value = new BigDecimal(cursor.getString(2));
+                value = Money.of(moneyNode.getCurrency(), new BigDecimal(cursor.getString(2)));
 
                 description = cursor.getString(3);
 
@@ -108,7 +134,7 @@ public abstract class Transaction extends DatabaseObject {
                     category = Category.createFromId(categoryId);
                 }
             } else {
-                throw new DbObjectLoadException("Couldn't find transaction " + 
+                throw new DbObjectLoadException("Couldn't find transaction " +
                         "associated with id " + getId());
             }
         } finally {
@@ -122,14 +148,14 @@ public abstract class Transaction extends DatabaseObject {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_ID, id);
         contentValues.put(COL_MONEYNODEID, moneyNode.getId());
-        contentValues.put(COL_VALUE, value.toString());
+        contentValues.put(COL_VALUE, value.getAmount().toString());
         contentValues.put(COL_DESCRIPTION, description);
         contentValues.put(COL_CATEGORYID, category.getId());
 
         long result;
 
         if (id != null) {
-            result = getDb().update(TABLE_NAME, contentValues, 
+            result = getDb().update(TABLE_NAME, contentValues,
                      COL_ID + " = ?", new String[] {id.toString()});
             result = (result == 0 ? -1 : id);
         } else {
@@ -139,7 +165,7 @@ public abstract class Transaction extends DatabaseObject {
         if (result >= 0) {
             return result;
         } else {
-            throw new DbObjectSaveException("Couldn't save transaction " + 
+            throw new DbObjectSaveException("Couldn't save transaction " +
                     "associated with id " + getId());
         }
     }
@@ -158,7 +184,7 @@ public abstract class Transaction extends DatabaseObject {
      *
      * @return The value.
      */
-    public BigDecimal getValue() {
+    public Money getValue() {
         return this.value;
     }
 
@@ -190,7 +216,7 @@ public abstract class Transaction extends DatabaseObject {
      *
      * @param value The value.
      */
-    public void setValue(BigDecimal value) {
+    public void setValue(Money value) {
         this.value = value;
         setChanged(true);
     }

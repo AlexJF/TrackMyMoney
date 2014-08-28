@@ -7,13 +7,14 @@ package net.alexjf.tmm.adapters;
 import java.text.DateFormat;
 import java.util.List;
 
+import org.joda.money.Money;
+
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
@@ -38,7 +39,7 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
         commonConstructorActions(context);
     }
 
-    public ImmediateTransactionAdapter(Context context, 
+    public ImmediateTransactionAdapter(Context context,
             List<ImmediateTransaction> objects) {
         super(context, ROW_VIEW_RESID, objects);
         commonConstructorActions(context);
@@ -82,7 +83,7 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
                 categoryTextView.setText(cat.getName());
             }
 
-            TextView execDateTextView = (TextView) 
+            TextView execDateTextView = (TextView)
                 view.findViewById(R.id.transaction_execDate);
             execDateTextView.setText(dateFormat.format(
                         transaction.getExecutionDate()));
@@ -95,15 +96,15 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
             if (colorValueDefault == null) {
                 colorValueDefault = valueTextView.getTextColors().getDefaultColor();
             }
-            valueTextView.setText(transaction.getValue().toString() + " " + 
-                    node.getCurrency());
-            int signum = transaction.getValue().signum();
+
+            Money value = transaction.getValue();
+            valueTextView.setText(value.toString());
             // If value is positive
-            if (signum == 1) {
+            if (value.isPositive()) {
                 valueTextView.setTextColor(colorValuePositive);
-            } 
+            }
             // If value is neutral
-            else if (signum == 0) {
+            else if (value.isZero()) {
                 valueTextView.setTextColor(colorValueDefault);
             }
             // If value is negative

@@ -44,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         		if (!instance.isClosed()) {
 		        	Log.d("TMM", "Closing previous instance");
 	        		instance.close();
+				    CacheFactory.getInstance().clearCaches();
         		}
         	}
 
@@ -86,7 +87,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         PreferenceManager prefManager = PreferenceManager.getInstance();
         prefManager.writeGlobalStringPreference(KEY_CURRENTUSER,
                 user.getName() + ":" + user.getPassword());
-	    CacheFactory.getInstance().clearCaches();
     }
 
     /**
@@ -175,7 +175,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         MoneyNode.onDatabaseCreation(db);
         Transaction.onDatabaseCreation(db);
         ImmediateTransaction.onDatabaseCreation(db);
-        ScheduledTransaction.onDatabaseCreation(db);
         Category.onDatabaseCreation(db);
         // TODO: Add these domain classes
         /*
@@ -196,7 +195,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         MoneyNode.onDatabaseUpgrade(db, oldVersion, newVersion);
         Transaction.onDatabaseUpgrade(db, oldVersion, newVersion);
         ImmediateTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
-        ScheduledTransaction.onDatabaseUpgrade(db, oldVersion, newVersion);
         Category.onDatabaseUpgrade(db, oldVersion, newVersion);
     }
 
