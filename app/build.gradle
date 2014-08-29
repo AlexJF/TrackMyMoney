@@ -1,76 +1,75 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
+	repositories {
+		mavenCentral()
+	}
 
-    dependencies {
-        classpath "com.android.tools.build:gradle:0.12.+"
+	dependencies {
+		classpath 'com.android.tools.build:gradle:0.12.+'
 
-        // https://github.com/alexvasilkov/AndroidGradleSignPlugin
-        classpath "com.alexvasilkov:android-sign-release:0.3.6"
-    }
+		// https://github.com/alexvasilkov/AndroidGradleSignPlugin
+		classpath "com.alexvasilkov:android-sign-release:0.3.6"
+	}
 }
 
 apply plugin: "android"
 apply plugin: "android-sign-release"
 
 dependencies {
-    repositories {
-        mavenCentral()
-    }
-
-    compile fileTree(dir: "libs", include: "*.jar")
-    compile project(":libraries:aFileChooser:aFileChooser")
-    compile 'com.android.support:support-v4:18.0+'
-    compile 'com.android.support:appcompat-v7:18.0+'
-    //compile "com.nineoldandroids:library:2.4.0"
+	repositories {
+		mavenCentral()
+	}
+	compile fileTree(dir: 'libs', include: '*.jar')
+	compile project(':libraries:aFileChooser:aFileChooser')
+	compile 'com.android.support:support-v4:18.0+'
+	compile 'com.android.support:appcompat-v7:18.0+'
+	//compile "com.nineoldandroids:library:2.4.0"
 }
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion "20.0.0"
+	compileSdkVersion 20
+	buildToolsVersion '20.0.0'
 
-    defaultConfig {
-        versionCode 8
-        minSdkVersion 8
-        targetSdkVersion 20
-        applicationId "net.alexjf.tmm"
-    }
+	defaultConfig {
+		versionCode 8
+		minSdkVersion 8
+		targetSdkVersion 20
+		applicationId "net.alexjf.tmm"
+	}
 
-    signingConfigs {
-        release {
-            storeFile file(RELEASE_STORE_FILE)
-            keyAlias RELEASE_KEY_ALIAS
-        }
-    }
+	signingConfigs {
+		release {
+			storeFile file(RELEASE_STORE_FILE)
+			keyAlias RELEASE_KEY_ALIAS
+		}
+	}
 
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
+	buildTypes {
+		release {
+			signingConfig signingConfigs.release
 
-            runProguard true
-            proguardFile "proguard-project.txt"
-        }
-    }
+			runProguard true
+			proguardFile "proguard-project.txt"
+		}
+	}
 
-    lintOptions {
-        abortOnError false
-    }
+	lintOptions {
+		abortOnError false
+	}
 
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LGPL2.1'
-    }
+	packagingOptions {
+		exclude 'META-INF/DEPENDENCIES.txt'
+		exclude 'META-INF/LICENSE.txt'
+		exclude 'META-INF/NOTICE.txt'
+		exclude 'META-INF/NOTICE'
+		exclude 'META-INF/LICENSE'
+		exclude 'META-INF/DEPENDENCIES'
+		exclude 'META-INF/notice.txt'
+		exclude 'META-INF/license.txt'
+		exclude 'META-INF/dependencies.txt'
+		exclude 'META-INF/LGPL2.1'
+	}
 
-    sourceSets.main {
-        jniLibs.srcDir 'src/main/libs'
-    }
+	sourceSets.main {
+		jniLibs.srcDir 'src/main/libs'
+	}
 }

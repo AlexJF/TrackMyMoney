@@ -8,3 +8,8 @@ tags
 .gradle
 build
 proguard
+/.nb-gradle/profiles/private/
+/.nb-gradle/private/
+/.nb-gradle-properties
+.idea/workspace.xml
+.idea/tasks.xml
