@@ -6,11 +6,12 @@ package net.alexjf.tmm.activities;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.SelectedAdapter;
-import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
-import net.alexjf.tmm.utils.CacheFactory;
 import net.alexjf.tmm.utils.PreferenceManager;
+import net.alexjf.tmm.utils.Utils;
+import net.alexjf.tmm.utils.Utils.RememberedLoginData;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -110,11 +111,11 @@ public class UserListActivity extends ActionBarActivity {
                     adapter.getSelectedPosition());
 
                 String password = userPasswordText.getText().toString();
-                selectedUser.setPassword(password);
                 userPasswordText.setText("");
 
+                String passwordHash = Utils.sha1(password);
 
-                navigateToMoneyNodeList(selectedUser, false);
+                navigateToMoneyNodeList(selectedUser.getName(), passwordHash, false);
             };
         });
 
@@ -126,10 +127,10 @@ public class UserListActivity extends ActionBarActivity {
         registerForContextMenu(userListView);
         refreshUserList();
 
-        User rememberedUser = UserList.getRememberedLogin(this);
+        RememberedLoginData loginData = Utils.getRememberedLogin();
 
-        if (rememberedUser != null) {
-            navigateToMoneyNodeList(rememberedUser, true);
+        if (loginData != null) {
+        	navigateToMoneyNodeList(loginData.username, loginData.passwordHash, true);
         }
     }
 
@@ -167,8 +168,9 @@ public class UserListActivity extends ActionBarActivity {
         User user = adapter.getItem(info.position);
         switch (item.getItemId()) {
             case R.id.menu_remove:
-                UserList userList = new UserList(this);
+                UserList userList = new UserList();
                 userList.removeUser(user);
+	            DatabaseManager.getInstance().deleteDatabase(user.getName());
                 PreferenceManager prefManager = PreferenceManager.getInstance();
                 SharedPreferences.Editor editor =
                     prefManager.getUserPreferences(user).edit();
@@ -188,7 +190,7 @@ public class UserListActivity extends ActionBarActivity {
     }
 
     private void refreshUserList() {
-        UserList userList = new UserList(this);
+        UserList userList = new UserList();
         adapter.clear();
         for (User user : userList.getUsers()) {
             adapter.add(user);
@@ -213,14 +215,19 @@ public class UserListActivity extends ActionBarActivity {
         super.onResume();
     }
 
-    private void navigateToMoneyNodeList(User user, boolean finish) {
-        DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
-        if (dbHelper.login()) {
+    private void navigateToMoneyNodeList(String username, String passwordHash, boolean finish) {
+        DatabaseManager dbManager = DatabaseManager.getInstance();
+
+        if (dbManager.login(username, passwordHash)) {
             if (rememberLoginCheck.isChecked()) {
-                UserList.setRememberedLogin(UserListActivity.this,
-                    user);
+            	Utils.setRememberedLogin(username, passwordHash);
                 finish = true;
+            } else {
+            	Utils.clearRememberedLogin();
             }
+
+            Utils.setCurrentUser(username);
+            dbManager.getDatabase(username, passwordHash);
 
             Intent intent = new Intent(UserListActivity.this,
                 MoneyNodeListActivity.class);
@@ -233,7 +240,7 @@ public class UserListActivity extends ActionBarActivity {
             userPasswordText.setText("");
             String strError = getResources().getString(R.string.error_login_failed);
             Toast.makeText(UserListActivity.this,
-                String.format(strError, user.getName()),
+                String.format(strError, username),
                 Toast.LENGTH_LONG).show();
         }
     }

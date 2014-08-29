@@ -9,10 +9,10 @@ import java.util.List;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
-import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.domain.UserList;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.utils.Utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -106,7 +106,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
         adapter.clear();
 
         try {
-            moneyNodes = DatabaseHelper.getInstance().getMoneyNodes();
+            moneyNodes = MoneyNode.getMoneyNodes();
             moneyNodes.removeAll(excludedMoneyNodes);
         } catch (Exception e) {
             Log.e("TMM", "Failed to get money nodes: " + e.getMessage() +
@@ -126,9 +126,9 @@ public class MoneyNodeListActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        DatabaseHelper.getInstance().close();
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseManager.getInstance().closeDatabase();
     }
 
     @Override
@@ -162,7 +162,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
                 intent = new Intent(this,
                     UserListActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                UserList.setRememberedLogin(this, null);
+                Utils.clearRememberedLogin();
                 startActivity(intent);
                 finish();
                 return true;
@@ -211,7 +211,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.menu_remove:
                 try {
-                    DatabaseHelper.getInstance().deleteMoneyNode(node);
+                    MoneyNode.deleteMoneyNode(node);
                     adapter.remove(node);
                 } catch (DatabaseException e) {
                     Log.e("TMM", "Unable to delete money node", e);

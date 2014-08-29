@@ -4,7 +4,6 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
-import net.alexjf.tmm.utils.Utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,20 +15,13 @@ public class User implements Parcelable {
     public static final String KEY_USER = "curUser";
 
     private String name;
-    private String password;
 
-    User(String name) {
+    public User(String name) {
         this.name = name;
     }
 
-    User(String name, String password) {
-        this(name);
-        setPassword(password);
-    }
-
-    User(User user) {
+    public User(User user) {
     	this(user.getName());
-    	setPasswordHash(user.getPassword());
     }
 
     User(Parcel in) {
@@ -52,28 +44,6 @@ public class User implements Parcelable {
         this.name = name;
     }
 
-    /**
-     * Sets the password for this instance.
-     *
-     * @param password The password.
-     */
-    public void setPassword(String password) {
-        this.password = Utils.sha1(password);
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.password = passwordHash;
-    }
-
-    /**
-     * Gets the sha-1 hash of the password for this instance.
-     *
-     * @return The password.
-     */
-    public String getPassword() {
-        return this.password;
-    }
-
     @Override
 	public boolean equals(Object o) {
 		if (!(o instanceof User))
@@ -83,15 +53,13 @@ public class User implements Parcelable {
             return true;
 
         User rhs = (User) o;
-        return getName().equals(rhs.getName()) &&
-        	   getPassword().equals(rhs.getPassword());
+        return getName().equals(rhs.getName());
 	}
 
 	@Override
 	public int hashCode() {
 		int hash = 7;
         hash = 31 * hash + name.hashCode();
-        hash = 31 * hash + password.hashCode();
 
         return hash;
 	}
@@ -102,12 +70,10 @@ public class User implements Parcelable {
 
     public void readFromParcel(Parcel in) {
         name = in.readString();
-        password = in.readString();
     }
 
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(name);
-        out.writeString(password);
     }
 
     public int describeContents() {

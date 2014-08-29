@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.alexjf.tmm.domain.User;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -22,7 +23,7 @@ import android.widget.Adapter;
  * This class implements miscelaneous function used throughout the entire app
  */
 public class Utils {
-    private static Map<Activity, Integer> prevOrientations = 
+    private static Map<Activity, Integer> prevOrientations =
         new HashMap<Activity, Integer>();
 
     /**
@@ -86,9 +87,9 @@ public class Utils {
     /**
      * {@link #dateBetween(Date, Date, Date)
      */
-    public static boolean dateBetween(Calendar date, Calendar dateStart, 
+    public static boolean dateBetween(Calendar date, Calendar dateStart,
             Calendar dateEnd) {
-        return (dateStart == null || dateStart.before(date)) && 
+        return (dateStart == null || dateStart.before(date)) &&
                (dateEnd == null || dateEnd.after(date));
     }
 
@@ -178,5 +179,72 @@ public class Utils {
 
         activity.setRequestedOrientation(prevOrientation);
         prevOrientations.remove(activity);
+    }
+
+    private static final String USERDATA_REMEMBEREDLOGIN = "rememberedLogin";
+
+    public static void setRememberedLogin(String username, String password) {
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        prefManager.writeGlobalStringPreference(USERDATA_REMEMBEREDLOGIN,
+            username + ":" + password);
+    }
+
+    public static void clearRememberedLogin() {
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        prefManager.removeGlobalPreference(USERDATA_REMEMBEREDLOGIN);
+    }
+
+    public static RememberedLoginData getRememberedLogin() {
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+        String[] rememberedLogin = prefManager.readGlobalStringPreference(
+                USERDATA_REMEMBEREDLOGIN, "").split(":");
+
+        if (rememberedLogin.length == 2) {
+        	String username = rememberedLogin[0];
+        	String password = rememberedLogin[1];
+
+        	return new RememberedLoginData(username, password);
+        }
+
+        return null;
+    }
+
+    public static class RememberedLoginData {
+		public String username;
+    	public String passwordHash;
+
+    	public RememberedLoginData(String username, String passwordHash) {
+			super();
+			this.username = username;
+			this.passwordHash = passwordHash;
+		}
+    }
+
+    private static final String USERDATA_CURRENTUSER = "currentUser";
+
+    public static User getCurrentUser() {
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+
+        String currentUsername = prefManager.readGlobalStringPreference(USERDATA_CURRENTUSER, null);
+
+        if (currentUsername != null) {
+        	return new User(currentUsername);
+        } else {
+        	return null;
+        }
+    }
+
+    public static void setCurrentUser(String username) {
+    	setCurrentUser(new User(username));
+    }
+
+    public static void setCurrentUser(User user) {
+        if (user == null) {
+        	return;
+        }
+
+        PreferenceManager prefManager = PreferenceManager.getInstance();
+
+        prefManager.writeGlobalStringPreference(USERDATA_CURRENTUSER, user.getName());
     }
 }

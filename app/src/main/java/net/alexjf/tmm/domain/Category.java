@@ -4,6 +4,10 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
@@ -14,6 +18,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * This class represents a transaction category.
@@ -60,6 +65,71 @@ public class Category extends DatabaseObject {
 
     // Caching
     private static Cache<Long, Category> cache = CacheFactory.getInstance().getCache("Category");
+
+    public static List<Category> getCategories() throws DatabaseException {
+        SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+
+        Cursor cursor = db.query(Category.TABLE_NAME,
+                new String[] {Category.COL_ID},
+                null, null, null, null, null, null);
+
+        List<Category> categories = new ArrayList<Category>(cursor.getCount());
+
+        while (cursor.moveToNext()) {
+            Category category = Category.createFromId(cursor.getLong(0));
+
+            if (category == null) {
+                Log.d("TMM", "Found null category");
+                continue;
+            }
+
+            category.setDb(db);
+            categories.add(category);
+        }
+
+        cursor.close();
+
+        return categories;
+    }
+
+    public static Category getCategoryWithName(String name) throws DatabaseException {
+        Long id = null;
+        SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+
+        Cursor cursor = db.query(Category.TABLE_NAME,
+                new String[] {Category.COL_ID},
+                Category.COL_NAME + " = ?",
+                new String[] {name},
+                null, null, null, null);
+
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            id = cursor.getLong(0);
+        }
+
+        cursor.close();
+
+        return Category.createFromId(id);
+    }
+
+    public static boolean hasCategoryWithName(String name) throws DatabaseException {
+        return getCategoryWithName(name) != null;
+    }
+
+    /*
+     * TODO: On category deletion have the option of transferring transactions
+     *       to another category.
+     */
+    public static void deleteCategory(Category category) throws DatabaseException {
+        if (category == null) {
+            return;
+        }
+
+        SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+
+        db.delete(Category.TABLE_NAME, Category.COL_ID + " = ?",
+                new String[]{category.getId().toString()});
+    }
 
     /**
      * Gets an instance of Category with the specified id.

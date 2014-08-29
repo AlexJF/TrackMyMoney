@@ -20,27 +20,38 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 
 public class PreferencesActivity extends PreferenceActivity {
     public static final String KEY_FORCEDATAREFRESH = "forceDataRefresh";
+    public static final String KEY_LOGOUT = "logout";
 
     private static final int REQCODE_FILECHOOSE = 0;
 
-    private Set<OnStopListener> stopListeners = 
+    private Set<OnStopListener> stopListeners =
         new HashSet<OnStopListener>();
-    private Set<OnDestroyListener> destroyListeners = 
+    private Set<OnDestroyListener> destroyListeners =
         new HashSet<OnDestroyListener>();
-    private Set<OnSaveInstanceListener> saveInstanceListeners = 
+    private Set<OnSaveInstanceListener> saveInstanceListeners =
         new HashSet<OnSaveInstanceListener>();
-    private Set<OnRestoreInstanceListener> restoreInstanceListeners = 
+    private Set<OnRestoreInstanceListener> restoreInstanceListeners =
         new HashSet<OnRestoreInstanceListener>();
 
     private OnFileChosenListener currentFileChoiceListener;
     private boolean forceDataRefresh;
+    private boolean logout;
 
     @Override
     public void finish() {
-        Intent result = new Intent();
-        result.putExtra(KEY_FORCEDATAREFRESH, forceDataRefresh);
-        setResult(RESULT_OK, result);
-        super.finish();
+    	if (logout) {
+
+    		Intent intent = new Intent(this, UserListActivity.class);
+    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    			  .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+    		startActivity(intent);
+    	} else {
+	        Intent result = new Intent();
+	        result.putExtra(KEY_FORCEDATAREFRESH, forceDataRefresh);
+	        setResult(RESULT_OK, result);
+	        super.finish();
+    	}
     }
 
     public interface OnStopListener {
@@ -92,12 +103,12 @@ public class PreferencesActivity extends PreferenceActivity {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {    
-        super.onCreate(savedInstanceState);       
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         PreferenceManager prefManager = PreferenceManager.getInstance();
         getPreferenceManager().setSharedPreferencesName(
                 prefManager.getCurrentUserPreferencesName());
-        addPreferencesFromResource(R.xml.preferences);       
+        addPreferencesFromResource(R.xml.preferences);
     }
 
     @Override
@@ -122,6 +133,7 @@ public class PreferencesActivity extends PreferenceActivity {
             listener.onSaveInstance(outState);
         }
         outState.putBoolean(KEY_FORCEDATAREFRESH, forceDataRefresh);
+        outState.putBoolean(KEY_LOGOUT, logout);
         super.onSaveInstanceState(outState);
     }
 
@@ -131,6 +143,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
         if (state != null) {
             forceDataRefresh = state.getBoolean(KEY_FORCEDATAREFRESH);
+            logout = state.getBoolean(KEY_LOGOUT);
         }
 
         for (OnRestoreInstanceListener listener : restoreInstanceListeners) {
@@ -141,7 +154,7 @@ public class PreferencesActivity extends PreferenceActivity {
     public void requestFileChooser(OnFileChosenListener requester) {
         currentFileChoiceListener = requester;
         Intent target = FileUtils.createGetContentIntent();
-        Intent intent = Intent.createChooser(target, 
+        Intent intent = Intent.createChooser(target,
                 getResources().getString(R.string.file_select));
 
         try {
@@ -155,6 +168,10 @@ public class PreferencesActivity extends PreferenceActivity {
         forceDataRefresh = force;
     }
 
+    public void setLogout(boolean logout) {
+    	this.logout = logout;
+    }
+
     public void refreshPreferenceScreen() {
         setPreferenceScreen(null);
         addPreferencesFromResource(R.xml.preferences);
@@ -163,9 +180,9 @@ public class PreferencesActivity extends PreferenceActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQCODE_FILECHOOSE:  
+            case REQCODE_FILECHOOSE:
                 if (resultCode == RESULT_OK &&
-                    currentFileChoiceListener != null) {  
+                    currentFileChoiceListener != null) {
                     currentFileChoiceListener.onFileChosen(data.getData());
                 }
         }

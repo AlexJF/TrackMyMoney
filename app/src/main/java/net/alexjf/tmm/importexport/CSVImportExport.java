@@ -17,16 +17,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.money.CurrencyUnit;
-import org.joda.money.Money;
-
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.ExportException;
 import net.alexjf.tmm.exceptions.ImportException;
+
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
+
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -116,9 +116,8 @@ public class CSVImportExport extends ImportExport {
         try {
             writer = new CSVWriter(new FileWriter(location));
 
-            DatabaseHelper dbHelper = DatabaseHelper.getInstance();
-            List<MoneyNode> moneyNodes = dbHelper.getMoneyNodes();
-            List<Category> categories = dbHelper.getCategories();
+            List<MoneyNode> moneyNodes = MoneyNode.getMoneyNodes();
+            List<Category> categories = Category.getCategories();
 
             List<String> exportOrder = new LinkedList<String>();
             exportOrder.add(ELEM_MONEYNODE_LABEL);
@@ -167,8 +166,7 @@ public class CSVImportExport extends ImportExport {
         Log.d("TMM", "Parsed money node");
         Log.d("TMM", "Name: " + name);
 
-        final DatabaseHelper dbHelper = DatabaseHelper.getInstance();
-        MoneyNode node = dbHelper.getMoneyNodeWithName(name);
+        MoneyNode node = MoneyNode.getMoneyNodeWithName(name);
 
         boolean createNode = true;
 
@@ -185,7 +183,7 @@ public class CSVImportExport extends ImportExport {
                 name = getCopyName(name, new ExistenceChecker() {
                     public boolean exists(String name)
                         throws DatabaseException {
-                        return dbHelper.hasMoneyNodeWithName(name);
+                        return MoneyNode.hasMoneyNodeWithName(name);
                     }
                 });
             }
@@ -279,8 +277,7 @@ public class CSVImportExport extends ImportExport {
         Log.d("TMM", "Parsed category");
         Log.d("TMM", "Name: " + name);
 
-        final DatabaseHelper dbHelper = DatabaseHelper.getInstance();
-        Category category = dbHelper.getCategoryWithName(name);
+        Category category = Category.getCategoryWithName(name);
 
         boolean createCategory = true;
 
@@ -293,7 +290,7 @@ public class CSVImportExport extends ImportExport {
                 name = getCopyName(name, new ExistenceChecker() {
                     public boolean exists(String name)
                         throws DatabaseException {
-                        return dbHelper.hasCategoryWithName(name);
+                        return Category.hasCategoryWithName(name);
                     }
                 });
             }

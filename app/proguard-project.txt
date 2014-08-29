@@ -1,6 +1,7 @@
 -dontwarn javax.annotation.**
 -dontwarn java.beans.**
 -dontwarn sun.misc.**
+-dontwarn org.joda.convert.**
 
 -optimizationpasses 5
 -dontusemixedcaseclassnames
@@ -16,8 +17,8 @@
 -keep class org.achartengine.** {*;}
 -keep class android.support.** { *; }
 -keep interface android.support.** { *; }
--keep class com.actionbarsherlock.** { *; }
--keep interface com.actionbarsherlock.** { *; } 
+-keep class org.joda.* { *; }
+-keep class android.provider.* { *; }
 
 -assumenosideeffects class android.util.Log {
     public static *** d(...);

@@ -36,7 +36,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
-public class ExportDataPreference 
+public class ExportDataPreference
     extends DialogWithAsyncTaskProgressPreference<Date>
     implements OnDateSetListener {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_export_data;
@@ -94,7 +94,7 @@ public class ExportDataPreference
 
         dateIntervalCheckBox.setOnCheckedChangeListener(
             new OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton view, 
+                public void onCheckedChanged(CompoundButton view,
                     boolean checked) {
                     if (checked) {
                         dateSelectorLayout.setVisibility(View.VISIBLE);
@@ -142,7 +142,7 @@ public class ExportDataPreference
     protected AsyncTaskWithProgressDialog<Date> createTask() {
         String strLoading = getActivity().getResources().getString(
                 R.string.exporting);
-        return new AsyncTaskWithProgressDialog<Date> 
+        return new AsyncTaskWithProgressDialog<Date>
         (TASK_EXPORT, strLoading) {
             private boolean sendToOnSuccess = shareCheckBox.isChecked();
 
@@ -176,7 +176,6 @@ public class ExportDataPreference
 
     @Override
     protected void runTask(AsyncTaskWithProgressDialog<Date> task) {
-        task.ensureDatabaseOpen(true);
         if (dateIntervalCheckBox.isChecked()) {
             task.execute(startDate.getTime(), endDate.getTime());
         } else {
@@ -197,7 +196,7 @@ public class ExportDataPreference
                     R.string.export_share_title);
             activity.startActivity(Intent.createChooser(i, title));
         }
-        Toast.makeText(activity, 
+        Toast.makeText(activity,
             activity.getResources().getString(R.string.export_success),
             3).show();
     }
@@ -207,7 +206,7 @@ public class ExportDataPreference
         super.onAsyncTaskResultFailure(taskId, e);
         String strError = getActivity().getResources().getString(
                 R.string.error_export);
-        Toast.makeText(getActivity(), 
+        Toast.makeText(getActivity(),
             String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
     }
@@ -223,7 +222,7 @@ public class ExportDataPreference
     }
 
     private void restoreDatePicker(Bundle inState) {
-        String curDatePickerDateString = 
+        String curDatePickerDateString =
             inState.getString(KEY_CURRENTPICKERDATE);
 
         if (curDatePickerDateString != null) {
@@ -264,7 +263,7 @@ public class ExportDataPreference
         currentDatePickerDate.set(Calendar.MONTH, picker.getMonth());
         currentDatePickerDate.set(Calendar.YEAR, picker.getYear());
 
-        outState.putString(KEY_CURRENTPICKERDATE, 
+        outState.putString(KEY_CURRENTPICKERDATE,
                 dateFormat.format(currentDatePickerDate.getTime()));
     }
 
@@ -290,9 +289,9 @@ public class ExportDataPreference
     public void onSaveInstance(Bundle outState) {
         saveDatePicker(outState);
 
-        outState.putString(KEY_CURRENTSTARTDATE, 
+        outState.putString(KEY_CURRENTSTARTDATE,
                 dateTimeFormat.format(startDate.getTime()));
-        outState.putString(KEY_CURRENTENDDATE, 
+        outState.putString(KEY_CURRENTENDDATE,
                 dateTimeFormat.format(endDate.getTime()));
         outState.putByte(KEY_STARTDATEEDIT,
                 (byte) (startDateBeingEdited ? 1 : 0));
@@ -317,7 +316,7 @@ public class ExportDataPreference
                 Log.e("TMM", "Error parsing saved end date", e);
             }
 
-            startDateBeingEdited = 
+            startDateBeingEdited =
                 savedInstanceState.getByte(KEY_STARTDATEEDIT) == 1;
             restoreDatePicker(savedInstanceState);
         }

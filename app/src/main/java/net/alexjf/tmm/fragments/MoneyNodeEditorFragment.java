@@ -13,7 +13,6 @@ import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
@@ -299,7 +298,7 @@ public class MoneyNodeEditorFragment extends Fragment
             try {
                 // If we are adding a new node and name already exists
                 if (node == null &&
-                    DatabaseHelper.getInstance().hasMoneyNodeWithName(name)) {
+                    MoneyNode.hasMoneyNodeWithName(name)) {
                     nameError = res.getString(
                             R.string.error_moneynode_name_already_exists);
                 }

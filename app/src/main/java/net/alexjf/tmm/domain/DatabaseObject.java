@@ -4,16 +4,16 @@
  ******************************************************************************/
 package net.alexjf.tmm.domain;
 
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.exceptions.DatabaseNotReadyException;
-import net.alexjf.tmm.exceptions.DatabaseUnknownUserException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.exceptions.UnknownIdException;
 import net.sqlcipher.database.SQLiteDatabase;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
+// TODO: Replace this custom ORM with ORMLite or equivalent.
 public abstract class DatabaseObject implements Parcelable {
     private Long id;
     private transient SQLiteDatabase db;
@@ -28,20 +28,20 @@ public abstract class DatabaseObject implements Parcelable {
     }
 
     public void load()
-        throws DatabaseNotReadyException, UnknownIdException, 
+        throws DatabaseNotReadyException, UnknownIdException,
                DbObjectLoadException {
         load(false);
     }
 
-    public void load(SQLiteDatabase db) 
-        throws DatabaseNotReadyException, UnknownIdException, 
+    public void load(SQLiteDatabase db)
+        throws DatabaseNotReadyException, UnknownIdException,
                DbObjectLoadException {
         setDb(db);
         load(false);
     }
 
-    public void load(boolean force) 
-        throws DatabaseNotReadyException, UnknownIdException, 
+    public void load(boolean force)
+        throws DatabaseNotReadyException, UnknownIdException,
                DbObjectLoadException {
         dbReadyOrThrow();
 
@@ -55,14 +55,14 @@ public abstract class DatabaseObject implements Parcelable {
         }
     }
 
-    public void load(SQLiteDatabase db, boolean force) 
-        throws DatabaseNotReadyException, UnknownIdException, 
+    public void load(SQLiteDatabase db, boolean force)
+        throws DatabaseNotReadyException, UnknownIdException,
                DbObjectLoadException {
         setDb(db);
         load(force);
     }
 
-    public void save() 
+    public void save()
         throws DatabaseNotReadyException, DbObjectSaveException {
         save(false);
     }
@@ -83,7 +83,7 @@ public abstract class DatabaseObject implements Parcelable {
         }
     }
 
-    public void save(SQLiteDatabase db, boolean force) 
+    public void save(SQLiteDatabase db, boolean force)
         throws DatabaseNotReadyException, DbObjectSaveException {
         setDb(db);
         save(force);
@@ -94,14 +94,10 @@ public abstract class DatabaseObject implements Parcelable {
 
     protected void dbReadyOrThrow() throws DatabaseNotReadyException {
         if (db == null || !db.isOpen()) {
-            try {
-                db = DatabaseHelper.getInstance().getWritableDatabase();
+            db = DatabaseManager.getInstance().getDatabase();
 
-                if (!db.isOpen()) {
-                    throw new DatabaseNotReadyException();
-                }
-            } catch (DatabaseUnknownUserException e) {
-                throw new DatabaseNotReadyException(e);
+            if (db == null || !db.isOpen()) {
+                throw new DatabaseNotReadyException();
             }
         }
     }

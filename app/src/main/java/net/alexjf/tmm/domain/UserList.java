@@ -11,46 +11,16 @@ import java.util.Map;
 
 import net.alexjf.tmm.utils.PreferenceManager;
 
-import android.content.Context;
-
 /**
  * This class represents a list of users of the application.
  */
 public class UserList {
     public final static String USERDATA_PREFERENCES_NAME = "userData";
     public final static String USERDATA_USERNAMES_KEY = "userNames";
-    public final static String USERDATA_REMEMBEREDLOGIN = "rememberedLogin";
 
-    private Context context;
     private Map<String, User> users;
 
-    public static User getRememberedLogin(Context context) {
-        PreferenceManager prefManager = PreferenceManager.getInstance();
-        String[] rememberedLogin = prefManager.readGlobalStringPreference(
-                USERDATA_REMEMBEREDLOGIN, "").split(":");
-
-        if (rememberedLogin.length != 2) {
-            return null;
-        } else {
-            User user = new User(rememberedLogin[0]);
-            user.setPasswordHash(rememberedLogin[1]);
-            return user;
-        }
-    }
-
-    public static void setRememberedLogin(Context context, User user) {
-        PreferenceManager prefManager = PreferenceManager.getInstance();
-        
-        if (user != null) {
-            prefManager.writeGlobalStringPreference(USERDATA_REMEMBEREDLOGIN, 
-                    user.getName() + ":" + user.getPassword());
-        } else {
-            prefManager.removeGlobalPreference(USERDATA_REMEMBEREDLOGIN);
-        }
-    }
-
-    public UserList(Context context) {
-        this.context = context;
+    public UserList() {
         PreferenceManager prefManager = PreferenceManager.getInstance();
         String[] userNames = prefManager.readGlobalStringPreference(
                     USERDATA_USERNAMES_KEY, "").split(":");
@@ -73,7 +43,6 @@ public class UserList {
 
     public void removeUser(User user) {
         if (user != null) {
-            DatabaseHelper.deleteDatabase(context, user);
             this.users.remove(user.getName());
             saveData();
         }

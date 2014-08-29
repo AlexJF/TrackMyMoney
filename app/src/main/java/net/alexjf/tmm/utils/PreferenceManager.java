@@ -4,9 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm.utils;
 
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.User;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -78,17 +76,21 @@ public class PreferenceManager {
         if (globalPreferences == null) {
             globalPreferences = getSharedPreferences(GLOBAL_PREFERENCES);
         }
-        
+
         return globalPreferences;
     }
 
+    public SharedPreferences getUserPreferences(String username) {
+        return getSharedPreferences(username);
+    }
+
     public SharedPreferences getUserPreferences(User user) {
-        return getSharedPreferences(user.getName());
+    	return getUserPreferences(user.getName());
     }
 
     public SharedPreferences getCurrentUserPreferences() {
-        User currentUser = DatabaseHelper.getInstance().getCurrentUser();
-        
+        User currentUser = Utils.getCurrentUser();
+
         if (currentUser == null) {
             return null;
         }
@@ -103,7 +105,7 @@ public class PreferenceManager {
     }
 
     public String getCurrentUserPreferencesName() {
-        User currentUser = DatabaseHelper.getInstance().getCurrentUser();
+        User currentUser = Utils.getCurrentUser();
 
         if (currentUser == null) {
             return null;

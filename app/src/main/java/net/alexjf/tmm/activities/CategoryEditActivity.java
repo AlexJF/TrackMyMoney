@@ -5,7 +5,6 @@
 package net.alexjf.tmm.activities;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.CategoryEditorFragment;
@@ -37,12 +36,6 @@ public class CategoryEditActivity extends ActionBarActivity
         } else {
             setTitle(R.string.title_activity_category_edit);
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        DatabaseHelper.getInstance().close();
     }
 
     public void onCategoryEdited(Category category) {

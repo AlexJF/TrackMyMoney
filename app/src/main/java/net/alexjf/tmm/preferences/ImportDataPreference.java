@@ -23,7 +23,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ImportDataPreference 
+public class ImportDataPreference
     extends DialogWithAsyncTaskProgressPreference<String>
     implements OnFileChosenListener {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_import_data;
@@ -72,7 +72,7 @@ public class ImportDataPreference
     protected AsyncTaskWithProgressDialog<String> createTask() {
         String strLoading = getActivity().getResources().getString(
                 R.string.importing);
-        return new AsyncTaskWithProgressDialog<String> 
+        return new AsyncTaskWithProgressDialog<String>
             (TASK_IMPORT, strLoading) {
                 @Override
                 protected Bundle doInBackground(String... args) {
@@ -93,8 +93,7 @@ public class ImportDataPreference
 
     @Override
     protected void runTask(AsyncTaskWithProgressDialog<String> task) {
-        task.ensureDatabaseOpen(true);
-        task.execute(locationEditText.getText().toString(), 
+        task.execute(locationEditText.getText().toString(),
                 Boolean.toString(replaceCheckBox.isChecked()));
     }
 
@@ -107,7 +106,7 @@ public class ImportDataPreference
     public void onAsyncTaskResultSuccess(String taskId, Bundle resultData) {
         super.onAsyncTaskResultSuccess(taskId, resultData);
         PreferencesActivity activity = getActivity();
-        Toast.makeText(activity, 
+        Toast.makeText(activity,
             getActivity().getResources().getString(R.string.import_success),
             3).show();
         activity.setForceDataRefresh(true);
@@ -118,7 +117,7 @@ public class ImportDataPreference
         super.onAsyncTaskResultFailure(taskId, e);
         String strError = getActivity().getResources().getString(
                 R.string.error_import);
-        Toast.makeText(getActivity(), 
+        Toast.makeText(getActivity(),
             String.format(strError, e.getMessage()), 3).show();
         Log.e("TMM", e.getMessage(), e);
     }

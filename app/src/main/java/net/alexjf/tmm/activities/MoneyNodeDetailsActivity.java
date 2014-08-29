@@ -8,14 +8,10 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.money.CurrencyUnit;
-import org.joda.money.Money;
-
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.ImmediateTransactionAdapter;
 import net.alexjf.tmm.adapters.TabAdapter;
 import net.alexjf.tmm.adapters.TabAdapter.OnTabFragmentCreateListener;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
@@ -29,6 +25,10 @@ import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog.AsyncTaskResultListener;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
+
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -180,12 +180,6 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        DatabaseHelper.getInstance().close();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_moneynode_details, menu);
@@ -296,7 +290,6 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
             };
 
         transactionTask.setResultListener(this);
-        transactionTask.ensureDatabaseOpen(true);
         transactionTask.execute(startDate, endDate);
     }
 

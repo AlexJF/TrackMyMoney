@@ -5,6 +5,7 @@
 package net.alexjf.tmm.domain;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
@@ -106,9 +108,9 @@ public class MoneyNode extends DatabaseObject {
             case 0:
             case 1:
             case 2:
+            	db.execSQL(SCHEMA_FK_DISABLE);
             	db.execSQL(SCHEMA_CREATETABLE.replaceFirst(TABLE_NAME, TABLE_NAME + "_tmp"));
             	db.execSQL(SCHEMA_TRANSFER_TO_TMP);
-            	db.execSQL(SCHEMA_FK_DISABLE);
             	db.execSQL(SCHEMA_DROP_TABLE);
             	db.execSQL(SCHEMA_TMP_TO_NEW);
             	db.execSQL(SCHEMA_FK_CHECK);
@@ -119,6 +121,66 @@ public class MoneyNode extends DatabaseObject {
 
     // Caching
     private static Cache<Long, MoneyNode> cache = CacheFactory.getInstance().getCache("MoneyNode");
+
+    public static List<MoneyNode> getMoneyNodes() throws DatabaseException {
+        SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+
+        Cursor cursor = db.query(MoneyNode.TABLE_NAME,
+                new String[] {MoneyNode.COL_ID},
+                null, null, null, null, null, null);
+
+        List<MoneyNode> moneyNodes = new ArrayList<MoneyNode>(cursor.getCount());
+
+        while (cursor.moveToNext()) {
+            MoneyNode moneyNode = MoneyNode.createFromId(cursor.getLong(0));
+            moneyNode.setDb(db);
+            moneyNodes.add(moneyNode);
+        }
+
+        cursor.close();
+
+        return moneyNodes;
+    }
+
+    public static MoneyNode getMoneyNodeWithName(String name) throws DatabaseException {
+        SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+        Long id = null;
+
+        Cursor cursor = db.query(MoneyNode.TABLE_NAME,
+                new String[] {MoneyNode.COL_ID},
+                MoneyNode.COL_NAME + " = ?",
+                new String[] {name},
+                null, null, null, null);
+
+        if (cursor.getCount() == 1) {
+            cursor.moveToFirst();
+            id = cursor.getLong(0);
+        }
+
+        cursor.close();
+
+        return MoneyNode.createFromId(id);
+    }
+
+    public static boolean hasMoneyNodeWithName(String name) throws DatabaseException {
+        return getMoneyNodeWithName(name) != null;
+    }
+
+    /*
+     * TODO: On money node deletion, have the option to move the transactions
+     * 		 to another money node.
+     */
+    public static void deleteMoneyNode(MoneyNode node) throws DatabaseException {
+        if (node == null) {
+            return;
+        }
+
+        SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+
+        db.delete(MoneyNode.TABLE_NAME, MoneyNode.COL_ID + " = ?",
+                new String[]{node.getId().toString()});
+    }
+
 
     /**
      * Gets an instance of MoneyNode with the specified id.
@@ -461,6 +523,12 @@ public class MoneyNode extends DatabaseObject {
         return immediateTransactions;
     }
 
+    /*
+     * TODO: When removing an immediate transaction associated with a transfer,
+     *       give the option of deleting the linked transaction as well
+     *       (currently, a deletion will simply remove that connection and the
+     *       other transaction will continue to exist).
+     */
     public void removeImmediateTransaction(ImmediateTransaction transaction)
         throws DatabaseException {
         if (transaction == null) {

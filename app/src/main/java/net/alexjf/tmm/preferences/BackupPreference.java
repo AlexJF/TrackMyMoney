@@ -20,10 +20,9 @@ import java.util.zip.ZipOutputStream;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.PreferencesActivity;
-import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.PreferenceManager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,7 +35,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
-public class BackupPreference 
+public class BackupPreference
     extends DialogWithAsyncTaskProgressPreference<Void> {
     private static final int RES_DIALOGLAYOUT = R.layout.prefdiag_backup;
 
@@ -77,7 +76,7 @@ public class BackupPreference
     protected AsyncTaskWithProgressDialog<Void> createTask() {
         String strLoading = getActivity().getResources().getString(
                 R.string.backingup);
-        return new AsyncTaskWithProgressDialog<Void> 
+        return new AsyncTaskWithProgressDialog<Void>
         (TASK_BACKUP, strLoading) {
             private boolean sendToOnSuccess = shareCheckBox.isChecked();
 
@@ -96,11 +95,11 @@ public class BackupPreference
                     zos = new ZipOutputStream(new BufferedOutputStream(os));
                     tmmDir.mkdirs();
 
-                    DatabaseHelper dbHelper = DatabaseHelper.getInstance();
+                    DatabaseManager dbManager = DatabaseManager.getInstance();
                     File dbFile = new File(
-                            dbHelper.getReadableDatabase().getPath());
+                            dbManager.getDatabase().getPath());
                     byte[] dbData = new byte[(int) dbFile.length()];
-                    
+
                     DataInputStream dis = new DataInputStream(
                             new FileInputStream(dbFile));
                     try {
@@ -118,7 +117,7 @@ public class BackupPreference
                     ObjectOutputStream oos = new ObjectOutputStream(bos);
 
                     try {
-                        PreferenceManager prefManager = 
+                        PreferenceManager prefManager =
                             PreferenceManager.getInstance();
                         oos.writeObject(
                                 prefManager.getCurrentUserPreferences().getAll());
@@ -169,9 +168,9 @@ public class BackupPreference
                     R.string.export_share_title);
             activity.startActivity(Intent.createChooser(i, title));
         }
-        Toast.makeText(activity, 
-            activity.getResources().getString(R.string.backup_success), 
-            3).show();
+        Toast.makeText(activity,
+            activity.getResources().getString(R.string.backup_success),
+            Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -179,8 +178,8 @@ public class BackupPreference
         super.onAsyncTaskResultFailure(taskId, e);
         String strError = getActivity().getResources().getString(
                 R.string.error_backup);
-        Toast.makeText(getActivity(), 
-            String.format(strError, e.getMessage()), 3).show();
+        Toast.makeText(getActivity(),
+            String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
         Log.e("TMM", e.getMessage(), e);
     }
 }

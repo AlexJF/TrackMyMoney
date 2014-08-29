@@ -1,3 +1,13 @@
+1.1.3 - 28 Aug 2014
+- Fix several bugs related to caching with multiple users or restore operation.
+- When deleting a transaction associated with a transfer, do not automatically
+  delete the opposing one.
+- Allow input of math expressions as the value of initial balance of a money 
+  node.
+- Refactor the code to use Joda Money for handling money values and currencies.
+  Should provide a more consistent handling of money values.
+- Replaced actionbarsherlock with android-support-v7 library.
+
 1.1.2 - 6 Sep 2013
 - Add hint to keyboard for numeric input but don't force numeric only text
   (to allow for math signs, etc...).

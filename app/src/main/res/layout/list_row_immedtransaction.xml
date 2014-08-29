@@ -2,41 +2,40 @@
   Copyright (c) 2013 - Alexandre Jorge Fonseca (alexjf.net)
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:paddingBottom="15dp"
     android:paddingTop="15dp" >
     <ImageView
         android:id="@+id/transaction_caticon"
         android:layout_width="30dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:gravity="center"
         android:padding="3dp" />
-    <TextView
-        android:id="@+id/transaction_cat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/transaction_caticon"
-        android:textSize="20sp" />
-    <TextView
-        android:id="@+id/transaction_execDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/transaction_cat"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/transaction_caticon" />
+    <LinearLayout
+    	android:id="@+id/cat_and_date_wrapper"
+    	android:layout_width="0dp"
+    	android:layout_height="wrap_content"
+    	android:layout_weight="1"
+    	android:layout_marginLeft="5dp"
+    	android:orientation="vertical">
+	    <TextView
+	        android:id="@+id/transaction_cat"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="20sp" />
+	    <TextView
+	        android:id="@+id/transaction_execDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" />
+	</LinearLayout>
     <TextView
         android:id="@+id/transaction_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/transaction_cat"
-        android:gravity="right|center_vertical" />
-</RelativeLayout>
+        android:layout_marginLeft="5dp" />
+</LinearLayout>

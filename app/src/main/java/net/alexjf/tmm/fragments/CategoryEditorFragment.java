@@ -6,7 +6,6 @@ package net.alexjf.tmm.fragments;
 
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
 import net.alexjf.tmm.utils.DrawableResolver;
@@ -191,7 +190,7 @@ public class CategoryEditorFragment extends Fragment
             try {
                 // If we are adding a new category and the name already exists
                 if (category == null &&
-                    DatabaseHelper.getInstance().hasCategoryWithName(name)) {
+                    Category.hasCategoryWithName(name)) {
                     nameError =
                         res.getString(R.string.error_cat_name_already_exists);
                 }

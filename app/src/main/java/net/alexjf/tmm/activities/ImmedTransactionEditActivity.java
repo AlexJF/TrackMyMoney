@@ -5,7 +5,6 @@
 package net.alexjf.tmm.activities;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
@@ -44,12 +43,6 @@ public class ImmedTransactionEditActivity extends ActionBarActivity
         } else {
             setTitle(R.string.title_activity_immedtrans_edit);
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        DatabaseHelper.getInstance().close();
     }
 
     public void onImmediateTransactionEdited(ImmediateTransaction trans,

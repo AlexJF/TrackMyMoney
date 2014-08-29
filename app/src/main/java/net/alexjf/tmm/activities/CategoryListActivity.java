@@ -10,7 +10,6 @@ import java.util.List;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.CategoryAdapter;
 import net.alexjf.tmm.domain.Category;
-import net.alexjf.tmm.domain.DatabaseHelper;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import android.app.Activity;
 import android.content.Intent;
@@ -93,7 +92,7 @@ public class CategoryListActivity extends ActionBarActivity {
         List<Category> categories;
 
         try {
-            categories = DatabaseHelper.getInstance().getCategories();
+            categories = Category.getCategories();
         } catch (Exception e) {
             Log.e("TMM", "Failed to get categories: " + e.getMessage() +
                     "\n" + e.getStackTrace());
@@ -108,12 +107,6 @@ public class CategoryListActivity extends ActionBarActivity {
 
     private void updateGui() {
         adapter.sort(new Category.Comparator());
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        DatabaseHelper.getInstance().close();
     }
 
     @Override
@@ -167,7 +160,7 @@ public class CategoryListActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.menu_remove:
                 try {
-                    DatabaseHelper.getInstance().deleteCategory(category);
+                    Category.deleteCategory(category);
                     adapter.remove(category);
                 } catch (DatabaseException e) {
                     Log.e("TMM", "Unable to delete category", e);

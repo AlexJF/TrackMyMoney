@@ -9,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.alexjf.tmm.domain.DatabaseHelper;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -28,7 +26,6 @@ public abstract class AsyncTaskWithProgressDialog<Params>
     private String progressMessage;
     private Throwable throwable;
     private AsyncTaskResultListener resultListener;
-    private boolean ensureDatabaseOpen;
     private boolean running;
 
     public AsyncTaskWithProgressDialog(String taskId, String progressMessage) {
@@ -40,16 +37,11 @@ public abstract class AsyncTaskWithProgressDialog<Params>
         this.context = context;
         this.taskId = taskId;
         this.progressMessage = progressMessage;
-        this.ensureDatabaseOpen = false;
         running = false;
     }
 
     @Override
     protected void onPreExecute() {
-        if (ensureDatabaseOpen) {
-            DatabaseHelper.getInstance().setPreventClose(true);
-        }
-
         running = true;
         showDialog();
     }
@@ -58,10 +50,6 @@ public abstract class AsyncTaskWithProgressDialog<Params>
     protected void onPostExecute(Bundle result) {
         running = false;
         dismissDialog();
-
-        if (ensureDatabaseOpen) {
-            DatabaseHelper.getInstance().setPreventClose(false);
-        }
 
         if (throwable == null) {
             resultListener.onAsyncTaskResultSuccess(taskId, result);
@@ -140,13 +128,6 @@ public abstract class AsyncTaskWithProgressDialog<Params>
      */
     public void setResultListener(AsyncTaskResultListener resultListener) {
         this.resultListener = resultListener;
-    }
-
-    /**
-     * @param ensureDatabaseOpen the ensureDatabaseOpen to set
-     */
-    public void ensureDatabaseOpen(boolean ensureDatabaseOpen) {
-        this.ensureDatabaseOpen = ensureDatabaseOpen;
     }
 
     private static class ProgressDialogInfo {

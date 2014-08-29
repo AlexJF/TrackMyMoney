@@ -5,10 +5,10 @@
 package net.alexjf.tmm.fragments;
 
 import net.alexjf.tmm.R;
-import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.domain.UserList;
-
+import net.alexjf.tmm.utils.Utils;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -74,10 +74,10 @@ public class UserEditorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_user_editor, 
+        View v = inflater.inflate(R.layout.fragment_user_editor,
                 container, false);
 
-        userList = new UserList(getActivity());
+        userList = new UserList();
 
         usernameText = (EditText) v.findViewById(R.id.username_text);
         passwordLabel = (TextView) v.findViewById(R.id.password_label);
@@ -94,25 +94,19 @@ public class UserEditorFragment extends Fragment {
                 }
 
                 String username = usernameText.getText().toString();
-                String password = passwordText.getText().toString();
+                // TODO: This needs some salt
+                String password = Utils.sha1(passwordText.getText().toString());
 
                 if (user == null) {
                     User newUser = userList.addUser(username);
-                    newUser.setPassword(password);
-                    DatabaseHelper dbHelper = DatabaseHelper.getInstance(newUser);
-                    dbHelper.login();
-                    dbHelper.close();
+                    DatabaseManager.getInstance().login(username, password);
                     listener.onUserCreated(newUser);
                 } else {
-                    String oldPassword = oldPasswordText.getText().toString();
-                    user.setPassword(oldPassword);
-                    DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
-                    if (!dbHelper.changePassword(password)) {
-                        Toast.makeText(getActivity(), R.string.error_password_change, 3).show();
+                    String oldPassword = Utils.sha1(oldPasswordText.getText().toString());
+                    if (!DatabaseManager.getInstance().changePassword(username, oldPassword, password)) {
+                        Toast.makeText(getActivity(), R.string.error_password_change, Toast.LENGTH_LONG).show();
                         return;
                     }
-                    user.setPassword("");
-                    dbHelper.close();
                     listener.onUserEdited(user);
                 }
             }
@@ -159,10 +153,10 @@ public class UserEditorFragment extends Fragment {
         boolean error = false;
 
         Resources res = getResources();
-        Drawable errorDrawable = 
+        Drawable errorDrawable =
             res.getDrawable(R.drawable.indicator_input_error);
-        errorDrawable.setBounds(0, 0, 
-                errorDrawable.getIntrinsicWidth(), 
+        errorDrawable.setBounds(0, 0,
+                errorDrawable.getIntrinsicWidth(),
                 errorDrawable.getIntrinsicHeight());
 
         String name = usernameText.getText().toString();
@@ -172,9 +166,9 @@ public class UserEditorFragment extends Fragment {
             nameError = res.getString(R.string.error_username_not_empty);
         }
         else {
-            UserList userList = new UserList(getActivity());
+            UserList userList = new UserList();
             if (user == null && userList.getUser(name) != null) {
-                nameError = 
+                nameError =
                     res.getString(R.string.error_username_already_exists);
             }
         }
@@ -187,23 +181,21 @@ public class UserEditorFragment extends Fragment {
         if (!passwordConfirmText.getText().toString().equals(
             passwordText.getText().toString())) {
             passwordConfirmText.setError(
-                    res.getString(R.string.error_password_confirmation), 
+                    res.getString(R.string.error_password_confirmation),
                     errorDrawable);
             error = true;
         }
 
         // If we are editing a user...
         if (user != null) {
-            DatabaseHelper dbHelper = DatabaseHelper.getInstance(user);
-            user.setPassword(oldPasswordText.getText().toString());
-            if (!dbHelper.login()) {
+        	String username = user.getName();
+            String passwordHash = Utils.sha1(oldPasswordText.getText().toString());
+            if (!DatabaseManager.getInstance().login(username, passwordHash)) {
                 oldPasswordText.setError(
-                        res.getString(R.string.error_wrong_password), 
+                        res.getString(R.string.error_wrong_password),
                             errorDrawable);
                 error = true;
             }
-            user.setPassword("");
-            dbHelper.close();
         }
 
         return !error;

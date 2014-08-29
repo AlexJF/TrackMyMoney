@@ -81,9 +81,9 @@ public class ImmediateTransaction extends Transaction {
             case 0:
             case 1:
             case 2:
+            	db.execSQL(SCHEMA_FK_DISABLE);
             	db.execSQL(SCHEMA_CREATETABLE.replaceFirst(TABLE_NAME, TABLE_NAME + "_tmp"));
             	db.execSQL(SCHEMA_TRANSFER_TO_TMP);
-            	db.execSQL(SCHEMA_FK_DISABLE);
             	db.execSQL(SCHEMA_DROP_TABLE);
             	db.execSQL(SCHEMA_TMP_TO_NEW);
             	db.execSQL(SCHEMA_FK_CHECK);

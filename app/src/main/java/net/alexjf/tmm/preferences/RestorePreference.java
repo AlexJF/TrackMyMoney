@@ -17,11 +17,11 @@ import java.util.zip.ZipFile;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.PreferencesActivity;
 import net.alexjf.tmm.activities.PreferencesActivity.OnFileChosenListener;
-import net.alexjf.tmm.domain.DatabaseHelper;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.User;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
-import net.alexjf.tmm.utils.CacheFactory;
 import net.alexjf.tmm.utils.PreferenceManager;
+import net.alexjf.tmm.utils.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -92,10 +92,9 @@ public class RestorePreference
                         ZipEntry dbEntry = backupZip.getEntry("database");
                         InputStream is = backupZip.getInputStream(dbEntry);
                         DataInputStream dis = new DataInputStream(is);
-                        DatabaseHelper dbHelper = DatabaseHelper.getInstance();
                         // Close the database for we will replace it.
-                        dbHelper.close();
-                        User currentUser = dbHelper.getCurrentUser();
+                        DatabaseManager.getInstance().closeDatabase();
+                        User currentUser = Utils.getCurrentUser();
                         File filesDir = getActivity().getFilesDir();
                         File dbFile = new File(filesDir, "../databases/" +
                                 currentUser.getName() + ".db");
@@ -171,7 +170,7 @@ public class RestorePreference
         Toast.makeText(activity,
             getActivity().getResources().getString(R.string.restore_success),
             Toast.LENGTH_LONG).show();
-        activity.setForceDataRefresh(true);
+        activity.setLogout(true);
         activity.refreshPreferenceScreen();
     }
 

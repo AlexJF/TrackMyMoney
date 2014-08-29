@@ -292,7 +292,6 @@ public class ImmedTransactionStatsFragment extends Fragment
             };
 
         categoryStatsTask.setResultListener(this);
-        categoryStatsTask.ensureDatabaseOpen(true);
         categoryStatsTask.execute(adapter);
     }
 

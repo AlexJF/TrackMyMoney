@@ -24,97 +24,91 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/description_label"
         android:singleLine="true" />
-    <TextView
-        android:id="@+id/category_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/category_button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@id/category_button"
-        android:layout_below="@id/description_text"
-        android:gravity="center_vertical"
-        android:text="@string/category" />
-    <net.alexjf.tmm.views.SelectorButton
-        android:id="@id/category_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/description_text"
-        android:layout_toRightOf="@id/category_label"
-        android:text="@string/choose" />
-    <TextView
-        android:id="@+id/executionDate_label"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/executionDate_button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@id/executionDate_button"
-        android:layout_below="@id/category_label"
-        android:gravity="center_vertical"
-        android:text="@string/executionDate" />
-    <Button
-        android:id="@id/executionDate_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/category_button"
-        android:layout_toLeftOf="@+id/executionTime_button"
-        android:layout_toRightOf="@id/executionDate_label"
-        android:freezesText="true" />
-    <Button
-        android:id="@id/executionTime_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/category_button"
-        android:layout_marginLeft="5dp"
-        android:freezesText="true" />
+    <LinearLayout
+    	android:id="@+id/category_wrapper"
+    	android:orientation="horizontal"
+    	android:gravity="center_vertical"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/description_text">
+	    <TextView
+	        android:id="@+id/category_label"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/category" />
+	    <net.alexjf.tmm.views.SelectorButton
+	        android:id="@+id/category_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/choose" />
+	</LinearLayout>
+    <LinearLayout
+    	android:id="@+id/executionDate_wrapper"
+    	android:orientation="horizontal"
+    	android:gravity="center_vertical"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/category_wrapper">
+	    <TextView
+	        android:id="@+id/executionDate_label"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/executionDate" />
+	    <Button
+	        android:id="@+id/executionDate_button"
+	        android:layout_width="0dp"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:freezesText="true" />
+	    <Button
+	        android:id="@+id/executionTime_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:freezesText="true" />
+	</LinearLayout>
     <TextView
         android:id="@+id/value_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/value_sign"
-        android:layout_alignRight="@+id/value_text"
-        android:layout_below="@id/executionDate_label"
-        android:gravity="center_vertical"
-        android:text="@string/value" />
-    <net.alexjf.tmm.views.SignToggleButton
-        android:id="@id/value_sign"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@id/value_text"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@id/value_text"
-        android:layout_below="@id/value_label"
-        positive="false"
-        android:background="@android:color/transparent"
-        android:freezesText="true"
-        android:gravity="center"
-        android:textSize="30dp"
-        android:textStyle="bold" />
-    <EditText
-        android:id="@id/value_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/value_label"
-        android:layout_toLeftOf="@+id/currency_label"
-        android:layout_toRightOf="@id/value_sign"
-        android:singleLine="true" >
-        <requestFocus />
-    </EditText>
-    <TextView
-        android:id="@id/currency_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/value_text"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/value_text"
-        android:layout_below="@id/value_label"
-        android:layout_marginLeft="5dp"
-        android:gravity="center_vertical" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/executionDate_wrapper"
+        android:text="@string/value" />
+    <LinearLayout
+    	android:id="@+id/value_wrapper"
+    	android:orientation="horizontal"
+    	android:gravity="center_vertical"
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/value_label">
+	    <net.alexjf.tmm.views.SignToggleButton
+	        android:id="@+id/value_sign"
+	        android:layout_width="40dp"
+	        android:layout_height="wrap_content"
+	        positive="false"
+	        android:background="@android:color/transparent"
+	        android:freezesText="true"
+	        android:gravity="center"
+	        android:textSize="30sp"
+	        android:textStyle="bold" />
+	    <EditText
+	        android:id="@+id/value_text"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:singleLine="true" >
+	        <requestFocus />
+	    </EditText>
+	    <TextView
+	        android:id="@+id/currency_label"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp" />
+	</LinearLayout>
     <CheckBox
         android:id="@+id/transfer_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/currency_label"
+        android:layout_below="@id/value_wrapper"
         android:layout_alignParentLeft="true"
         android:text="@string/transfer_check" />
     <LinearLayout
