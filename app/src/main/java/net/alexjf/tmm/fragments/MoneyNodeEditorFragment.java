@@ -267,7 +267,7 @@ public class MoneyNodeEditorFragment extends Fragment
 	            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
 	            iconSelectorButton.setDrawableId(iconId);
 	            creationDateButton.setText(dateFormat.format(node.getCreationDate()));
-	            initialBalanceText.setText(node.getInitialBalance().toString());
+	            initialBalanceText.setText(node.getInitialBalance().getAmount().toString());
 	            @SuppressWarnings("unchecked")
 	            ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
 	            int positionInSpinner = adapter.getPosition(node.getCurrency().getCurrencyCode());
