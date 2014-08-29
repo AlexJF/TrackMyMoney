@@ -242,6 +242,9 @@ public class UserListActivity extends ActionBarActivity {
             Toast.makeText(UserListActivity.this,
                 String.format(strError, username),
                 Toast.LENGTH_LONG).show();
+
+            // If there's a remembered login, it's clearly wrong so remove it
+            Utils.clearRememberedLogin();
         }
     }
 }
