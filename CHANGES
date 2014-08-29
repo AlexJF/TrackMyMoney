@@ -7,6 +7,7 @@
 - Refactor the code to use Joda Money for handling money values and currencies.
   Should provide a more consistent handling of money values.
 - Replaced actionbarsherlock with android-support-v7 library.
+- Refactored database management and upgraded to SQLCipher 3.
 
 1.1.2 - 6 Sep 2013
 - Add hint to keyboard for numeric input but don't force numeric only text
