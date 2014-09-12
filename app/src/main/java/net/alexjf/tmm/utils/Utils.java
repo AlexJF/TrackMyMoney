@@ -183,10 +183,10 @@ public class Utils {
 
     private static final String USERDATA_REMEMBEREDLOGIN = "rememberedLogin";
 
-    public static void setRememberedLogin(String username, String password) {
+    public static void setRememberedLogin(String username, String passwordHash) {
         PreferenceManager prefManager = PreferenceManager.getInstance();
         prefManager.writeGlobalStringPreference(USERDATA_REMEMBEREDLOGIN,
-            username + ":" + password);
+            username + ":" + passwordHash);
     }
 
     public static void clearRememberedLogin() {
@@ -201,9 +201,9 @@ public class Utils {
 
         if (rememberedLogin.length == 2) {
         	String username = rememberedLogin[0];
-        	String password = rememberedLogin[1];
+        	String passwordHash = rememberedLogin[1];
 
-        	return new RememberedLoginData(username, password);
+        	return new RememberedLoginData(username, passwordHash);
         }
 
         return null;

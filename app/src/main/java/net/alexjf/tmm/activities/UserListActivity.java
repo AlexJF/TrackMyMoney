@@ -130,6 +130,8 @@ public class UserListActivity extends ActionBarActivity {
         RememberedLoginData loginData = Utils.getRememberedLogin();
 
         if (loginData != null) {
+	        // We need to do this to ensure that login data is not cleared when doing this automatic login.
+	        rememberLoginCheck.setChecked(true);
         	navigateToMoneyNodeList(loginData.username, loginData.passwordHash, true);
         }
     }
