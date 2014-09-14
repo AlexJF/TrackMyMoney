@@ -4,6 +4,7 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -220,8 +221,9 @@ public class ImmedTransactionEditorFragment extends Fragment
                 try {
                     Calculable calc = new ExpressionBuilder(
                         valueText.getText().toString()).build();
-                    value = Money.of(currentMoneyNode.getCurrency(), calc.calculate());
+                    value = Money.of(currentMoneyNode.getCurrency(), calc.calculate(), RoundingMode.HALF_EVEN);
                 } catch (Exception e) {
+					Log.e("TMM", "Error calculating value expression: " + e.getMessage(), e);
                     value = Money.zero(currentMoneyNode.getCurrency());
                 }
 
@@ -361,7 +363,7 @@ public class ImmedTransactionEditorFragment extends Fragment
     }
 
     /**
-     * @param node the transaction to set
+     * @param trans the transaction to set
      */
     public void setTransaction(ImmediateTransaction trans) {
         ImmediateTransaction prevNode = this.transaction;

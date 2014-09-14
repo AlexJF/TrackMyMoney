@@ -128,7 +128,10 @@ public class MoneyNodeListActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DatabaseManager.getInstance().closeDatabase();
+
+		if (isTaskRoot()) {
+			DatabaseManager.getInstance().closeDatabase();
+		}
     }
 
     @Override

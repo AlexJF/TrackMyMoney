@@ -4,7 +4,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.android.tools.build:gradle:0.12.+'
+		//classpath 'com.android.tools.build:gradle:0.11.+'
 
 		// https://github.com/alexvasilkov/AndroidGradleSignPlugin
 		classpath "com.alexvasilkov:android-sign-release:0.3.6"
