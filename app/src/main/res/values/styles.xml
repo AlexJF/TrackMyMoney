@@ -3,9 +3,12 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <style name="AppTheme" parent="@style/Theme.AppCompat" />
-    <style name="AppTheme.NoActionBar" parent="@style/AppTheme">
-        <item name="android:windowNoTitle">true</item>
-        <item name="windowActionBar">false</item> <!-- For 2.x version -->
-    </style>
+
+	<style name="AppTheme" parent="@style/Theme.AppCompat"/>
+
+	<style name="AppTheme.NoActionBar" parent="@style/AppTheme">
+		<item name="android:windowNoTitle">true</item>
+		<item name="windowActionBar">false</item>
+		<!-- For 2.x version -->
+	</style>
 </resources>

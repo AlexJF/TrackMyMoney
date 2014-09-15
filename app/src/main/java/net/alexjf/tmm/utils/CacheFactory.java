@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class CacheFactory {
 	private static CacheFactory instance = null;
-	private Map<String, Cache<?,?>> caches;
+	private Map<String, Cache<?, ?>> caches;
 
 	public static CacheFactory getInstance() {
 		if (instance == null) {
@@ -24,14 +24,14 @@ public class CacheFactory {
 	}
 
 	private CacheFactory() {
-		caches = new HashMap<String, Cache<?,?>>();
+		caches = new HashMap<String, Cache<?, ?>>();
 	}
 
 	public <K, V> Cache<K, V> getCache(String name) {
 		Cache<K, V> cache = (Cache<K, V>) caches.get(name);
 
 		if (cache == null) {
-			cache = new Cache<K,V>();
+			cache = new Cache<K, V>();
 			caches.put(name, cache);
 		}
 
@@ -39,7 +39,7 @@ public class CacheFactory {
 	}
 
 	public void clearCaches() {
-		for (Cache<?,?> cache : caches.values()) {
+		for (Cache<?, ?> cache : caches.values()) {
 			cache.clear();
 		}
 	}

@@ -5,14 +5,14 @@
 package net.alexjf.tmm.exceptions;
 
 public class DatabaseNotReadyException extends DatabaseException {
-    static final long serialVersionUID = 1;
+	static final long serialVersionUID = 1;
 
-    public DatabaseNotReadyException() {
-        super("Database not ready: null or closed");
-    }
+	public DatabaseNotReadyException() {
+		super("Database not ready: null or closed");
+	}
 
-    public DatabaseNotReadyException(DatabaseException e) {
-        super("Database not ready: " + e.getMessage(), e);
-    }
+	public DatabaseNotReadyException(DatabaseException e) {
+		super("Database not ready: " + e.getMessage(), e);
+	}
 }
 

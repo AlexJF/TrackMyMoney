@@ -5,10 +5,10 @@
 package net.alexjf.tmm.exceptions;
 
 public class DatabaseUnknownUserException extends DatabaseException {
-    static final long serialVersionUID = 1;
+	static final long serialVersionUID = 1;
 
-    public DatabaseUnknownUserException() {
-        super("Database cannot be opened: no user defined");
-    }
+	public DatabaseUnknownUserException() {
+		super("Database cannot be opened: no user defined");
+	}
 }
 

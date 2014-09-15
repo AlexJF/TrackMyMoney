@@ -1,38 +1,37 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="15dp" >
-    <TextView
-        android:id="@+id/filepath_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:gravity="center_vertical"
-        android:text="@string/file_path" />
-    <EditText
-        android:id="@+id/filepath_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/filepath_label"
-        android:layout_toLeftOf="@+id/filepath_chooser"
-        android:singleLine="true" />
-    <Button
-        android:id="@id/filepath_chooser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/filepath_label"
-        android:text="..." />
-    <CheckBox
-        android:id="@+id/replace_check"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/filepath_text"
-        android:gravity="center_vertical"
-        android:text="@string/import_replace" />
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="15dp">
+	<TextView
+			android:id="@+id/filepath_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentRight="true"
+			android:gravity="center_vertical"
+			android:text="@string/file_path"/>
+	<EditText
+			android:id="@+id/filepath_text"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_below="@id/filepath_label"
+			android:layout_toLeftOf="@+id/filepath_chooser"
+			android:singleLine="true"/>
+	<Button
+			android:id="@id/filepath_chooser"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/filepath_label"
+			android:text="..."/>
+	<CheckBox
+			android:id="@+id/replace_check"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/filepath_text"
+			android:gravity="center_vertical"
+			android:text="@string/import_replace"/>
 </RelativeLayout>

@@ -4,107 +4,107 @@
  ******************************************************************************/
 package net.alexjf.tmm.database;
 
+import android.content.Context;
+import android.util.Log;
 import net.alexjf.tmm.utils.CacheFactory;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteException;
-import android.content.Context;
-import android.util.Log;
 
 public class DatabaseManager {
 
-    private SQLiteDatabase database;
-    private Context context = null;
+	private SQLiteDatabase database;
+	private Context context = null;
 
-    private static DatabaseManager instance = null;
+	private static DatabaseManager instance = null;
 
-    public static void initialize(Context context) {
-    	instance = new DatabaseManager(context);
-    }
+	public static void initialize(Context context) {
+		instance = new DatabaseManager(context);
+	}
 
-    public static DatabaseManager getInstance() {
-    	return instance;
-    }
+	public static DatabaseManager getInstance() {
+		return instance;
+	}
 
-    private DatabaseManager(Context context) {
-    	this.context = context;
-    }
+	private DatabaseManager(Context context) {
+		this.context = context;
+	}
 
-    public SQLiteDatabase getDatabase() {
-    	return database;
-    }
+	public SQLiteDatabase getDatabase() {
+		return database;
+	}
 
-    public SQLiteDatabase getDatabase(String username, String password) {
-    	closeDatabase();
+	public SQLiteDatabase getDatabase(String username, String password) {
+		closeDatabase();
 
-    	database = new DatabaseHelper(
-    			context,
-    			getDatabaseName(username),
-    			PreferenceManager.getInstance().getUserPreferences(username)
-    		).getWritableDatabase(password);
+		database = new DatabaseHelper(
+				context,
+				getDatabaseName(username),
+				PreferenceManager.getInstance().getUserPreferences(username)
+		).getWritableDatabase(password);
 
-    	return database;
-    }
+		return database;
+	}
 
-    public void closeDatabase() {
-    	if (database != null) {
-    		if (database.isOpen()) {
-	    		database.close();
-    		}
+	public void closeDatabase() {
+		if (database != null) {
+			if (database.isOpen()) {
+				database.close();
+			}
 			CacheFactory.getInstance().clearCaches();
-    	}
+		}
 
-    	database = null;
-    }
+		database = null;
+	}
 
-    public boolean login(String username, String password) {
-        try {
-            getDatabase(username, password);
-            testDatabaseAccess(database);
-            return true;
-        } catch (SQLiteException e) {
-            Log.e("TMM", e.getMessage(), e);
-        } finally {
-        	closeDatabase();
-        }
+	public boolean login(String username, String password) {
+		try {
+			getDatabase(username, password);
+			testDatabaseAccess(database);
+			return true;
+		} catch (SQLiteException e) {
+			Log.e("TMM", e.getMessage(), e);
+		} finally {
+			closeDatabase();
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    public boolean changePassword(String username, String oldPassword, String newPassword) {
-        try {
-        	getDatabase(username, oldPassword);
-            database.rawQuery("PRAGMA rekey = '" + newPassword + "'", null);
-            return true;
-        } catch (SQLiteException e) {
-            Log.e("TMM", e.getMessage(), e);
-            return false;
-        } finally {
-        	closeDatabase();
-        }
-    }
+	public boolean changePassword(String username, String oldPassword, String newPassword) {
+		try {
+			getDatabase(username, oldPassword);
+			database.rawQuery("PRAGMA rekey = '" + newPassword + "'", null);
+			return true;
+		} catch (SQLiteException e) {
+			Log.e("TMM", e.getMessage(), e);
+			return false;
+		} finally {
+			closeDatabase();
+		}
+	}
 
-    /**
-     * Deletes a database associated with a particular user
-     *
-     * @param User user whose database we want to delete.
-     */
-    public void deleteDatabase(String username) {
-        context.deleteDatabase(getDatabaseName(username));
-    }
+	/**
+	 * Deletes a database associated with a particular user
+	 *
+	 * @param User user whose database we want to delete.
+	 */
+	public void deleteDatabase(String username) {
+		context.deleteDatabase(getDatabaseName(username));
+	}
 
-    private boolean testDatabaseAccess(SQLiteDatabase db) {
-        try {
-            db.query("sqlite_master", new String[] { "count(*)" }, null, null,
-                    null, null, null, null);
-            return true;
-        } catch (SQLiteException e) {
-            Log.e("TMM", e.getMessage(), e);
-            return false;
-        }
-    }
+	private boolean testDatabaseAccess(SQLiteDatabase db) {
+		try {
+			db.query("sqlite_master", new String[]{"count(*)"}, null, null,
+					null, null, null, null);
+			return true;
+		} catch (SQLiteException e) {
+			Log.e("TMM", e.getMessage(), e);
+			return false;
+		}
+	}
 
-    private String getDatabaseName(String username) {
-    	return username + ".db";
-    }
+	private String getDatabaseName(String username) {
+		return username + ".db";
+	}
 }

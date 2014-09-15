@@ -5,14 +5,14 @@
 package net.alexjf.tmm.exceptions;
 
 public class ImportException extends Exception {
-    static final long serialVersionUID = 1;
+	static final long serialVersionUID = 1;
 
-    public ImportException(String s) {
-        super(s);
-    }
+	public ImportException(String s) {
+		super(s);
+	}
 
-    public ImportException(Throwable e) {
-        super(e.getMessage(), e);
-    }
+	public ImportException(Throwable e) {
+		super(e.getMessage(), e);
+	}
 }
 

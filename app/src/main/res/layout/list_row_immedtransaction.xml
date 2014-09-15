@@ -3,39 +3,38 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp" >
-    <ImageView
-        android:id="@+id/transaction_caticon"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="3dp" />
-    <LinearLayout
-    	android:id="@+id/cat_and_date_wrapper"
-    	android:layout_width="0dp"
-    	android:layout_height="wrap_content"
-    	android:layout_weight="1"
-    	android:layout_marginLeft="5dp"
-    	android:orientation="vertical">
-	    <TextView
-	        android:id="@+id/transaction_cat"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:textSize="20sp" />
-	    <TextView
-	        android:id="@+id/transaction_execDate"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content" />
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center_vertical"
+		android:paddingBottom="15dp"
+		android:paddingTop="15dp">
+	<ImageView
+			android:id="@+id/transaction_caticon"
+			android:layout_width="30dp"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:padding="3dp"/>
+	<LinearLayout
+			android:id="@+id/cat_and_date_wrapper"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:layout_marginLeft="5dp"
+			android:orientation="vertical">
+		<TextView
+				android:id="@+id/transaction_cat"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="20sp"/>
+		<TextView
+				android:id="@+id/transaction_execDate"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"/>
 	</LinearLayout>
-    <TextView
-        android:id="@+id/transaction_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp" />
+	<TextView
+			android:id="@+id/transaction_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dp"/>
 </LinearLayout>

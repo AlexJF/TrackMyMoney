@@ -1,74 +1,74 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.alexjf.tmm"
-    android:versionCode="9"
-    android:installLocation="preferExternal"
-    android:versionName="@string/app_version_value" >
+		package="net.alexjf.tmm"
+		android:versionCode="9"
+		android:installLocation="preferExternal"
+		android:versionName="@string/app_version_value">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="20" />
+	<uses-sdk
+			android:minSdkVersion="8"
+			android:targetSdkVersion="20"/>
 
-    <application
-        android:name="TrackMyMoneyApplication"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name_value"
-        android:theme="@style/AppTheme"
-        android:allowBackup="true">
-        <activity
-            android:name=".activities.UserListActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/title_activity_user_list" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+	<application
+			android:name="TrackMyMoneyApplication"
+			android:icon="@drawable/ic_launcher"
+			android:label="@string/app_name_value"
+			android:theme="@style/AppTheme"
+			android:allowBackup="true">
+		<activity
+				android:name=".activities.UserListActivity"
+				android:theme="@style/AppTheme.NoActionBar"
+				android:label="@string/title_activity_user_list">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activities.UserEditActivity">
-        </activity>
-        <activity
-            android:name=".activities.MoneyNodeListActivity"
-            android:label="@string/title_activity_moneynode_list" >
-        </activity>
-        <activity
-            android:name=".activities.MoneyNodeEditActivity">
-        </activity>
-        <activity
-            android:name=".activities.MoneyNodeDetailsActivity"
-            android:configChanges="keyboardHidden">
-        </activity>
-        <activity
-            android:name=".activities.ImmedTransactionEditActivity">
-        </activity>
-        <activity
-            android:name=".activities.ImmedTransactionDetailsActivity">
-        </activity>
-        <activity
-            android:name=".activities.CategoryListActivity"
-            android:label="@string/title_activity_category_list" >
-        </activity>
-        <activity
-            android:name=".activities.CategoryEditActivity">
-        </activity>
-        <activity
-            android:name=".activities.PreferencesActivity">
-        </activity>
-        <activity
-            android:name="com.ipaulpro.afilechooser.FileChooserActivity"
-            android:icon="@drawable/ic_chooser"
-            android:label="@string/title_activity_filechooser" >
-            <intent-filter>
-                <action android:name="android.intent.action.GET_CONTENT" />
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
+		<activity
+				android:name=".activities.UserEditActivity">
+		</activity>
+		<activity
+				android:name=".activities.MoneyNodeListActivity"
+				android:label="@string/title_activity_moneynode_list">
+		</activity>
+		<activity
+				android:name=".activities.MoneyNodeEditActivity">
+		</activity>
+		<activity
+				android:name=".activities.MoneyNodeDetailsActivity"
+				android:configChanges="keyboardHidden">
+		</activity>
+		<activity
+				android:name=".activities.ImmedTransactionEditActivity">
+		</activity>
+		<activity
+				android:name=".activities.ImmedTransactionDetailsActivity">
+		</activity>
+		<activity
+				android:name=".activities.CategoryListActivity"
+				android:label="@string/title_activity_category_list">
+		</activity>
+		<activity
+				android:name=".activities.CategoryEditActivity">
+		</activity>
+		<activity
+				android:name=".activities.PreferencesActivity">
+		</activity>
+		<activity
+				android:name="com.ipaulpro.afilechooser.FileChooserActivity"
+				android:icon="@drawable/ic_chooser"
+				android:label="@string/title_activity_filechooser">
+			<intent-filter>
+				<action android:name="android.intent.action.GET_CONTENT"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.OPENABLE" />
+				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.OPENABLE"/>
 
-                <data android:mimeType="*/*" />
-            </intent-filter>
-        </activity>
-    </application>
+				<data android:mimeType="*/*"/>
+			</intent-filter>
+		</activity>
+	</application>
 
 </manifest>

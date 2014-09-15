@@ -3,9 +3,9 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <string-array name="pref_tab_navigation">
-        <item>@string/tabs</item>
-        <item>@string/swipe</item>
-        <item>@string/both</item>
-    </string-array>
+	<string-array name="pref_tab_navigation">
+		<item>@string/tabs</item>
+		<item>@string/swipe</item>
+		<item>@string/both</item>
+	</string-array>
 </resources>

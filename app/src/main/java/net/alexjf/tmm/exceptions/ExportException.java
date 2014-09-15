@@ -5,15 +5,15 @@
 package net.alexjf.tmm.exceptions;
 
 public class ExportException extends Exception {
-    static final long serialVersionUID = 1;
+	static final long serialVersionUID = 1;
 
-    public ExportException(String s) {
-        super(s);
-    }
+	public ExportException(String s) {
+		super(s);
+	}
 
-    public ExportException(Throwable e) {
-        super(e.getMessage(), e);
-    }
+	public ExportException(Throwable e) {
+		super(e.getMessage(), e);
+	}
 }
 
 

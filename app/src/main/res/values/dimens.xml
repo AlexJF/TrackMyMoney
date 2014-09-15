@@ -3,7 +3,7 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <dimen name="padding_small">8dp</dimen>
-    <dimen name="padding_medium">8dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
+	<dimen name="padding_small">8dp</dimen>
+	<dimen name="padding_medium">8dp</dimen>
+	<dimen name="padding_large">16dp</dimen>
 </resources>

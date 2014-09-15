@@ -3,25 +3,25 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/menu_add"
-        android:icon="@android:drawable/ic_menu_add"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:title="@string/add" />
-    <item
-        android:id="@+id/menu_manage_categories"
-        android:orderInCategory="101"
-        android:title="@string/manage_categories"/>
-    <item
-        android:id="@+id/menu_preferences"
-        android:orderInCategory="102"
-        app:showAsAction="never"
-        android:title="@string/menu_preferences" />
-    <item
-        android:id="@+id/menu_logout"
-        android:orderInCategory="103"
-        app:showAsAction="never"
-        android:title="@string/menu_logout" />
+		xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+			android:id="@+id/menu_add"
+			android:icon="@android:drawable/ic_menu_add"
+			android:orderInCategory="100"
+			app:showAsAction="ifRoom"
+			android:title="@string/add"/>
+	<item
+			android:id="@+id/menu_manage_categories"
+			android:orderInCategory="101"
+			android:title="@string/manage_categories"/>
+	<item
+			android:id="@+id/menu_preferences"
+			android:orderInCategory="102"
+			app:showAsAction="never"
+			android:title="@string/menu_preferences"/>
+	<item
+			android:id="@+id/menu_logout"
+			android:orderInCategory="103"
+			app:showAsAction="never"
+			android:title="@string/menu_logout"/>
 </menu>

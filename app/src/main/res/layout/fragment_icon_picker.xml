@@ -3,21 +3,20 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <Spinner
-        android:id="@+id/iconcat_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <GridView
-        android:id="@+id/icon_grid"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:columnWidth="45dp"
-        android:horizontalSpacing="10dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="10dp" />
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+	<Spinner
+			android:id="@+id/iconcat_spinner"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+	<GridView
+			android:id="@+id/icon_grid"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:columnWidth="45dp"
+			android:horizontalSpacing="10dp"
+			android:numColumns="auto_fit"
+			android:verticalSpacing="10dp"/>
 </LinearLayout>

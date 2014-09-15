@@ -3,48 +3,47 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
-    <LinearLayout
-    	android:orientation="horizontal"
-    	android:gravity="center_vertical"
-    	android:layout_width="match_parent"
-    	android:layout_height="wrap_content">
-	    <TextView
-	        android:id="@+id/interval_label"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_marginRight="5dp"
-	        android:text="@string/date_interval" />
-	    <Spinner
-	        android:id="@+id/interval_spinner"
-	        android:layout_width="0dp"
-	        android:layout_weight="1"
-	        android:layout_height="wrap_content"
-	        android:entries="@array/date_intervals" />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/custom_selector"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-        <Button
-            android:id="@+id/start_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:freezesText="true"
-            android:gravity="center" />
-        <Button
-            android:id="@+id/end_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:freezesText="true" />
-    </LinearLayout>
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+	<LinearLayout
+			android:orientation="horizontal"
+			android:gravity="center_vertical"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+		<TextView
+				android:id="@+id/interval_label"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="5dp"
+				android:text="@string/date_interval"/>
+		<Spinner
+				android:id="@+id/interval_spinner"
+				android:layout_width="0dp"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:entries="@array/date_intervals"/>
+	</LinearLayout>
+	<LinearLayout
+			android:id="@+id/custom_selector"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:visibility="gone">
+		<Button
+				android:id="@+id/start_button"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginRight="5dp"
+				android:layout_weight="1"
+				android:freezesText="true"
+				android:gravity="center"/>
+		<Button
+				android:id="@+id/end_button"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="5dp"
+				android:layout_weight="1"
+				android:freezesText="true"/>
+	</LinearLayout>
 </LinearLayout>

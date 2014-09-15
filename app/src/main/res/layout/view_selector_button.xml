@@ -4,33 +4,32 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
-    <ImageView
-        android:id="@+id/selection_icon"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@+id/selection_button"
-        android:layout_alignTop="@id/selection_button"
-        android:gravity="center"
-        android:scaleType="centerInside" />
-    <Button
-        android:id="@id/selection_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/selection_icon"
-        android:gravity="center"
-        android:text="@string/choose" />
-    <ImageView
-        android:id="@+id/selection_error"
-        android:layout_width="40dp"
-        android:layout_height="0dp"
-        android:layout_alignBottom="@id/selection_button"
-        android:layout_alignTop="@id/selection_button"
-        android:layout_toRightOf="@id/selection_button"
-        android:gravity="center"
-        android:scaleType="centerInside"
-        android:src="@drawable/indicator_input_error"
-        android:visibility="gone" />
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+	<ImageView
+			android:id="@+id/selection_icon"
+			android:layout_width="40dp"
+			android:layout_height="0dp"
+			android:layout_alignBottom="@+id/selection_button"
+			android:layout_alignTop="@id/selection_button"
+			android:gravity="center"
+			android:scaleType="centerInside"/>
+	<Button
+			android:id="@id/selection_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/selection_icon"
+			android:gravity="center"
+			android:text="@string/choose"/>
+	<ImageView
+			android:id="@+id/selection_error"
+			android:layout_width="40dp"
+			android:layout_height="0dp"
+			android:layout_alignBottom="@id/selection_button"
+			android:layout_alignTop="@id/selection_button"
+			android:layout_toRightOf="@id/selection_button"
+			android:gravity="center"
+			android:scaleType="centerInside"
+			android:src="@drawable/indicator_input_error"
+			android:visibility="gone"/>
 </RelativeLayout>

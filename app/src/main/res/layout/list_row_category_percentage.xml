@@ -3,50 +3,49 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp" >
-    <ImageView
-        android:id="@+id/category_icon"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/glyphish_piggy_bank" />
-    <TextView
-        android:id="@id/category_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/category_icon"
-        android:gravity="center_vertical|left" />
-    <TextView
-        android:id="@+id/category_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/category_name"
-        android:gravity="right" />
-    <ProgressBar
-        android:id="@+id/category_percentage_bar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/category_name"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_toLeftOf="@+id/category_percentage_text"
-        android:layout_toRightOf="@id/category_icon" />
-    <TextView
-        android:id="@id/category_percentage_text"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/category_value"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center" />
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		android:paddingBottom="15dp"
+		android:paddingTop="15dp">
+	<ImageView
+			android:id="@+id/category_icon"
+			android:layout_width="50dp"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:scaleType="centerInside"
+			android:src="@drawable/glyphish_piggy_bank"/>
+	<TextView
+			android:id="@id/category_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dp"
+			android:layout_toRightOf="@id/category_icon"
+			android:gravity="center_vertical|left"/>
+	<TextView
+			android:id="@+id/category_value"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_toRightOf="@id/category_name"
+			android:gravity="right"/>
+	<ProgressBar
+			android:id="@+id/category_percentage_bar"
+			style="@android:style/Widget.ProgressBar.Horizontal"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/category_name"
+			android:layout_marginLeft="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_toLeftOf="@+id/category_percentage_text"
+			android:layout_toRightOf="@id/category_icon"/>
+	<TextView
+			android:id="@id/category_percentage_text"
+			android:layout_width="50dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_below="@id/category_value"
+			android:layout_marginLeft="5dp"
+			android:layout_marginTop="5dp"
+			android:gravity="center"/>
 </RelativeLayout>

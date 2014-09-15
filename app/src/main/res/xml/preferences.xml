@@ -1,82 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tmm="http://schemas.android.com/apk/res/net.alexjf.tmm" >
-    <PreferenceCategory android:title="@string/pref_general" >
-        <ListPreference
-            android:entries="@array/currencies"
-            android:entryValues="@array/currencies"
-            android:key="pref_key_default_currency"
-            android:persistent="true"
-            android:title="@string/pref_default_currency" />
-        <ListPreference
-            android:entries="@array/date_intervals"
-            android:entryValues="@array/date_intervals_values"
-            android:key="pref_key_default_timeinterval"
-            android:persistent="true"
-            android:title="@string/pref_default_timeinterval" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_interface" >
-        <ListPreference
-            android:defaultValue="@string/both"
-            android:entries="@array/pref_tab_navigation"
-            android:entryValues="@array/pref_tab_navigation_values"
-            android:key="pref_key_tab_navigation"
-            android:persistent="true"
-            android:title="@string/pref_tab_navigation" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_import_export_data" >
-        <net.alexjf.tmm.preferences.ImportDataPreference
-            android:key="pref_key_import_data"
-            android:persistent="false"
-            android:summary="@string/pref_import_data_summary"
-            android:title="@string/pref_import_data" />
-        <net.alexjf.tmm.preferences.ExportDataPreference
-            android:key="pref_key_export_data"
-            android:persistent="false"
-            android:summary="@string/pref_export_data_summary"
-            android:title="@string/pref_export_data" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_backup_restore" >
-        <net.alexjf.tmm.preferences.BackupPreference
-            android:key="pref_key_backup"
-            android:persistent="false"
-            android:summary="@string/pref_backup_summary"
-            android:title="@string/pref_backup" />
-        <net.alexjf.tmm.preferences.RestorePreference
-            android:key="pref_key_restore"
-            android:persistent="false"
-            android:summary="@string/pref_restore_summary"
-            android:title="@string/pref_restore" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_misc" >
-        <PreferenceScreen
-            android:key="pref_key_about"
-            android:title="@string/pref_about" >
-            <Preference
-                android:key="pref_key_about_appname"
-                android:persistent="false"
-                android:summary="@string/app_name_value"
-                android:title="@string/app_name_label" />
-            <Preference
-                android:key="pref_key_about_appversion"
-                android:persistent="false"
-                android:summary="@string/app_version_value"
-                android:title="@string/app_version_label" />
-            <Preference
-                android:key="pref_key_about_appauthor"
-                android:persistent="false"
-                android:summary="@string/app_author_value"
-                android:title="@string/app_author_label" />
-            <Preference
-                android:key="pref_key_about_appcopyright"
-                android:persistent="false"
-                android:title="@string/app_copyright" />
-            <net.alexjf.tmm.preferences.URLPreference
-                android:key="pref_key_about_appweb"
-                android:persistent="false"
-                android:summary="@string/app_website_value"
-                android:title="@string/app_website_label"
-                tmm:url="@string/app_website_value" />
-        </PreferenceScreen>
-    </PreferenceCategory>
+		xmlns:tmm="http://schemas.android.com/apk/res/net.alexjf.tmm">
+	<PreferenceCategory android:title="@string/pref_general">
+		<ListPreference
+				android:entries="@array/currencies"
+				android:entryValues="@array/currencies"
+				android:key="pref_key_default_currency"
+				android:persistent="true"
+				android:title="@string/pref_default_currency"/>
+		<ListPreference
+				android:entries="@array/date_intervals"
+				android:entryValues="@array/date_intervals_values"
+				android:key="pref_key_default_timeinterval"
+				android:persistent="true"
+				android:title="@string/pref_default_timeinterval"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pref_interface">
+		<ListPreference
+				android:defaultValue="@string/both"
+				android:entries="@array/pref_tab_navigation"
+				android:entryValues="@array/pref_tab_navigation_values"
+				android:key="pref_key_tab_navigation"
+				android:persistent="true"
+				android:title="@string/pref_tab_navigation"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pref_import_export_data">
+		<net.alexjf.tmm.preferences.ImportDataPreference
+				android:key="pref_key_import_data"
+				android:persistent="false"
+				android:summary="@string/pref_import_data_summary"
+				android:title="@string/pref_import_data"/>
+		<net.alexjf.tmm.preferences.ExportDataPreference
+				android:key="pref_key_export_data"
+				android:persistent="false"
+				android:summary="@string/pref_export_data_summary"
+				android:title="@string/pref_export_data"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pref_backup_restore">
+		<net.alexjf.tmm.preferences.BackupPreference
+				android:key="pref_key_backup"
+				android:persistent="false"
+				android:summary="@string/pref_backup_summary"
+				android:title="@string/pref_backup"/>
+		<net.alexjf.tmm.preferences.RestorePreference
+				android:key="pref_key_restore"
+				android:persistent="false"
+				android:summary="@string/pref_restore_summary"
+				android:title="@string/pref_restore"/>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/pref_misc">
+		<PreferenceScreen
+				android:key="pref_key_about"
+				android:title="@string/pref_about">
+			<Preference
+					android:key="pref_key_about_appname"
+					android:persistent="false"
+					android:summary="@string/app_name_value"
+					android:title="@string/app_name_label"/>
+			<Preference
+					android:key="pref_key_about_appversion"
+					android:persistent="false"
+					android:summary="@string/app_version_value"
+					android:title="@string/app_version_label"/>
+			<Preference
+					android:key="pref_key_about_appauthor"
+					android:persistent="false"
+					android:summary="@string/app_author_value"
+					android:title="@string/app_author_label"/>
+			<Preference
+					android:key="pref_key_about_appcopyright"
+					android:persistent="false"
+					android:title="@string/app_copyright"/>
+			<net.alexjf.tmm.preferences.URLPreference
+					android:key="pref_key_about_appweb"
+					android:persistent="false"
+					android:summary="@string/app_website_value"
+					android:title="@string/app_website_label"
+					tmm:url="@string/app_website_value"/>
+		</PreferenceScreen>
+	</PreferenceCategory>
 </PreferenceScreen>

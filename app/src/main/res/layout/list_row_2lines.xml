@@ -3,22 +3,21 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp" >
-    <TextView
-        android:id="@+id/item_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:textSize="25sp" />
-    <TextView
-        android:id="@+id/item_value"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawablePadding="10dp"
-        android:textSize="15sp" />
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		android:paddingBottom="15dp"
+		android:paddingTop="15dp">
+	<TextView
+			android:id="@+id/item_title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textSize="25sp"/>
+	<TextView
+			android:id="@+id/item_value"
+			android:layout_marginTop="5dp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:drawablePadding="10dp"
+			android:textSize="15sp"/>
 </LinearLayout>

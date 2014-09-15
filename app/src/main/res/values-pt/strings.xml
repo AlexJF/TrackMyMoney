@@ -3,183 +3,183 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <!-- Application -->
-    <string name="app_name_label">Nome da aplicação</string>
-    <string name="app_name_value">Track My Money</string>
-    <string name="app_version_label">Versão</string>
-    <!--<string name="app_version_value">1.1.0</string>-->
-    <string name="app_author_label">Autor</string>
-    <string name="app_author_value">Alexandre Fonseca</string>
-    <string name="app_copyright">Copyright © 2013</string>
-    <string name="app_website_label">Website</string>
-    <string name="app_website_value">http://www.alexjf.net/projects/android/track-my-money</string>
-    <!-- Activities -->
-    <string name="menu_settings">Preferências</string>
-    <string name="title_activity_user_list">Track My Money</string>
-    <string name="title_activity_user_add">Adicionar utilizador</string>
-    <string name="title_activity_user_edit">Editar utilizador</string>
-    <string name="title_activity_moneynode_list">Nós de dinheiro</string>
-    <string name="title_activity_moneynode_add">Adicionar nó</string>
-    <string name="title_activity_moneynode_edit">Editar nó</string>
-    <string name="title_activity_category_list">Categorias</string>
-    <string name="title_activity_category_add">Adicionar categoria</string>
-    <string name="title_activity_category_edit">Editar categoria</string>
-    <string name="title_activity_immedtrans_add">Adicionar transacção</string>
-    <string name="title_activity_immedtrans_edit">Editar transacção</string>
-    <string name="title_activity_immedtrans_details">Detalhes de transacção</string>
-    <string name="title_activity_filechooser">Escolher um ficheiro</string>
-    <!-- General -->
-    <string name="add">Adicionar</string>
-    <string name="duplicate">Duplicar</string>
-    <string name="remove">Remover</string>
-    <string name="edit">Editar</string>
-    <string name="name">Nome:</string>
-    <string name="description">Descrição:</string>
-    <string name="icon">Ícone:</string>
-    <string name="choose">Escolher...</string>
-    <string name="currency">Moeda:</string>
-    <string name="value">Valor:</string>
-    <string name="today">Hoje</string>
-    <string name="yesterday">Ontem</string>
-    <string name="this_week">Esta semana</string>
-    <string name="last_week">Semana anterior</string>
-    <string name="this_month">Este mês</string>
-    <string name="last_month">Mês anterior</string>
-    <string name="this_year">Este ano</string>
-    <string name="all_time">Desde o ínicio</string>
-    <string name="custom">Personalizado</string>
-    <string name="list">Lista</string>
-    <string name="stats">Estatísticas</string>
-    <string name="file_path">Caminho para o ficheiro:</string>
-    <string name="import_text">Importar</string>
-    <string name="export_text">Exportar</string>
-    <string name="backup">Backup</string>
-    <string name="restore">Restaurar</string>
-    <string name="tabs">Separadores</string>
-    <string name="swipe">Gesto</string>
-    <string name="both">Ambos</string>
-    <string name="file_select">Seleccionar ficheiro</string>
-    <string name="all">Todos</string>
-    <!-- User Related -->
-    <string name="login">Login</string>
-    <string name="login_remember">Recordar este login</string>
-    <string name="addUser">Adicionar novo utilizador</string>
-    <string name="username">Nome de utilizador:</string>
-    <string name="password">Password:</string>
-    <string name="password_confirm">Confirmar password:</string>
-    <string name="password_new">Nova password:</string>
-    <string name="password_old">Password antiga:</string>
-    <!-- Money Node Related -->
-    <string name="moneyNode">Nó:</string>
-    <string name="creationDate">Data de criação:</string>
-    <string name="initialBalance">Saldo inicial:</string>
-    <string name="balance">Saldo</string>
-    <string name="balance_label">Saldo:</string>
-    <string name="income">Receita</string>
-    <string name="income_label">Receita:</string>
-    <string name="expense">Despesa</string>
-    <string name="expense_label">Despesa:</string>
-    <string name="moneynode_empty">Não existem nós de dinheiro.\nCrie um através do menu.</string>
-    <string name="moneynode_nonselected">Nenhum nó de dinheiro seleccionado.</string>
-    <!-- Transaction Related -->
-    <string name="transaction_type_label">Tipo de transacção:</string>
-    <string name="total_transactions">Núm. Transacções:</string>
-    <string name="transaction_empty">Não existem transacções.\nCrie uma através do menu.</string>
-    <string name="addTransaction">Adicionar transacção</string>
-    <string name="editTransaction">Editar transacção</string>
-    <string name="executionDate">Data de execução:</string>
-    <string name="transfer_check">É uma transferência?</string>
-    <string name="transfer_moneynode">De:</string>
-    <string name="title_fragment_duplicate_trans">Duplicar transacção</string>
-    <string name="duplicate_trans_moneynode">Destino:</string>
-    <!-- Category Related -->
-    <string name="category">Categoria:</string>
-    <string name="manage_categories">Gerir categorias</string>
-    <string name="category_empty">Não existem categorias.\nCrie uma através do menu.</string>
-    <string name="category_nonselected">Nenhuma categoria seleccionada</string>
-    <!-- Icon categories -->
-    <string name="iconcat_transportation">Transportes</string>
-    <string name="iconcat_people">Pessoas e Interacção</string>
-    <string name="iconcat_fooddrink">Comida e Bebida</string>
-    <string name="iconcat_entertainment">Entretenimento</string>
-    <string name="iconcat_finance">Finanças</string>
-    <string name="iconcat_shopping">Compras</string>
-    <string name="iconcat_health">Saúde e Exercício</string>
-    <string name="iconcat_science">Ciência/Educação</string>
-    <string name="iconcat_buildings">Edifícios</string>
-    <string name="iconcat_office">Escritório</string>
-    <string name="iconcat_dev">Aparelhos Electrónicos</string>
-    <string name="iconcat_nature">Natureza e Animais</string>
-    <string name="iconcat_misc">Misc</string>
-    <!-- DateIntervalBar Related -->
-    <string name="date_interval">Intervalo de Tempo:</string>
-    <!-- Preferences -->
-    <string name="pref_general">Geral</string>
-    <string name="pref_default_currency">Moeda por omissão</string>
-    <string name="pref_default_timeinterval">Intervalo de tempo por omissão</string>
-    <string name="pref_interface">Interface</string>
-    <string name="pref_tab_navigation">Navegação entre separadores</string>
-    <string name="pref_import_export_data">Importar/Exportar Dados</string>
-    <string name="pref_import_data">Importar</string>
-    <string name="pref_import_data_summary">Importar dados a partir de ficheiro CSV</string>
-    <string name="pref_export_data">Exportar</string>
-    <string name="pref_export_data_summary">Exportar dados para ficheiro CSV</string>
-    <string name="pref_backup_restore">Backup/Restaurar</string>
-    <string name="pref_backup">Backup</string>
-    <string name="pref_backup_summary">Efectuar backup de dados e preferências</string>
-    <string name="pref_restore">Restaurar</string>
-    <string name="pref_restore_summary">Restaurar base de dados e preferências</string>
-    <string name="pref_misc">Misc</string>
-    <string name="pref_about">Acerca</string>
-    <!-- Menu -->
-    <string name="menu_preferences">Preferências</string>
-    <string name="menu_logout">Logout</string>
-    <!-- Import -->
-    <string name="import_replace">Substituir dados existentes.</string>
-    <string name="import_success">Importação completa!</string>
-    <!-- Export -->
-    <string name="export_share_check">Enviar para... depois de exportar</string>
-    <string name="export_dateinterval_check">Limitar intervalo de tempo</string>
-    <string name="export_share_title">Enviar para...</string>
-    <string name="export_success">Exportação completa!</string>
-    <!-- Backup -->
-    <string name="backup_success">Backup completo!</string>
-    <!-- Restore -->
-    <string name="restore_success">Restauração completa!</string>
-    <!-- Loader messages -->
-    <string name="loading">A carregar...</string>
-    <string name="analyzing_stats">A analisar estatísticas...</string>
-    <string name="backingup">A efectuar backup...</string>
-    <string name="restoring">A restaurar...</string>
-    <string name="importing">A importar...</string>
-    <string name="exporting">A exportar...</string>
-    <!-- Errors -->
-    <string name="error_name_not_empty">Nome não pode ser vazio.</string>
-    <string name="error_cat_name_already_exists">Uma categoria com esse nome já existe.</string>
-    <string name="error_cat_determine_exists">Impossível determinar se categoria já existe.</string>
-    <string name="error_cat_add">Erro ao adicionar categoria: %1$s.</string>
-    <string name="error_cat_edit">Erro ao editar categoria: %1$s.</string>
-    <string name="error_cat_delete">Erro ao eliminar categoria.</string>
-    <string name="error_trans_value_unspecified">Tem de especificar um valor para a transacção.</string>
-    <string name="error_trans_value_invalid">Valor inválido. Tem de ser um número ou uma expressão matemática.</string>
-    <string name="error_trans_add">Erro a adicionar transacção.</string>
-    <string name="error_trans_duplicate">Erro a duplicar transacção: %1$s</string>
-    <string name="error_trans_edit">Erro a editar transacção: %1$s.</string>
-    <string name="error_stat_analysis">Erro a analisar estatísticas: %1$s.</string>
-    <string name="error_moneynode_name_already_exists">Um nó de dinheiro com esse nome já existe.</string>
-    <string name="error_moneynode_determine_exists">Impossível determinar se nó com mesmo nome já existe.</string>
-    <string name="error_moneynode_load_transactions">Erro ao carregar transacções: %1$s.</string>
-    <string name="error_moneynode_add">Erro ao adicionar nó: %1$s.</string>
-    <string name="error_moneynode_edit">Erro ao editar nó: %1$s.</string>
-    <string name="error_moneynode_delete">Erro ao eliminar nó.</string>
-    <string name="error_username_not_empty">Nome de utilizador não pode ser vazio.</string>
-    <string name="error_username_already_exists">Nome de utilizador já existe.</string>
-    <string name="error_password_change">Falha ao alterar password.</string>
-    <string name="error_password_confirmation">Confirmação de password não corresponde à password introduzida.</string>
-    <string name="error_wrong_password">Password errada.</string>
-    <string name="error_login_failed">Falha durante o login de \'%1$s\'.</string>
-    <string name="error_import">Erro de importação: %1$s.</string>
-    <string name="error_export">Erro de exportação: %1$s.</string>
-    <string name="error_backup">Erro de backup: %1$s.</string>
-    <string name="error_restore">Erro de restauro: %1$s.</string>
+	<!-- Application -->
+	<string name="app_name_label">Nome da aplicação</string>
+	<string name="app_name_value">Track My Money</string>
+	<string name="app_version_label">Versão</string>
+	<!--<string name="app_version_value">1.1.0</string>-->
+	<string name="app_author_label">Autor</string>
+	<string name="app_author_value">Alexandre Fonseca</string>
+	<string name="app_copyright">Copyright © 2013</string>
+	<string name="app_website_label">Website</string>
+	<string name="app_website_value">http://www.alexjf.net/projects/android/track-my-money</string>
+	<!-- Activities -->
+	<string name="menu_settings">Preferências</string>
+	<string name="title_activity_user_list">Track My Money</string>
+	<string name="title_activity_user_add">Adicionar utilizador</string>
+	<string name="title_activity_user_edit">Editar utilizador</string>
+	<string name="title_activity_moneynode_list">Nós de dinheiro</string>
+	<string name="title_activity_moneynode_add">Adicionar nó</string>
+	<string name="title_activity_moneynode_edit">Editar nó</string>
+	<string name="title_activity_category_list">Categorias</string>
+	<string name="title_activity_category_add">Adicionar categoria</string>
+	<string name="title_activity_category_edit">Editar categoria</string>
+	<string name="title_activity_immedtrans_add">Adicionar transacção</string>
+	<string name="title_activity_immedtrans_edit">Editar transacção</string>
+	<string name="title_activity_immedtrans_details">Detalhes de transacção</string>
+	<string name="title_activity_filechooser">Escolher um ficheiro</string>
+	<!-- General -->
+	<string name="add">Adicionar</string>
+	<string name="duplicate">Duplicar</string>
+	<string name="remove">Remover</string>
+	<string name="edit">Editar</string>
+	<string name="name">Nome:</string>
+	<string name="description">Descrição:</string>
+	<string name="icon">Ícone:</string>
+	<string name="choose">Escolher...</string>
+	<string name="currency">Moeda:</string>
+	<string name="value">Valor:</string>
+	<string name="today">Hoje</string>
+	<string name="yesterday">Ontem</string>
+	<string name="this_week">Esta semana</string>
+	<string name="last_week">Semana anterior</string>
+	<string name="this_month">Este mês</string>
+	<string name="last_month">Mês anterior</string>
+	<string name="this_year">Este ano</string>
+	<string name="all_time">Desde o ínicio</string>
+	<string name="custom">Personalizado</string>
+	<string name="list">Lista</string>
+	<string name="stats">Estatísticas</string>
+	<string name="file_path">Caminho para o ficheiro:</string>
+	<string name="import_text">Importar</string>
+	<string name="export_text">Exportar</string>
+	<string name="backup">Backup</string>
+	<string name="restore">Restaurar</string>
+	<string name="tabs">Separadores</string>
+	<string name="swipe">Gesto</string>
+	<string name="both">Ambos</string>
+	<string name="file_select">Seleccionar ficheiro</string>
+	<string name="all">Todos</string>
+	<!-- User Related -->
+	<string name="login">Login</string>
+	<string name="login_remember">Recordar este login</string>
+	<string name="addUser">Adicionar novo utilizador</string>
+	<string name="username">Nome de utilizador:</string>
+	<string name="password">Password:</string>
+	<string name="password_confirm">Confirmar password:</string>
+	<string name="password_new">Nova password:</string>
+	<string name="password_old">Password antiga:</string>
+	<!-- Money Node Related -->
+	<string name="moneyNode">Nó:</string>
+	<string name="creationDate">Data de criação:</string>
+	<string name="initialBalance">Saldo inicial:</string>
+	<string name="balance">Saldo</string>
+	<string name="balance_label">Saldo:</string>
+	<string name="income">Receita</string>
+	<string name="income_label">Receita:</string>
+	<string name="expense">Despesa</string>
+	<string name="expense_label">Despesa:</string>
+	<string name="moneynode_empty">Não existem nós de dinheiro.\nCrie um através do menu.</string>
+	<string name="moneynode_nonselected">Nenhum nó de dinheiro seleccionado.</string>
+	<!-- Transaction Related -->
+	<string name="transaction_type_label">Tipo de transacção:</string>
+	<string name="total_transactions">Núm. Transacções:</string>
+	<string name="transaction_empty">Não existem transacções.\nCrie uma através do menu.</string>
+	<string name="addTransaction">Adicionar transacção</string>
+	<string name="editTransaction">Editar transacção</string>
+	<string name="executionDate">Data de execução:</string>
+	<string name="transfer_check">É uma transferência?</string>
+	<string name="transfer_moneynode">De:</string>
+	<string name="title_fragment_duplicate_trans">Duplicar transacção</string>
+	<string name="duplicate_trans_moneynode">Destino:</string>
+	<!-- Category Related -->
+	<string name="category">Categoria:</string>
+	<string name="manage_categories">Gerir categorias</string>
+	<string name="category_empty">Não existem categorias.\nCrie uma através do menu.</string>
+	<string name="category_nonselected">Nenhuma categoria seleccionada</string>
+	<!-- Icon categories -->
+	<string name="iconcat_transportation">Transportes</string>
+	<string name="iconcat_people">Pessoas e Interacção</string>
+	<string name="iconcat_fooddrink">Comida e Bebida</string>
+	<string name="iconcat_entertainment">Entretenimento</string>
+	<string name="iconcat_finance">Finanças</string>
+	<string name="iconcat_shopping">Compras</string>
+	<string name="iconcat_health">Saúde e Exercício</string>
+	<string name="iconcat_science">Ciência/Educação</string>
+	<string name="iconcat_buildings">Edifícios</string>
+	<string name="iconcat_office">Escritório</string>
+	<string name="iconcat_dev">Aparelhos Electrónicos</string>
+	<string name="iconcat_nature">Natureza e Animais</string>
+	<string name="iconcat_misc">Misc</string>
+	<!-- DateIntervalBar Related -->
+	<string name="date_interval">Intervalo de Tempo:</string>
+	<!-- Preferences -->
+	<string name="pref_general">Geral</string>
+	<string name="pref_default_currency">Moeda por omissão</string>
+	<string name="pref_default_timeinterval">Intervalo de tempo por omissão</string>
+	<string name="pref_interface">Interface</string>
+	<string name="pref_tab_navigation">Navegação entre separadores</string>
+	<string name="pref_import_export_data">Importar/Exportar Dados</string>
+	<string name="pref_import_data">Importar</string>
+	<string name="pref_import_data_summary">Importar dados a partir de ficheiro CSV</string>
+	<string name="pref_export_data">Exportar</string>
+	<string name="pref_export_data_summary">Exportar dados para ficheiro CSV</string>
+	<string name="pref_backup_restore">Backup/Restaurar</string>
+	<string name="pref_backup">Backup</string>
+	<string name="pref_backup_summary">Efectuar backup de dados e preferências</string>
+	<string name="pref_restore">Restaurar</string>
+	<string name="pref_restore_summary">Restaurar base de dados e preferências</string>
+	<string name="pref_misc">Misc</string>
+	<string name="pref_about">Acerca</string>
+	<!-- Menu -->
+	<string name="menu_preferences">Preferências</string>
+	<string name="menu_logout">Logout</string>
+	<!-- Import -->
+	<string name="import_replace">Substituir dados existentes.</string>
+	<string name="import_success">Importação completa!</string>
+	<!-- Export -->
+	<string name="export_share_check">Enviar para... depois de exportar</string>
+	<string name="export_dateinterval_check">Limitar intervalo de tempo</string>
+	<string name="export_share_title">Enviar para...</string>
+	<string name="export_success">Exportação completa!</string>
+	<!-- Backup -->
+	<string name="backup_success">Backup completo!</string>
+	<!-- Restore -->
+	<string name="restore_success">Restauração completa!</string>
+	<!-- Loader messages -->
+	<string name="loading">A carregar...</string>
+	<string name="analyzing_stats">A analisar estatísticas...</string>
+	<string name="backingup">A efectuar backup...</string>
+	<string name="restoring">A restaurar...</string>
+	<string name="importing">A importar...</string>
+	<string name="exporting">A exportar...</string>
+	<!-- Errors -->
+	<string name="error_name_not_empty">Nome não pode ser vazio.</string>
+	<string name="error_cat_name_already_exists">Uma categoria com esse nome já existe.</string>
+	<string name="error_cat_determine_exists">Impossível determinar se categoria já existe.</string>
+	<string name="error_cat_add">Erro ao adicionar categoria: %1$s.</string>
+	<string name="error_cat_edit">Erro ao editar categoria: %1$s.</string>
+	<string name="error_cat_delete">Erro ao eliminar categoria.</string>
+	<string name="error_trans_value_unspecified">Tem de especificar um valor para a transacção.</string>
+	<string name="error_trans_value_invalid">Valor inválido. Tem de ser um número ou uma expressão matemática.</string>
+	<string name="error_trans_add">Erro a adicionar transacção.</string>
+	<string name="error_trans_duplicate">Erro a duplicar transacção: %1$s</string>
+	<string name="error_trans_edit">Erro a editar transacção: %1$s.</string>
+	<string name="error_stat_analysis">Erro a analisar estatísticas: %1$s.</string>
+	<string name="error_moneynode_name_already_exists">Um nó de dinheiro com esse nome já existe.</string>
+	<string name="error_moneynode_determine_exists">Impossível determinar se nó com mesmo nome já existe.</string>
+	<string name="error_moneynode_load_transactions">Erro ao carregar transacções: %1$s.</string>
+	<string name="error_moneynode_add">Erro ao adicionar nó: %1$s.</string>
+	<string name="error_moneynode_edit">Erro ao editar nó: %1$s.</string>
+	<string name="error_moneynode_delete">Erro ao eliminar nó.</string>
+	<string name="error_username_not_empty">Nome de utilizador não pode ser vazio.</string>
+	<string name="error_username_already_exists">Nome de utilizador já existe.</string>
+	<string name="error_password_change">Falha ao alterar password.</string>
+	<string name="error_password_confirmation">Confirmação de password não corresponde à password introduzida.</string>
+	<string name="error_wrong_password">Password errada.</string>
+	<string name="error_login_failed">Falha durante o login de \'%1$s\'.</string>
+	<string name="error_import">Erro de importação: %1$s.</string>
+	<string name="error_export">Erro de exportação: %1$s.</string>
+	<string name="error_backup">Erro de backup: %1$s.</string>
+	<string name="error_restore">Erro de restauro: %1$s.</string>
 </resources>

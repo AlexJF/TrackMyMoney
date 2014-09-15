@@ -3,15 +3,15 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <resources>
-    <string-array name="date_intervals">
-        <item>@string/today</item>
-        <item>@string/yesterday</item>
-        <item>@string/this_week</item>
-        <item>@string/last_week</item>
-        <item>@string/this_month</item>
-        <item>@string/last_month</item>
-        <item>@string/this_year</item>
-        <item>@string/all_time</item>
-        <item>@string/custom</item>
-    </string-array>
+	<string-array name="date_intervals">
+		<item>@string/today</item>
+		<item>@string/yesterday</item>
+		<item>@string/this_week</item>
+		<item>@string/last_week</item>
+		<item>@string/this_month</item>
+		<item>@string/last_month</item>
+		<item>@string/this_year</item>
+		<item>@string/all_time</item>
+		<item>@string/custom</item>
+	</string-array>
 </resources>

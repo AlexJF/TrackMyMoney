@@ -3,18 +3,17 @@
   License: GPL v3 (http://www.gnu.org/licenses/gpl-3.0.txt)
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    <ListView
-        android:id="@id/android:list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    <TextView
-        android:id="@id/android:empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal|center_vertical"
-        android:text="@string/transaction_empty"
-        android:visibility="gone" />
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+	<ListView
+			android:id="@id/android:list"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+	<TextView
+			android:id="@id/android:empty"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="@string/transaction_empty"
+			android:visibility="gone"/>
 </RelativeLayout>

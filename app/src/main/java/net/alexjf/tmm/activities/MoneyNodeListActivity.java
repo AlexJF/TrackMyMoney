@@ -4,245 +4,241 @@
  ******************************************************************************/
 package net.alexjf.tmm.activities;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.*;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.Toast;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.Utils;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.Toast;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class MoneyNodeListActivity extends ActionBarActivity {
-    private static final int REQCODE_ADD = 0;
-    private static final int REQCODE_EDIT = 1;
-    private static final int REQCODE_PREFS = 2;
+	private static final int REQCODE_ADD = 0;
+	private static final int REQCODE_EDIT = 1;
+	private static final int REQCODE_PREFS = 2;
 
-    public static final String KEY_INTENTION = "intention";
-    public static final String KEY_EXCLUDE = "exclude";
-    public static final String INTENTION_MANAGE = "manage";
-    public static final String INTENTION_SELECT = "select";
+	public static final String KEY_INTENTION = "intention";
+	public static final String KEY_EXCLUDE = "exclude";
+	public static final String INTENTION_MANAGE = "manage";
+	public static final String INTENTION_SELECT = "select";
 
-    private MoneyNodeAdapter adapter;
+	private MoneyNodeAdapter adapter;
 
-    private String intention;
-    private List<MoneyNode> excludedMoneyNodes;
+	private String intention;
+	private List<MoneyNode> excludedMoneyNodes;
 
-    public MoneyNodeListActivity() {
-        adapter = null;
-    }
+	public MoneyNodeListActivity() {
+		adapter = null;
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_moneynode_list);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_moneynode_list);
 
-        Intent intent = getIntent();
+		Intent intent = getIntent();
 
-        intention = intent.getStringExtra(KEY_INTENTION);
+		intention = intent.getStringExtra(KEY_INTENTION);
 
-        if (intention == null) {
-            intention = INTENTION_MANAGE;
-        }
+		if (intention == null) {
+			intention = INTENTION_MANAGE;
+		}
 
-        excludedMoneyNodes = intent.getParcelableArrayListExtra(KEY_EXCLUDE);
+		excludedMoneyNodes = intent.getParcelableArrayListExtra(KEY_EXCLUDE);
 
-        if (excludedMoneyNodes == null) {
-            excludedMoneyNodes = new LinkedList<MoneyNode>();
-        }
+		if (excludedMoneyNodes == null) {
+			excludedMoneyNodes = new LinkedList<MoneyNode>();
+		}
 
-        adapter = new MoneyNodeAdapter(this);
+		adapter = new MoneyNodeAdapter(this);
 
-        ListView moneyNodesListView = (ListView) findViewById(
-                R.id.moneynode_list);
+		ListView moneyNodesListView = (ListView) findViewById(
+				R.id.moneynode_list);
 
-        View emptyView = findViewById(R.id.moneynode_list_empty);
+		View emptyView = findViewById(R.id.moneynode_list_empty);
 
-        moneyNodesListView.setEmptyView(emptyView);
-        moneyNodesListView.setAdapter(adapter);
-        moneyNodesListView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                int position, long id) {
-                MoneyNode selectedNode = adapter.getItem(position);
+		moneyNodesListView.setEmptyView(emptyView);
+		moneyNodesListView.setAdapter(adapter);
+		moneyNodesListView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				MoneyNode selectedNode = adapter.getItem(position);
 
-                if (intention.equals(INTENTION_MANAGE)) {
-                    Intent intent = new Intent(MoneyNodeListActivity.this,
-                        MoneyNodeDetailsActivity.class);
-                    intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
-                    startActivity(intent);
-                } else {
-                    Intent data = new Intent();
-                    data.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
-                    setResult(ActionBarActivity.RESULT_OK, data);
-                    finish();
-                }
-            }
-        });
+				if (intention.equals(INTENTION_MANAGE)) {
+					Intent intent = new Intent(MoneyNodeListActivity.this,
+							MoneyNodeDetailsActivity.class);
+					intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
+					startActivity(intent);
+				} else {
+					Intent data = new Intent();
+					data.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
+					setResult(ActionBarActivity.RESULT_OK, data);
+					finish();
+				}
+			}
+		});
 
-        registerForContextMenu(moneyNodesListView);
-        updateData();
-    }
+		registerForContextMenu(moneyNodesListView);
+		updateData();
+	}
 
-    private void updateData() {
-        List<MoneyNode> moneyNodes;
-        adapter.setNotifyOnChange(false);
-        adapter.clear();
+	private void updateData() {
+		List<MoneyNode> moneyNodes;
+		adapter.setNotifyOnChange(false);
+		adapter.clear();
 
-        try {
-            moneyNodes = MoneyNode.getMoneyNodes();
-            moneyNodes.removeAll(excludedMoneyNodes);
-        } catch (Exception e) {
-            Log.e("TMM", "Failed to get money nodes: " + e.getMessage() +
-                    "\n" + e.getStackTrace());
-            moneyNodes = new LinkedList<MoneyNode>();
-        }
+		try {
+			moneyNodes = MoneyNode.getMoneyNodes();
+			moneyNodes.removeAll(excludedMoneyNodes);
+		} catch (Exception e) {
+			Log.e("TMM", "Failed to get money nodes: " + e.getMessage() +
+					"\n" + e.getStackTrace());
+			moneyNodes = new LinkedList<MoneyNode>();
+		}
 
-        for (MoneyNode node : moneyNodes) {
-            adapter.add(node);
-        }
+		for (MoneyNode node : moneyNodes) {
+			adapter.add(node);
+		}
 
-        updateGui();
-    }
+		updateGui();
+	}
 
-    private void updateGui() {
-        adapter.notifyDataSetChanged();
-    }
+	private void updateGui() {
+		adapter.notifyDataSetChanged();
+	}
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 
 		if (isTaskRoot() && isFinishing()) {
 			DatabaseManager.getInstance().closeDatabase();
 		}
-    }
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_moneynode_list, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_moneynode_list, menu);
+		return true;
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        switch (item.getItemId()) {
-            case R.id.menu_add:
-                intent = new Intent(this,
-                    MoneyNodeEditActivity.class);
-                startActivityForResult(intent, REQCODE_ADD);
-                return true;
-            // TODO: All below could be merged with moneynodedetails activity
-            case R.id.menu_manage_categories:
-                intent = new Intent(this,
-                    CategoryListActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.menu_preferences:
-                intent = new Intent(this,
-                    PreferencesActivity.class);
-                startActivityForResult(intent, REQCODE_PREFS);
-                return true;
-            case R.id.menu_logout:
-                intent = new Intent(this,
-                    UserListActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                Utils.clearRememberedLogin();
-                startActivity(intent);
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+			case R.id.menu_add:
+				intent = new Intent(this,
+						MoneyNodeEditActivity.class);
+				startActivityForResult(intent, REQCODE_ADD);
+				return true;
+			// TODO: All below could be merged with moneynodedetails activity
+			case R.id.menu_manage_categories:
+				intent = new Intent(this,
+						CategoryListActivity.class);
+				startActivity(intent);
+				return true;
+			case R.id.menu_preferences:
+				intent = new Intent(this,
+						PreferencesActivity.class);
+				startActivityForResult(intent, REQCODE_PREFS);
+				return true;
+			case R.id.menu_logout:
+				intent = new Intent(this,
+						UserListActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				Utils.clearRememberedLogin();
+				startActivity(intent);
+				finish();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-            Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case REQCODE_ADD:
-                    MoneyNode node = (MoneyNode) data.getParcelableExtra(
-                        MoneyNode.KEY_MONEYNODE);
-                    adapter.add(node);
-                    break;
-                case REQCODE_EDIT:
-                    break;
-                case REQCODE_PREFS:
-                	Log.d("TMM", "Return from preferences: " + data.getBooleanExtra(
-                			PreferencesActivity.KEY_FORCEDATAREFRESH, false));
-                    if (data.getBooleanExtra(
-                                PreferencesActivity.KEY_FORCEDATAREFRESH,
-                                false)) {
-                        updateData();
-                    }
-                    break;
-            }
-        }
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent data) {
+		if (resultCode == Activity.RESULT_OK) {
+			switch (requestCode) {
+				case REQCODE_ADD:
+					MoneyNode node = (MoneyNode) data.getParcelableExtra(
+							MoneyNode.KEY_MONEYNODE);
+					adapter.add(node);
+					break;
+				case REQCODE_EDIT:
+					break;
+				case REQCODE_PREFS:
+					Log.d("TMM", "Return from preferences: " + data.getBooleanExtra(
+							PreferencesActivity.KEY_FORCEDATAREFRESH, false));
+					if (data.getBooleanExtra(
+							PreferencesActivity.KEY_FORCEDATAREFRESH,
+							false)) {
+						updateData();
+					}
+					break;
+			}
+		}
+	}
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        android.view.MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_moneynode_list, menu);
-    }
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		android.view.MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.context_moneynode_list, menu);
+	}
 
-    @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        MoneyNode node = adapter.getItem(info.position);
-        switch (item.getItemId()) {
-            case R.id.menu_remove:
-                try {
-                    MoneyNode.deleteMoneyNode(node);
-                    adapter.remove(node);
-                } catch (DatabaseException e) {
-                    Log.e("TMM", "Unable to delete money node", e);
-                    Toast.makeText(
-                        this,
-                        getResources().getString(
-                            R.string.error_moneynode_delete),
-                        Toast.LENGTH_LONG).show();
-                }
-                return true;
-            case R.id.menu_edit:
-                Intent intent = new Intent(this,
-                    MoneyNodeEditActivity.class);
-                intent.putExtra(MoneyNode.KEY_MONEYNODE, node);
-                startActivityForResult(intent, REQCODE_EDIT);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
+	@Override
+	public boolean onContextItemSelected(android.view.MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		MoneyNode node = adapter.getItem(info.position);
+		switch (item.getItemId()) {
+			case R.id.menu_remove:
+				try {
+					MoneyNode.deleteMoneyNode(node);
+					adapter.remove(node);
+				} catch (DatabaseException e) {
+					Log.e("TMM", "Unable to delete money node", e);
+					Toast.makeText(
+							this,
+							getResources().getString(
+									R.string.error_moneynode_delete),
+							Toast.LENGTH_LONG).show();
+				}
+				return true;
+			case R.id.menu_edit:
+				Intent intent = new Intent(this,
+						MoneyNodeEditActivity.class);
+				intent.putExtra(MoneyNode.KEY_MONEYNODE, node);
+				startActivityForResult(intent, REQCODE_EDIT);
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+		}
+	}
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Money nodes can be added from MoneyNodeList activities started
-        // further down the stack so either we propagate some 'updateData'
-        // flag down the stack or we force update everytime.
-        updateData();
-        updateGui();
-    }
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// Money nodes can be added from MoneyNodeList activities started
+		// further down the stack so either we propagate some 'updateData'
+		// flag down the stack or we force update everytime.
+		updateData();
+		updateGui();
+	}
 }

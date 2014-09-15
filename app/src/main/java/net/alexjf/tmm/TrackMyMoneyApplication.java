@@ -4,18 +4,18 @@
  ******************************************************************************/
 package net.alexjf.tmm;
 
+import android.app.Application;
 import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.sqlcipher.database.SQLiteDatabase;
-import android.app.Application;
 
 public class TrackMyMoneyApplication extends Application {
-    @Override
-    public void onCreate() {
-        SQLiteDatabase.loadLibs(this);
-        DrawableResolver.initialize(this);
-        PreferenceManager.initialize(this);
-        DatabaseManager.initialize(this);
-    }
+	@Override
+	public void onCreate() {
+		SQLiteDatabase.loadLibs(this);
+		DrawableResolver.initialize(this);
+		PreferenceManager.initialize(this);
+		DatabaseManager.initialize(this);
+	}
 }

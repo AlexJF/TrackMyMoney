@@ -4,21 +4,6 @@
  ******************************************************************************/
 package net.alexjf.tmm.fragments;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import org.joda.money.CurrencyUnit;
-import org.joda.money.Money;
-
-import net.alexjf.tmm.R;
-import net.alexjf.tmm.domain.MoneyNode;
-import net.alexjf.tmm.exceptions.DatabaseException;
-import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
-import net.alexjf.tmm.utils.DrawableResolver;
-import net.alexjf.tmm.utils.PreferenceManager;
-import net.alexjf.tmm.views.SelectorButton;
 import android.app.Activity;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.res.Resources;
@@ -33,292 +18,303 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.*;
 import de.congrace.exp4j.Calculable;
 import de.congrace.exp4j.ExpressionBuilder;
+import net.alexjf.tmm.R;
+import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
+import net.alexjf.tmm.utils.DrawableResolver;
+import net.alexjf.tmm.utils.PreferenceManager;
+import net.alexjf.tmm.views.SelectorButton;
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class MoneyNodeEditorFragment extends Fragment
-    implements OnDateSetListener, OnIconPickedListener {
-    private static final String KEY_CURRENTNODE = "currentNode";
-    private static final String KEY_SELECTEDICON = "selectedIcon";
+		implements OnDateSetListener, OnIconPickedListener {
+	private static final String KEY_CURRENTNODE = "currentNode";
+	private static final String KEY_SELECTEDICON = "selectedIcon";
 
-    private static final String PREFKEY_DEFAULTCURRENCY = "pref_key_default_currency";
+	private static final String PREFKEY_DEFAULTCURRENCY = "pref_key_default_currency";
 
-    private static final String TAG_DATEPICKER = "datePicker";
-    private static final String TAG_DRAWABLEPICKER = "iconPicker";
+	private static final String TAG_DATEPICKER = "datePicker";
+	private static final String TAG_DRAWABLEPICKER = "iconPicker";
 
-    private OnMoneyNodeEditListener listener;
+	private OnMoneyNodeEditListener listener;
 
-    private MoneyNode node;
-    private String selectedDrawableName;
+	private MoneyNode node;
+	private String selectedDrawableName;
 
-    private DatePickerFragment datePicker;
-    private IconPickerFragment iconPicker;
+	private DatePickerFragment datePicker;
+	private IconPickerFragment iconPicker;
 
-    private EditText nameText;
-    private EditText descriptionText;
-    private SelectorButton iconSelectorButton;
-    private Button creationDateButton;
-    private EditText initialBalanceText;
-    private Spinner currencySpinner;
-    private Button addButton;
-    private SimpleDateFormat dateFormat;
+	private EditText nameText;
+	private EditText descriptionText;
+	private SelectorButton iconSelectorButton;
+	private Button creationDateButton;
+	private EditText initialBalanceText;
+	private Spinner currencySpinner;
+	private Button addButton;
+	private SimpleDateFormat dateFormat;
 
-    public interface OnMoneyNodeEditListener {
-        public void onMoneyNodeCreated(MoneyNode node);
-        public void onMoneyNodeEdited(MoneyNode node);
-    }
+	public interface OnMoneyNodeEditListener {
+		public void onMoneyNodeCreated(MoneyNode node);
 
-    public MoneyNodeEditorFragment() {
-        dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy");
-    }
+		public void onMoneyNodeEdited(MoneyNode node);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_moneynode_editor, container, false);
+	public MoneyNodeEditorFragment() {
+		dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy");
+	}
 
-        nameText = (EditText) v.findViewById(R.id.name_text);
-        descriptionText = (EditText) v.findViewById(R.id.description_text);
-        iconSelectorButton = (SelectorButton) v.findViewById(R.id.icon_selector);
-        creationDateButton = (Button) v.findViewById(R.id.creationDate_button);
-        initialBalanceText = (EditText) v.findViewById(R.id.initialBalance_text);
-        currencySpinner = (Spinner) v.findViewById(R.id.currency_spinner);
-        addButton = (Button) v.findViewById(R.id.add_button);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View v = inflater.inflate(R.layout.fragment_moneynode_editor, container, false);
 
-        initialBalanceText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
+		nameText = (EditText) v.findViewById(R.id.name_text);
+		descriptionText = (EditText) v.findViewById(R.id.description_text);
+		iconSelectorButton = (SelectorButton) v.findViewById(R.id.icon_selector);
+		creationDateButton = (Button) v.findViewById(R.id.creationDate_button);
+		initialBalanceText = (EditText) v.findViewById(R.id.initialBalance_text);
+		currencySpinner = (Spinner) v.findViewById(R.id.currency_spinner);
+		addButton = (Button) v.findViewById(R.id.add_button);
 
-        FragmentManager fm = getFragmentManager();
-        datePicker = (DatePickerFragment) fm.findFragmentByTag(TAG_DATEPICKER);
-        iconPicker = (IconPickerFragment)
-            fm.findFragmentByTag(TAG_DRAWABLEPICKER);
+		initialBalanceText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
 
-        if (datePicker == null) {
-            datePicker = new DatePickerFragment();
-        }
+		FragmentManager fm = getFragmentManager();
+		datePicker = (DatePickerFragment) fm.findFragmentByTag(TAG_DATEPICKER);
+		iconPicker = (IconPickerFragment)
+				fm.findFragmentByTag(TAG_DRAWABLEPICKER);
 
-        if (iconPicker == null) {
-            iconPicker = new IconPickerFragment();
-        }
+		if (datePicker == null) {
+			datePicker = new DatePickerFragment();
+		}
 
-        datePicker.setListener(this);
-        iconPicker.setListener(this);
+		if (iconPicker == null) {
+			iconPicker = new IconPickerFragment();
+		}
 
-        creationDateButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                try {
-                    datePicker.setDate(dateFormat.parse(
-                            creationDateButton.getText().toString()));
-                } catch (ParseException e) {
-                }
-                datePicker.show(getFragmentManager(), TAG_DATEPICKER);
-            }
-        });
+		datePicker.setListener(this);
+		iconPicker.setListener(this);
 
-        iconSelectorButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                iconPicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
-            }
-        });
+		creationDateButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View view) {
+				try {
+					datePicker.setDate(dateFormat.parse(
+							creationDateButton.getText().toString()));
+				} catch (ParseException e) {
+				}
+				datePicker.show(getFragmentManager(), TAG_DATEPICKER);
+			}
+		});
 
-        addButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View view) {
-                if (!validateInputFields()) {
-                    return;
-                }
+		iconSelectorButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View view) {
+				iconPicker.show(getFragmentManager(), TAG_DRAWABLEPICKER);
+			}
+		});
 
-                String name = nameText.getText().toString().trim();
-                String description = descriptionText.getText().toString().trim();
-                Date creationDate;
-                try {
-                    creationDate = dateFormat.parse(
-                        creationDateButton.getText().toString());
-                } catch (ParseException e) {
-                    creationDate = new Date();
-                }
+		addButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View view) {
+				if (!validateInputFields()) {
+					return;
+				}
 
-                CurrencyUnit currency = CurrencyUnit.getInstance(
-                		currencySpinner.getSelectedItem().toString().trim());
+				String name = nameText.getText().toString().trim();
+				String description = descriptionText.getText().toString().trim();
+				Date creationDate;
+				try {
+					creationDate = dateFormat.parse(
+							creationDateButton.getText().toString());
+				} catch (ParseException e) {
+					creationDate = new Date();
+				}
 
-                Money initialBalance;
-                try {
-                    Calculable calc = new ExpressionBuilder(
-                        initialBalanceText.getText().toString()).build();
-                    initialBalance = Money.of(currency, calc.calculate());
-                } catch (Exception e) {
-                    initialBalance = Money.zero(currency);
-                }
+				CurrencyUnit currency = CurrencyUnit.getInstance(
+						currencySpinner.getSelectedItem().toString().trim());
 
-                if (node == null) {
-                    MoneyNode newNode = new MoneyNode(name, description, selectedDrawableName,
-                        creationDate, initialBalance, currency);
-                    listener.onMoneyNodeCreated(newNode);
-                } else {
-                    node.setName(name);
-                    node.setIcon(selectedDrawableName);
-                    node.setDescription(description);
-                    node.setCreationDate(creationDate);
-                    node.setInitialBalance(initialBalance);
-                    node.setCurrency(currency);
-                    listener.onMoneyNodeEdited(node);
-                }
-            }
-        });
+				Money initialBalance;
+				try {
+					Calculable calc = new ExpressionBuilder(
+							initialBalanceText.getText().toString()).build();
+					initialBalance = Money.of(currency, calc.calculate());
+				} catch (Exception e) {
+					initialBalance = Money.zero(currency);
+				}
 
-        if (savedInstanceState != null) {
-            node = savedInstanceState.getParcelable(KEY_CURRENTNODE);
-        } else {
-        }
+				if (node == null) {
+					MoneyNode newNode = new MoneyNode(name, description, selectedDrawableName,
+							creationDate, initialBalance, currency);
+					listener.onMoneyNodeCreated(newNode);
+				} else {
+					node.setName(name);
+					node.setIcon(selectedDrawableName);
+					node.setDescription(description);
+					node.setCreationDate(creationDate);
+					node.setInitialBalance(initialBalance);
+					node.setCurrency(currency);
+					listener.onMoneyNodeEdited(node);
+				}
+			}
+		});
 
-        updateNodeFields();
+		if (savedInstanceState != null) {
+			node = savedInstanceState.getParcelable(KEY_CURRENTNODE);
+		} else {
+		}
 
-        if (savedInstanceState != null) {
-            selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
-            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-            iconSelectorButton.setDrawableId(iconId);
-        }
+		updateNodeFields();
 
-        return v;
-    }
+		if (savedInstanceState != null) {
+			selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
+			int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
+			iconSelectorButton.setDrawableId(iconId);
+		}
 
-    public void onDateSet(DatePicker view, int year, int month, int day) {
-        GregorianCalendar calendar = new GregorianCalendar(year, month, day);
-        creationDateButton.setText(dateFormat.format(calendar.getTime()));
-    }
+		return v;
+	}
 
-    public void onIconPicked(int drawableId, String drawableName) {
-        iconSelectorButton.setDrawableId(drawableId);
-        selectedDrawableName = drawableName;
-        iconSelectorButton.setError(false);
-    }
+	public void onDateSet(DatePicker view, int year, int month, int day) {
+		GregorianCalendar calendar = new GregorianCalendar(year, month, day);
+		creationDateButton.setText(dateFormat.format(calendar.getTime()));
+	}
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putString(KEY_SELECTEDICON, selectedDrawableName);
-        outState.putParcelable(KEY_CURRENTNODE, node);
-        super.onSaveInstanceState(outState);
-    }
+	public void onIconPicked(int drawableId, String drawableName) {
+		iconSelectorButton.setDrawableId(drawableId);
+		selectedDrawableName = drawableName;
+		iconSelectorButton.setError(false);
+	}
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            listener = (OnMoneyNodeEditListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
-                    " must implement OnMoneyNodeEditListener");
-        }
-    }
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putString(KEY_SELECTEDICON, selectedDrawableName);
+		outState.putParcelable(KEY_CURRENTNODE, node);
+		super.onSaveInstanceState(outState);
+	}
 
-    /**
-     * @return the node
-     */
-    public MoneyNode getNode() {
-        return node;
-    }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			listener = (OnMoneyNodeEditListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() +
+					" must implement OnMoneyNodeEditListener");
+		}
+	}
 
-    /**
-     * @param node the node to set
-     */
-    public void setNode(MoneyNode node) {
-        MoneyNode prevNode = this.node;
-        this.node = node;
+	/**
+	 * @return the node
+	 */
+	public MoneyNode getNode() {
+		return node;
+	}
 
-        if (prevNode != node) {
-            updateNodeFields();
-        }
-    }
+	/**
+	 * @param node the node to set
+	 */
+	public void setNode(MoneyNode node) {
+		MoneyNode prevNode = this.node;
+		this.node = node;
 
-    private void updateNodeFields() {
-        // If we are adding a new node, reset all fields
-        if (node == null) {
-            nameText.setText("");
-            descriptionText.setText("");
-            iconSelectorButton.setDrawableId(0);
-            creationDateButton.setText(dateFormat.format(new Date()));
-            initialBalanceText.setText("");
+		if (prevNode != node) {
+			updateNodeFields();
+		}
+	}
 
-            PreferenceManager prefManager = PreferenceManager.getInstance();
-            String prefCurrency = prefManager.readUserStringPreference(
-                    PREFKEY_DEFAULTCURRENCY, null);
+	private void updateNodeFields() {
+		// If we are adding a new node, reset all fields
+		if (node == null) {
+			nameText.setText("");
+			descriptionText.setText("");
+			iconSelectorButton.setDrawableId(0);
+			creationDateButton.setText(dateFormat.format(new Date()));
+			initialBalanceText.setText("");
 
-            int positionInSpinner = 0;
+			PreferenceManager prefManager = PreferenceManager.getInstance();
+			String prefCurrency = prefManager.readUserStringPreference(
+					PREFKEY_DEFAULTCURRENCY, null);
 
-            if (prefCurrency != null) {
-                @SuppressWarnings("unchecked")
-                ArrayAdapter<String> adapter = (ArrayAdapter<String>)
-                    currencySpinner.getAdapter();
-                positionInSpinner = adapter.getPosition(prefCurrency);
-            }
+			int positionInSpinner = 0;
 
-            currencySpinner.setSelection(positionInSpinner);
-            addButton.setText(R.string.add);
-        // If we are editing a node, fill fields with current information
-        } else {
-        	try {
-	        	node.load();
-	            nameText.setText(node.getName());
-	            descriptionText.setText(node.getDescription());
-	            selectedDrawableName = node.getIcon();
-	            int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
-	            iconSelectorButton.setDrawableId(iconId);
-	            creationDateButton.setText(dateFormat.format(node.getCreationDate()));
-	            initialBalanceText.setText(node.getInitialBalance().getAmount().toString());
-	            @SuppressWarnings("unchecked")
-	            ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
-	            int positionInSpinner = adapter.getPosition(node.getCurrency().getCurrencyCode());
-	            currencySpinner.setSelection(positionInSpinner);
-	        } catch (DatabaseException e) {
-	            Log.e("TMM", e.getMessage(), e);
-	        }
+			if (prefCurrency != null) {
+				@SuppressWarnings("unchecked")
+				ArrayAdapter<String> adapter = (ArrayAdapter<String>)
+						currencySpinner.getAdapter();
+				positionInSpinner = adapter.getPosition(prefCurrency);
+			}
 
-	        addButton.setText(R.string.edit);
-        }
-    }
+			currencySpinner.setSelection(positionInSpinner);
+			addButton.setText(R.string.add);
+			// If we are editing a node, fill fields with current information
+		} else {
+			try {
+				node.load();
+				nameText.setText(node.getName());
+				descriptionText.setText(node.getDescription());
+				selectedDrawableName = node.getIcon();
+				int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
+				iconSelectorButton.setDrawableId(iconId);
+				creationDateButton.setText(dateFormat.format(node.getCreationDate()));
+				initialBalanceText.setText(node.getInitialBalance().getAmount().toString());
+				@SuppressWarnings("unchecked")
+				ArrayAdapter<String> adapter = (ArrayAdapter<String>) currencySpinner.getAdapter();
+				int positionInSpinner = adapter.getPosition(node.getCurrency().getCurrencyCode());
+				currencySpinner.setSelection(positionInSpinner);
+			} catch (DatabaseException e) {
+				Log.e("TMM", e.getMessage(), e);
+			}
 
-    private boolean validateInputFields() {
-        boolean error = false;
+			addButton.setText(R.string.edit);
+		}
+	}
 
-        Resources res = getResources();
-        Drawable errorDrawable =
-            res.getDrawable(R.drawable.indicator_input_error);
-        errorDrawable.setBounds(0, 0,
-                errorDrawable.getIntrinsicWidth(),
-                errorDrawable.getIntrinsicHeight());
-        String name = nameText.getText().toString();
+	private boolean validateInputFields() {
+		boolean error = false;
 
-        String nameError = null;
-        if (TextUtils.isEmpty(name)) {
-            nameError = res.getString(R.string.error_name_not_empty);
-        } else {
-            try {
-                // If we are adding a new node and name already exists
-                if (node == null &&
-                    MoneyNode.hasMoneyNodeWithName(name)) {
-                    nameError = res.getString(
-                            R.string.error_moneynode_name_already_exists);
-                }
-            } catch (DatabaseException e) {
-                nameError = res.getString(
-                        R.string.error_moneynode_determine_exists);
-            }
-        }
+		Resources res = getResources();
+		Drawable errorDrawable =
+				res.getDrawable(R.drawable.indicator_input_error);
+		errorDrawable.setBounds(0, 0,
+				errorDrawable.getIntrinsicWidth(),
+				errorDrawable.getIntrinsicHeight());
+		String name = nameText.getText().toString();
 
-        if (nameError != null) {
-            nameText.setError(nameError, errorDrawable);
-            error = true;
-        }
+		String nameError = null;
+		if (TextUtils.isEmpty(name)) {
+			nameError = res.getString(R.string.error_name_not_empty);
+		} else {
+			try {
+				// If we are adding a new node and name already exists
+				if (node == null &&
+						MoneyNode.hasMoneyNodeWithName(name)) {
+					nameError = res.getString(
+							R.string.error_moneynode_name_already_exists);
+				}
+			} catch (DatabaseException e) {
+				nameError = res.getString(
+						R.string.error_moneynode_determine_exists);
+			}
+		}
 
-        if (TextUtils.isEmpty(selectedDrawableName)) {
-            iconSelectorButton.setError(true);
-            error = true;
-        }
+		if (nameError != null) {
+			nameText.setError(nameError, errorDrawable);
+			error = true;
+		}
 
-        return !error;
-    }
+		if (TextUtils.isEmpty(selectedDrawableName)) {
+			iconSelectorButton.setError(true);
+			error = true;
+		}
+
+		return !error;
+	}
 }
 

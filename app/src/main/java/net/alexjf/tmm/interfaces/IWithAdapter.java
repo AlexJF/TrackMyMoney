@@ -7,6 +7,7 @@ package net.alexjf.tmm.interfaces;
 import android.widget.BaseAdapter;
 
 public interface IWithAdapter {
-    public BaseAdapter getAdapter();
-    public void setAdapter(BaseAdapter adapter);
+	public BaseAdapter getAdapter();
+
+	public void setAdapter(BaseAdapter adapter);
 }
