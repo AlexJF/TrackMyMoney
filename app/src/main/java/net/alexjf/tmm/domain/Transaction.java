@@ -6,6 +6,7 @@ package net.alexjf.tmm.domain;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -101,7 +102,7 @@ public abstract class Transaction extends DatabaseObject {
 	 * @param moneyNode   The moneyNode for this instance.
 	 * @param value       The value for this instance.
 	 * @param description The description for this instance.
-	 * @param categoryId  The categoryId for this instance.
+	 * @param category  The categoryId for this instance.
 	 */
 	public Transaction(MoneyNode moneyNode, Money value,
 			String description, Category category) {
@@ -123,6 +124,12 @@ public abstract class Transaction extends DatabaseObject {
 
 				if (moneyNode == null || !moneyNode.getId().equals(moneyNodeId)) {
 					moneyNode = MoneyNode.createFromId(moneyNodeId);
+				}
+
+				try {
+					moneyNode.load();
+				} catch (DatabaseException e) {
+					throw new DbObjectLoadException("Couldn't load owning money node " + moneyNode, e);
 				}
 
 				value = Money.of(moneyNode.getCurrency(), new BigDecimal(cursor.getString(2)));

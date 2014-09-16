@@ -106,7 +106,6 @@
 					android:id="@+id/initialBalance_text"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:inputType="number|numberSigned|numberDecimal"
 					android:layout_gravity="center_vertical"
 					android:singleLine="true"/>
 			<Spinner

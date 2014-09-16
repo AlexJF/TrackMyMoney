@@ -382,7 +382,12 @@ public class ImmedTransactionEditorFragment extends Fragment
 	 * @param currentMoneyNode the currentMoneyNode to set
 	 */
 	public void setCurrentMoneyNode(MoneyNode currentMoneyNode) {
+		MoneyNode prevMoneyNode = this.currentMoneyNode;
 		this.currentMoneyNode = currentMoneyNode;
+
+		if (prevMoneyNode != currentMoneyNode) {
+			updateTransactionFields();
+		}
 	}
 
 	private void updateTransactionFields() {
@@ -413,7 +418,12 @@ public class ImmedTransactionEditorFragment extends Fragment
 		}
 
 		if (currentMoneyNode != null) {
-			currencyTextView.setText(currentMoneyNode.getCurrency().getCurrencyCode());
+			try {
+				currentMoneyNode.load();
+				currencyTextView.setText(currentMoneyNode.getCurrency().getCurrencyCode());
+			} catch (DatabaseException e) {
+				Log.e("TMM", "Error loading money node", e);
+			}
 		}
 
 		updateCategoryFields();

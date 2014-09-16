@@ -6,8 +6,12 @@ package net.alexjf.tmm.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -15,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
@@ -22,9 +27,10 @@ import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.Utils;
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class MoneyNodeListActivity extends ActionBarActivity {
 	private static final int REQCODE_ADD = 0;
@@ -40,6 +46,10 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 
 	private String intention;
 	private List<MoneyNode> excludedMoneyNodes;
+
+	private ViewGroup balancePanel;
+	private TextView balanceTextView;
+	private Map<CurrencyUnit, Money> balances;
 
 	public MoneyNodeListActivity() {
 		adapter = null;
@@ -92,6 +102,10 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 			}
 		});
 
+		balancePanel = (ViewGroup) findViewById(R.id.balance_panel);
+		balanceTextView = (TextView) findViewById(R.id.balance_value);
+		balances = new LinkedHashMap();
+
 		registerForContextMenu(moneyNodesListView);
 		updateData();
 	}
@@ -105,13 +119,29 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 			moneyNodes = MoneyNode.getMoneyNodes();
 			moneyNodes.removeAll(excludedMoneyNodes);
 		} catch (Exception e) {
-			Log.e("TMM", "Failed to get money nodes: " + e.getMessage() +
-					"\n" + e.getStackTrace());
+			Log.e("TMM", "Failed to get money nodes: " + e.getMessage(), e);
 			moneyNodes = new LinkedList<MoneyNode>();
 		}
 
+		balances.clear();
+
 		for (MoneyNode node : moneyNodes) {
 			adapter.add(node);
+
+			try {
+				node.load();
+				CurrencyUnit moneyNodeCurrency = node.getCurrency();
+
+				Money currencyBalance = balances.get(moneyNodeCurrency);
+
+				if (currencyBalance == null) {
+					currencyBalance = Money.zero(moneyNodeCurrency);
+				}
+
+				balances.put(moneyNodeCurrency, currencyBalance.plus(node.getBalance()));
+			} catch (DatabaseException e) {
+				Log.e("TMM", "Unable to load money node " + node + ": " + e.getMessage(), e);
+			}
 		}
 
 		updateGui();
@@ -119,6 +149,42 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 
 	private void updateGui() {
 		adapter.notifyDataSetChanged();
+
+		if (adapter.getCount() > 1) {
+			SpannableStringBuilder sb = new SpannableStringBuilder();
+			Resources resources = getResources();
+
+			int colorValuePositive = resources.getColor(R.color.positive);
+			int colorValueNegative = resources.getColor(R.color.negative);
+
+			boolean first = true;
+
+			for (Map.Entry<CurrencyUnit, Money> balance : balances.entrySet()) {
+				if (!first) {
+					sb.append(", ");
+				}
+
+				first = false;
+
+				Money balanceValue = balance.getValue();
+
+				int startIndex = sb.length();
+				sb.append(balanceValue.toString());
+				int endIndex = sb.length();
+
+				if (balanceValue.isPositive()) {
+					sb.setSpan(new ForegroundColorSpan(colorValuePositive), startIndex, endIndex, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+				}
+				else if (balanceValue.isNegative()) {
+					sb.setSpan(new ForegroundColorSpan(colorValueNegative), startIndex, endIndex, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+				}
+			}
+
+			balanceTextView.setText(sb);
+			balancePanel.setVisibility(View.VISIBLE);
+		} else {
+			balancePanel.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -176,20 +242,13 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 		if (resultCode == Activity.RESULT_OK) {
 			switch (requestCode) {
 				case REQCODE_ADD:
-					MoneyNode node = (MoneyNode) data.getParcelableExtra(
-							MoneyNode.KEY_MONEYNODE);
-					adapter.add(node);
+					// Changes reflected by onResume
 					break;
 				case REQCODE_EDIT:
+					// Changes reflected by onResume
 					break;
 				case REQCODE_PREFS:
-					Log.d("TMM", "Return from preferences: " + data.getBooleanExtra(
-							PreferencesActivity.KEY_FORCEDATAREFRESH, false));
-					if (data.getBooleanExtra(
-							PreferencesActivity.KEY_FORCEDATAREFRESH,
-							false)) {
-						updateData();
-					}
+					// Changes reflected by onResume
 					break;
 			}
 		}
@@ -211,7 +270,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 			case R.id.menu_remove:
 				try {
 					MoneyNode.deleteMoneyNode(node);
-					adapter.remove(node);
+					updateData();
 				} catch (DatabaseException e) {
 					Log.e("TMM", "Unable to delete money node", e);
 					Toast.makeText(
@@ -239,6 +298,5 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 		// further down the stack so either we propagate some 'updateData'
 		// flag down the stack or we force update everytime.
 		updateData();
-		updateGui();
 	}
 }

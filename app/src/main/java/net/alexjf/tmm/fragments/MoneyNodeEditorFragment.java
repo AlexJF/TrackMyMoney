@@ -31,6 +31,7 @@ import net.alexjf.tmm.views.SelectorButton;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -144,7 +145,7 @@ public class MoneyNodeEditorFragment extends Fragment
 				try {
 					Calculable calc = new ExpressionBuilder(
 							initialBalanceText.getText().toString()).build();
-					initialBalance = Money.of(currency, calc.calculate());
+					initialBalance = Money.of(currency, calc.calculate(), RoundingMode.HALF_EVEN);
 				} catch (Exception e) {
 					initialBalance = Money.zero(currency);
 				}
