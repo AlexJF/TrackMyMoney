@@ -12,6 +12,7 @@ import android.preference.PreferenceActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.utils.PreferenceManager;
+import net.alexjf.tmm.utils.Utils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,10 +39,9 @@ public class PreferencesActivity extends PreferenceActivity {
 	@Override
 	public void finish() {
 		if (logout) {
-
-			Intent intent = new Intent(this, UserListActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-					.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+			Intent intent = new Intent(this, MoneyNodeListActivity.class);
+			intent.putExtra(MoneyNodeListActivity.KEY_INTENTION, MoneyNodeListActivity.INTENTION_LOGOUT);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
 			startActivity(intent);
 		} else {

@@ -41,6 +41,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 	public static final String KEY_EXCLUDE = "exclude";
 	public static final String INTENTION_MANAGE = "manage";
 	public static final String INTENTION_SELECT = "select";
+	public static final String INTENTION_LOGOUT = "logout";
 
 	private MoneyNodeAdapter adapter;
 
@@ -66,6 +67,11 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 
 		if (intention == null) {
 			intention = INTENTION_MANAGE;
+		}
+
+		if (intention.equals(INTENTION_LOGOUT)) {
+			logout();
+			return;
 		}
 
 		excludedMoneyNodes = intent.getParcelableArrayListExtra(KEY_EXCLUDE);
@@ -224,12 +230,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 				startActivityForResult(intent, REQCODE_PREFS);
 				return true;
 			case R.id.menu_logout:
-				intent = new Intent(this,
-						UserListActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				Utils.clearRememberedLogin();
-				startActivity(intent);
-				finish();
+				logout();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -298,5 +299,17 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 		// further down the stack so either we propagate some 'updateData'
 		// flag down the stack or we force update everytime.
 		updateData();
+	}
+
+	private void logout() {
+		Log.d("TMM", "Logging out");
+		Intent intent;
+
+		intent = new Intent(this,
+				UserListActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		Utils.clearRememberedLogin();
+		startActivity(intent);
+		finish();
 	}
 }
