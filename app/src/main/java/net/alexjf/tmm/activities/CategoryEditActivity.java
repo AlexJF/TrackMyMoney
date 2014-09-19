@@ -12,16 +12,21 @@ import android.widget.Toast;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.fragments.CategoryEditorFragment;
 import net.alexjf.tmm.fragments.CategoryEditorFragment.OnCategoryEditListener;
 
-public class CategoryEditActivity extends ActionBarActivity
+public class CategoryEditActivity extends BaseActionBarActivity
 		implements OnCategoryEditListener {
+	@Override
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		super.onCreateInternal(savedInstanceState);
+		setContentView(R.layout.activity_category_edit);
+	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_category_edit);
+	protected void onDatabaseReady(Bundle savedInstanceState) {
+		super.onDatabaseReady(savedInstanceState);
 
 		Intent intent = getIntent();
 		Category category = (Category) intent.getParcelableExtra(

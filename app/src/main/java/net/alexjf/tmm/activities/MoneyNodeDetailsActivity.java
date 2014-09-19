@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -25,6 +24,7 @@ import net.alexjf.tmm.adapters.TabAdapter.OnTabFragmentCreateListener;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.fragments.DateIntervalBarFragment.OnDateIntervalChangedListener;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
 import net.alexjf.tmm.fragments.ImmedTransactionListFragment;
@@ -42,7 +42,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class MoneyNodeDetailsActivity extends ActionBarActivity
+public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 		implements OnDateIntervalChangedListener, OnImmedTransactionActionListener,
 		AsyncTaskResultListener {
 	private static String KEY_IMMEDIATETRANSACTIONS = "immediateTransactions";
@@ -82,27 +82,12 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		super.onCreateInternal(savedInstanceState);
 		setContentView(R.layout.activity_moneynode_details);
-
-		Intent intent = getIntent();
-		currentMoneyNode = (MoneyNode) intent.getParcelableExtra(
-				MoneyNode.KEY_MONEYNODE);
-		try {
-			currentMoneyNode.load();
-		} catch (DatabaseException e) {
-			Log.e("TMM", e.getMessage(), e);
-		}
-		currency = currentMoneyNode.getCurrency();
-
-		income = Money.zero(currency);
-		expense = Money.zero(currency);
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayUseLogoEnabled(true);
-
-		setTitle(currentMoneyNode.getName());
 
 		balancePanel = (ViewGroup) findViewById(R.id.balance_panel);
 		balanceTextView = (TextView) findViewById(R.id.balance_value);
@@ -118,14 +103,11 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 
 		immedTransAdapter = new ImmediateTransactionAdapter(this);
 
-		Bundle args = new Bundle();
-		args.putString(MoneyNode.KEY_CURRENCY, currency.getCurrencyCode());
-
 		tabAdapter = new TabAdapter(this, viewPager);
 		tabAdapter.addTab(actionBar.newTab().setText(R.string.list),
-				ImmedTransactionListFragment.class, args);
+				ImmedTransactionListFragment.class);
 		tabAdapter.addTab(actionBar.newTab().setText(R.string.stats),
-				ImmedTransactionStatsFragment.class, args);
+				ImmedTransactionStatsFragment.class);
 
 		tabAdapter.setOnTabFragmentCreateListener(new OnTabFragmentCreateListener() {
 			public void onTabFragmentCreated(Fragment fragment, int position) {
@@ -133,6 +115,12 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 				IWithAdapter fragmentWithAdapter =
 						(IWithAdapter) fragment;
 				fragmentWithAdapter.setAdapter(immedTransAdapter);
+
+				if (fragment instanceof ImmedTransactionListFragment) {
+					if (isDatabaseReady()) {
+						((ImmedTransactionListFragment) fragment).onDatabaseReady();
+					}
+				}
 			}
 		});
 
@@ -160,6 +148,35 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 			transactionTask.setContext(this);
 			transactionTask.setResultListener(this);
 		}
+	}
+
+	@Override
+	protected void onDatabaseReady(Bundle savedInstanceState) {
+		super.onDatabaseReady(savedInstanceState);
+
+		Intent intent = getIntent();
+		currentMoneyNode = (MoneyNode) intent.getParcelableExtra(
+				MoneyNode.KEY_MONEYNODE);
+		try {
+			currentMoneyNode.load();
+		} catch (DatabaseException e) {
+			Log.e("TMM", e.getMessage(), e);
+		}
+		currency = currentMoneyNode.getCurrency();
+
+		income = Money.zero(currency);
+		expense = Money.zero(currency);
+
+		setTitle(currentMoneyNode.getName());
+
+		ImmedTransactionListFragment transactionListFragment =
+				(ImmedTransactionListFragment) tabAdapter.getFragment(0);
+
+		if (transactionListFragment != null) {
+			transactionListFragment.onDatabaseReady();
+		}
+
+		updateData();
 	}
 
 	@Override
@@ -253,6 +270,11 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 
 	// TODO: Use lazy loading instead of getting all transactions in the period
 	private void updateData() {
+		// If database not ready, do nothing
+		if (!isDatabaseReady()) {
+			return;
+		}
+
 		// If task is already running, do nothing
 		if (transactionTask != null) {
 			return;
@@ -420,8 +442,8 @@ public class MoneyNodeDetailsActivity extends ActionBarActivity
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onResumeInternal() throws ExitingException {
+		super.onResumeInternal();
 		// If there's not a database refresh ongoing, refresh gui
 		if (transactionTask == null) {
 			updateGui();

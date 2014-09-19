@@ -10,14 +10,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.User;
+import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.fragments.UserEditorFragment;
 import net.alexjf.tmm.fragments.UserEditorFragment.OnUserEditListener;
 
-public class UserEditActivity extends ActionBarActivity
+public class UserEditActivity extends BaseActionBarActivity
 		implements OnUserEditListener {
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		setRequiresDatabase(false);
+		super.onCreateInternal(savedInstanceState);
 		setContentView(R.layout.activity_user_edit);
 
 		Intent intent = getIntent();
@@ -34,11 +36,6 @@ public class UserEditActivity extends ActionBarActivity
 		} else {
 			setTitle(R.string.title_activity_user_edit);
 		}
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
 	}
 
 	public void onUserEdited(User user) {

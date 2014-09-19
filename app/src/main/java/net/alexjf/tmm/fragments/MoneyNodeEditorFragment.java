@@ -167,13 +167,6 @@ public class MoneyNodeEditorFragment extends Fragment
 		});
 
 		if (savedInstanceState != null) {
-			node = savedInstanceState.getParcelable(KEY_CURRENTNODE);
-		} else {
-		}
-
-		updateNodeFields();
-
-		if (savedInstanceState != null) {
 			selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
 			int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
 			iconSelectorButton.setDrawableId(iconId);

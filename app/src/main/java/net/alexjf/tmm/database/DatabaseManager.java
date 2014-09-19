@@ -35,7 +35,11 @@ public class DatabaseManager {
 	}
 
 	public SQLiteDatabase getDatabase(String username, String password) {
-		closeDatabase();
+		return getDatabase(username, password, false);
+	}
+
+	public SQLiteDatabase getDatabase(String username, String password, boolean clearCache) {
+		closeDatabase(clearCache);
 
 		database = new DatabaseHelper(
 				context,
@@ -47,11 +51,18 @@ public class DatabaseManager {
 	}
 
 	public void closeDatabase() {
+		closeDatabase(false);
+	}
+
+	public void closeDatabase(boolean clearCache) {
 		if (database != null) {
 			if (database.isOpen()) {
 				database.close();
 			}
-			CacheFactory.getInstance().clearCaches();
+
+			if (clearCache) {
+				CacheFactory.getInstance().clearCaches();
+			}
 		}
 
 		database = null;

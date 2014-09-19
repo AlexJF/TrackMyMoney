@@ -84,6 +84,8 @@ public class ImmedTransactionEditorFragment extends Fragment
 	private DateFormat dateFormat;
 	private DateFormat timeFormat;
 
+	private Bundle savedInstanceState;
+
 	public ImmedTransactionEditorFragment() {
 		dateFormat = DateFormat.getDateInstance();
 		timeFormat = DateFormat.getTimeInstance();
@@ -289,8 +291,13 @@ public class ImmedTransactionEditorFragment extends Fragment
 			}
 		});
 
+		this.savedInstanceState = savedInstanceState;
+
+		return v;
+	}
+
+	public void onDatabaseReady() {
 		if (savedInstanceState != null) {
-			transaction = savedInstanceState.getParcelable(KEY_CURRENTTRANSACTION);
 			selectedCategory = savedInstanceState.getParcelable(KEY_SELECTEDCATEGORY);
 			selectedTransferMoneyNode = savedInstanceState.getParcelable(
 					KEY_SELECTEDTRANSFERMONEYNODE);
@@ -298,7 +305,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 
 		updateTransactionFields();
 
-		return v;
+		this.savedInstanceState = null;
 	}
 
 	@Override
@@ -315,7 +322,6 @@ public class ImmedTransactionEditorFragment extends Fragment
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putParcelable(KEY_CURRENTTRANSACTION, transaction);
 		outState.putParcelable(KEY_SELECTEDCATEGORY, selectedCategory);
 		outState.putParcelable(KEY_SELECTEDTRANSFERMONEYNODE,
 				selectedTransferMoneyNode);
@@ -359,14 +365,14 @@ public class ImmedTransactionEditorFragment extends Fragment
 	 * @param trans the transaction to set
 	 */
 	public void setTransaction(ImmediateTransaction trans) {
-		ImmediateTransaction prevNode = this.transaction;
+		ImmediateTransaction prevTransaction = this.transaction;
 		this.transaction = trans;
 
 		if (trans != null) {
 			setCurrentMoneyNode(trans.getMoneyNode());
 		}
 
-		if (prevNode != transaction) {
+		if (prevTransaction != transaction) {
 			updateTransactionFields();
 		}
 	}

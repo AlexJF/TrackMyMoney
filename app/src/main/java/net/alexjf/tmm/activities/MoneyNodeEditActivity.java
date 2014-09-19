@@ -12,16 +12,22 @@ import android.widget.Toast;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment.OnMoneyNodeEditListener;
 
-public class MoneyNodeEditActivity extends ActionBarActivity
+public class MoneyNodeEditActivity extends BaseActionBarActivity
 		implements OnMoneyNodeEditListener {
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		super.onCreateInternal(savedInstanceState);
 		setContentView(R.layout.activity_moneynode_edit);
+	}
+
+	@Override
+	protected void onDatabaseReady(Bundle savedInstanceState) {
+		super.onDatabaseReady(savedInstanceState);
 
 		Intent intent = getIntent();
 		MoneyNode node = (MoneyNode) intent.getParcelableExtra(

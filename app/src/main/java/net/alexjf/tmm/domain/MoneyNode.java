@@ -203,6 +203,8 @@ public class MoneyNode extends DatabaseObject {
 			cache.put(id, node);
 		}
 
+		Log.d("TMM", "MoneyNode - createFromId - cache=" + cache);
+
 		return node;
 	}
 
@@ -561,7 +563,7 @@ public class MoneyNode extends DatabaseObject {
 	}
 
 	public String toString() {
-		return getName();
+		return hashCode() + "|" + getId() + "|" + getName();
 	}
 
 	public static final Parcelable.Creator<MoneyNode> CREATOR =

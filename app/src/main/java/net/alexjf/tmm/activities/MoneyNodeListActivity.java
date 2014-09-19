@@ -26,13 +26,14 @@ import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.utils.Utils;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
 import java.util.*;
 
-public class MoneyNodeListActivity extends ActionBarActivity {
+public class MoneyNodeListActivity extends BaseActionBarActivity {
 	private static final int REQCODE_ADD = 0;
 	private static final int REQCODE_EDIT = 1;
 	private static final int REQCODE_PREFS = 2;
@@ -57,9 +58,8 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_moneynode_list);
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		Log.d("TMM", "MoneyNodeListActivity - onCreateInternal");
 
 		Intent intent = getIntent();
 
@@ -69,15 +69,17 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 			intention = INTENTION_MANAGE;
 		}
 
+		// Don't need active database for logout
+		if (intention.equals(INTENTION_LOGOUT)) {
+			setRequiresDatabase(false);
+		}
+
+		super.onCreateInternal(savedInstanceState);
+		setContentView(R.layout.activity_moneynode_list);
+
 		if (intention.equals(INTENTION_LOGOUT)) {
 			logout();
 			return;
-		}
-
-		excludedMoneyNodes = intent.getParcelableArrayListExtra(KEY_EXCLUDE);
-
-		if (excludedMoneyNodes == null) {
-			excludedMoneyNodes = new LinkedList<MoneyNode>();
 		}
 
 		adapter = new MoneyNodeAdapter(this);
@@ -113,16 +115,42 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 		balances = new LinkedHashMap();
 
 		registerForContextMenu(moneyNodesListView);
-		updateData();
+	}
+
+	@Override
+	protected void onDatabaseReady(Bundle savedInstanceState) {
+		super.onDatabaseReady(savedInstanceState);
+
+		Intent intent = getIntent();
+
+		Log.d("TMM", "MoneyNodeListActivity - onDatabaseReady - " + intent);
+
+		excludedMoneyNodes = intent.getParcelableArrayListExtra(KEY_EXCLUDE);
+
+		Log.d("TMM", "MoneyNodeListActivity - excludedMoneyNodes=" + excludedMoneyNodes);
+
+		if (excludedMoneyNodes == null) {
+			excludedMoneyNodes = new LinkedList<MoneyNode>();
+		}
 	}
 
 	private void updateData() {
+		Log.d("TMM", "MoneyNodeListActivity - updateData");
+		// Do nothing if database is not ready
+		if (!isDatabaseReady()) {
+			Log.d("TMM", "MoneyNodeListActivity - updateData - Database not ready");
+			return;
+		}
+
 		List<MoneyNode> moneyNodes;
 		adapter.setNotifyOnChange(false);
 		adapter.clear();
 
 		try {
 			moneyNodes = MoneyNode.getMoneyNodes();
+			Log.d("TMM", "MoneyNodeListActivity - moneyNodes=" + moneyNodes);
+			Log.d("TMM", "MoneyNodeListActivity - excludedMoneyNodes=" + excludedMoneyNodes);
+
 			moneyNodes.removeAll(excludedMoneyNodes);
 		} catch (Exception e) {
 			Log.e("TMM", "Failed to get money nodes: " + e.getMessage(), e);
@@ -156,7 +184,9 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 	private void updateGui() {
 		adapter.notifyDataSetChanged();
 
-		if (adapter.getCount() > 1) {
+		// Only show balance panel if intention is manage (root) and there's more
+		// than one money node.
+		if (adapter.getCount() > 1 && intention.equals(INTENTION_MANAGE)) {
 			SpannableStringBuilder sb = new SpannableStringBuilder();
 			Resources resources = getResources();
 
@@ -206,6 +236,12 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_moneynode_list, menu);
+
+		// Only allow logout from the main MoneyNodeListActivity
+		if (!intention.equals(INTENTION_MANAGE)) {
+			menu.removeItem(R.id.menu_logout);
+		}
+
 		return true;
 	}
 
@@ -253,6 +289,8 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 					break;
 			}
 		}
+
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -293,8 +331,11 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onResumeInternal() throws ExitingException {
+		super.onResumeInternal();
+
+		Log.d("TMM", "MoneyNodeListActivity - onResumeInternal");
+
 		// Money nodes can be added from MoneyNodeList activities started
 		// further down the stack so either we propagate some 'updateData'
 		// flag down the stack or we force update everytime.
@@ -305,9 +346,7 @@ public class MoneyNodeListActivity extends ActionBarActivity {
 		Log.d("TMM", "Logging out");
 		Intent intent;
 
-		intent = new Intent(this,
-				UserListActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent = new Intent(this, UserListActivity.class);
 		Utils.clearRememberedLogin();
 		startActivity(intent);
 		finish();

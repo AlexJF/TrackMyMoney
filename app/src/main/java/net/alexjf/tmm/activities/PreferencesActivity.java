@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import net.alexjf.tmm.R;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.utils.PreferenceManager;
 import net.alexjf.tmm.utils.Utils;
+import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +24,7 @@ public class PreferencesActivity extends PreferenceActivity {
 	public static final String KEY_LOGOUT = "logout";
 
 	private static final int REQCODE_FILECHOOSE = 0;
+	private static final int REQCODE_RELOGIN = 99;
 
 	private Set<OnStopListener> stopListeners =
 			new HashSet<OnStopListener>();
@@ -103,10 +106,29 @@ public class PreferencesActivity extends PreferenceActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (Utils.isApplicationExiting()) {
+			finish();
+			return;
+		}
+
 		PreferenceManager prefManager = PreferenceManager.getInstance();
 		getPreferenceManager().setSharedPreferencesName(
 				prefManager.getCurrentUserPreferencesName());
 		addPreferencesFromResource(R.xml.preferences);
+
+		SQLiteDatabase db = DatabaseManager.getInstance().getDatabase();
+
+		// If db doesn't exist or is not open, ask for relogin
+		if (db == null || !db.isOpen()) {
+			// If we got this far, database does not exist or is not open.
+			// We need to recreate it and open it. We do so in the UserListActivity
+			Intent intent = new Intent(this, UserListActivity.class);
+			intent.putExtra(UserListActivity.KEY_INTENTION, UserListActivity.INTENTION_RELOGIN);
+
+			this.startActivityForResult(intent, REQCODE_RELOGIN);
+
+			return;
+		}
 	}
 
 	@Override

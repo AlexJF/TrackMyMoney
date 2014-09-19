@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.DatabaseNotReadyException;
 import net.alexjf.tmm.exceptions.DbObjectLoadException;
 import net.alexjf.tmm.exceptions.DbObjectSaveException;
 import net.alexjf.tmm.utils.Cache;
@@ -153,6 +154,11 @@ public class ImmediateTransaction extends Transaction {
 		moneyNodeOnDatabase = null;
 	}
 
+	public static ImmediateTransaction copy(ImmediateTransaction original) throws DatabaseException {
+		original.load();
+		return new ImmediateTransaction(original);
+	}
+
 	/**
 	 * Creates a copy of the transaction passed as argument.
 	 * <p/>
@@ -162,7 +168,7 @@ public class ImmediateTransaction extends Transaction {
 	 *
 	 * @param original The transaction from which to copy from.
 	 */
-	public ImmediateTransaction(ImmediateTransaction original) {
+	private ImmediateTransaction(ImmediateTransaction original) {
 		this(original.getMoneyNode(), original.getValue(),
 				original.getDescription(), original.getCategory(),
 				original.getExecutionDate());

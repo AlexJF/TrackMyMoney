@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 public class ImmedTransactionStatsFragment extends Fragment
 		implements IWithAdapter, AsyncTaskResultListener {
 	private final static String KEY_SPINNERSELECTION = "spinnerSelection";
+	private final static String KEY_CURRENCY = "currency";
 	private final static String KEY_CATEGORIES = "categories";
 	private final static String KEY_VALUES = "values";
 	private final static String KEY_TOTALVALUE = "totalValue";
@@ -51,8 +52,6 @@ public class ImmedTransactionStatsFragment extends Fragment
 	private static int[] colors = null;
 	private static AsyncTaskWithProgressDialog<ImmediateTransactionAdapter>
 			categoryStatsTask;
-
-	private CurrencyUnit currency;
 
 	private ImmediateTransactionAdapter adapter;
 	private CategoryPercentageAdapter catPercentageAdapter;
@@ -140,13 +139,6 @@ public class ImmedTransactionStatsFragment extends Fragment
 
 		percentagesListView = new ListView(getActivity());
 
-		currency = null;
-
-		Bundle bundle = getArguments();
-		if (bundle != null) {
-			currency = CurrencyUnit.getInstance(bundle.getString(MoneyNode.KEY_CURRENCY));
-		}
-
 		catPercentageAdapter = new CategoryPercentageAdapter(getActivity());
 		percentagesListView.addHeaderView(chartView);
 		percentagesListView.setAdapter(catPercentageAdapter);
@@ -176,13 +168,9 @@ public class ImmedTransactionStatsFragment extends Fragment
 						updateCurrentTransactionSet();
 					}
 
-					;
-
 					public void onNothingSelected(AdapterView<?> arg0) {
 						currentFilter = incomeFilter;
 					}
-
-					;
 				});
 
 		if (categoryStatsTask != null) {
@@ -226,6 +214,7 @@ public class ImmedTransactionStatsFragment extends Fragment
 						Map<Category, Double> perCategoryValues = new HashMap<Category, Double>();
 
 						double totalValue = 0;
+						CurrencyUnit currency = null;
 
 						for (ImmediateTransaction transaction : currentTransactionSet) {
 							try {
@@ -233,17 +222,23 @@ public class ImmedTransactionStatsFragment extends Fragment
 								Category cat = transaction.getCategory();
 								cat.load();
 
-								double transactionValue =
-										transaction.getValue().abs().getAmount().doubleValue();
-								Double existingValue = perCategoryValues.get(cat);
+								Money transactionValue = transaction.getValue();
 
-								totalValue += transactionValue;
-
-								if (existingValue != null) {
-									transactionValue += existingValue;
+								if (currency == null) {
+									currency = transactionValue.getCurrencyUnit();
 								}
 
-								perCategoryValues.put(cat, transactionValue);
+								double transactionValueDouble = transactionValue.abs().getAmount().doubleValue();
+
+								Double existingValue = perCategoryValues.get(cat);
+
+								totalValue += transactionValueDouble;
+
+								if (existingValue != null) {
+									transactionValueDouble += existingValue;
+								}
+
+								perCategoryValues.put(cat, transactionValueDouble);
 							} catch (DatabaseException e) {
 								setThrowable(e);
 								return null;
@@ -276,6 +271,9 @@ public class ImmedTransactionStatsFragment extends Fragment
 							i++;
 						}
 
+						if (currency != null) {
+							bundle.putString(KEY_CURRENCY, currency.getCurrencyCode());
+						}
 						bundle.putParcelableArray(KEY_CATEGORIES, categories);
 						bundle.putDoubleArray(KEY_VALUES, values);
 						bundle.putDouble(KEY_TOTALVALUE, totalValue);
@@ -331,6 +329,14 @@ public class ImmedTransactionStatsFragment extends Fragment
 		catPercentageAdapter.clear();
 		catPercentageAdapter.setNotifyOnChange(false);
 
+		String currencyCode = resultData.getString(KEY_CURRENCY);
+		CurrencyUnit currency;
+
+		if (currencyCode == null) {
+			currency = CurrencyUnit.EUR;
+		} else {
+			currency = CurrencyUnit.getInstance(currencyCode);
+		}
 		Category[] categories = (Category[])
 				resultData.getParcelableArray(KEY_CATEGORIES);
 		double[] values = resultData.getDoubleArray(KEY_VALUES);

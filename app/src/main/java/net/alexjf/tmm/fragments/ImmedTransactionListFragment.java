@@ -38,6 +38,7 @@ public class ImmedTransactionListFragment extends ListFragment
 	private OnImmedTransactionActionListener listener;
 
 	private DuplicateTransactionFragment duplicateFragment;
+	private boolean databaseReady;
 
 	public interface OnImmedTransactionActionListener {
 		public void onImmedTransactionAdded(ImmediateTransaction transaction);
@@ -70,9 +71,29 @@ public class ImmedTransactionListFragment extends ListFragment
 			duplicateFragment = new DuplicateTransactionFragment();
 		}
 
+		if (databaseReady) {
+			Log.d("TMM", "ImmedTransactionListFragment - onCreateView - databaseReady");
+
+			duplicateFragment.onDatabaseReady();
+		}
+
 		duplicateFragment.setListener(this);
 
 		return v;
+	}
+
+	public void onDatabaseReady() {
+		Log.d("TMM", "ImmedTransactionListFragment - onDatabaseReady - " + duplicateFragment);
+		if (databaseReady) {
+			Log.d("TMM", "ImmedTransactionListFragment - onDatabaseReady - Duplicate");
+			return;
+		}
+
+		databaseReady = true;
+
+		if (duplicateFragment != null) {
+			duplicateFragment.onDatabaseReady();
+		}
 	}
 
 	@Override

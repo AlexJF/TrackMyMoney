@@ -6,11 +6,17 @@ package net.alexjf.tmm.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.util.Log;
 import android.widget.Adapter;
+import net.alexjf.tmm.activities.UserListActivity;
+import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.User;
+import net.alexjf.tmm.domain.UserList;
+import net.alexjf.tmm.exceptions.ExitingException;
+import net.sqlcipher.database.SQLiteDatabase;
 
 import java.security.MessageDigest;
 import java.util.*;
@@ -219,7 +225,8 @@ public class Utils {
 		String currentUsername = prefManager.readGlobalStringPreference(USERDATA_CURRENTUSER, null);
 
 		if (currentUsername != null) {
-			return new User(currentUsername);
+			UserList userList = new UserList();
+			return userList.getUser(currentUsername);
 		} else {
 			return null;
 		}
@@ -237,5 +244,26 @@ public class Utils {
 		PreferenceManager prefManager = PreferenceManager.getInstance();
 
 		prefManager.writeGlobalStringPreference(USERDATA_CURRENTUSER, user.getName());
+	}
+
+	private static boolean exiting = false;
+
+	public static void exitApplication(Activity activity) {
+		exiting = true;
+		activity.finish();
+	}
+
+	public static void checkIfExiting() throws ExitingException {
+		if (exiting) {
+			throw new ExitingException();
+		}
+	}
+
+	public static void cancelExiting() {
+		exiting = false;
+	}
+
+	public static boolean isApplicationExiting() {
+		return exiting;
 	}
 }

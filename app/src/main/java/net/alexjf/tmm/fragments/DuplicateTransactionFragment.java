@@ -12,13 +12,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.MoneyNodeListActivity;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.views.SelectorButton;
 
@@ -34,6 +37,9 @@ public class DuplicateTransactionFragment extends DialogFragment {
 
 	private SelectorButton targetMoneyNodeButton;
 
+	private Bundle savedInstanceState;
+	private boolean databaseReady;
+
 	public interface DuplicateTransactionDialogListener {
 		void onDuplicateTransaction(ImmediateTransaction srcTransaction,
 				ImmediateTransaction dstTransaction);
@@ -46,12 +52,7 @@ public class DuplicateTransactionFragment extends DialogFragment {
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		if (savedInstanceState != null) {
-			transaction = savedInstanceState.getParcelable(
-					ImmediateTransaction.KEY_TRANSACTION);
-			target = savedInstanceState.getParcelable(
-					MoneyNode.KEY_MONEYNODE);
-		}
+		Log.d("TMM", "DuplicateTransactionFragment - " + this + " - onCreateDialog - " + databaseReady);
 
 		LayoutInflater vi = (LayoutInflater) getActivity().
 				getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -71,7 +72,11 @@ public class DuplicateTransactionFragment extends DialogFragment {
 			}
 		});
 
-		updateTarget();
+		if (databaseReady) {
+			readDataFromState(savedInstanceState);
+		} else {
+			this.savedInstanceState = savedInstanceState;
+		}
 
 		return new AlertDialog.Builder(getActivity())
 				.setTitle(R.string.title_fragment_duplicate_trans)
@@ -93,8 +98,32 @@ public class DuplicateTransactionFragment extends DialogFragment {
 				.create();
 	}
 
+	public void onDatabaseReady() {
+		databaseReady = true;
+		Log.d("TMM", "DuplicateTransactionFragment - " + this + " - onDatabaseReady - " + savedInstanceState);
+
+		readDataFromState(savedInstanceState);
+	}
+
+	private void readDataFromState(Bundle savedInstanceState) {
+		Log.d("TMM", "DuplicateTransactionFragment - " + this + " - readDataFromState - " + savedInstanceState);
+
+		if (savedInstanceState != null) {
+			transaction = savedInstanceState.getParcelable(
+					KEY_TRANSACTION);
+			Log.d("TMM", "Set transaction to " + transaction);
+			target = savedInstanceState.getParcelable(
+					KEY_MONEYNODE);
+			Log.d("TMM", "Set target to " + target);
+
+		}
+
+		updateTarget();
+	}
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
+		Log.d("TMM", "DuplicateTransactionFragment - " + this + " - onSaveInstanceState - " + transaction + " - " + target);
 		outState.putParcelable(KEY_TRANSACTION, transaction);
 		outState.putParcelable(KEY_MONEYNODE, target);
 		super.onSaveInstanceState(outState);
@@ -115,40 +144,61 @@ public class DuplicateTransactionFragment extends DialogFragment {
 	 * @param transaction the transaction to set
 	 */
 	public void setTransaction(ImmediateTransaction transaction) {
+		Log.d("TMM", "DuplicateTransactionFragment - " + this + " - setTransaction - " + transaction);
 		this.transaction = transaction;
 		this.target = null;
 		updateTarget();
 	}
 
 	/**
-	 * @param caller the caller to set
+	 * @param listener the caller to set
 	 */
 	public void setListener(DuplicateTransactionDialogListener listener) {
 		this.listener = listener;
 	}
 
 	private void updateTarget() {
-		if (targetMoneyNodeButton == null) {
+		if (transaction == null) {
+			Log.d("TMM", "updateTarget - Leaving cause transaction is null");
 			return;
 		}
 
-		if (target == null) {
-			this.target = transaction.getMoneyNode();
+		if (targetMoneyNodeButton == null) {
+			Log.d("TMM", "updateTarget - Leaving cause targetMoneyNodeButton is null");
+			return;
 		}
 
-		targetMoneyNodeButton.setText(
-				target.getName());
-		int drawableId = DrawableResolver.getInstance().getDrawableId(
-				target.getIcon());
-		targetMoneyNodeButton.setDrawableId(drawableId);
-		targetMoneyNodeButton.setError(false);
+		try {
+			Log.d("TMM", "updateTarget - target=" + target);
+			if (target == null) {
+				transaction.load();
+				target = transaction.getMoneyNode();
+				Log.d("TMM", "updateTarget - default target=" + target);
+			}
+
+			target.load();
+
+			targetMoneyNodeButton.setText(
+					target.getName());
+			int drawableId = DrawableResolver.getInstance().getDrawableId(
+					target.getIcon());
+			targetMoneyNodeButton.setDrawableId(drawableId);
+			targetMoneyNodeButton.setError(false);
+		} catch (DatabaseException e) {
+			Log.e("TMM", "Error updating target", e);
+		}
 	}
 
 	private void doDuplication(ImmediateTransaction transaction,
 			MoneyNode target) {
-		ImmediateTransaction duplicate = new ImmediateTransaction(transaction);
-		duplicate.setMoneyNode(target);
-		listener.onDuplicateTransaction(transaction, duplicate);
+		try {
+			ImmediateTransaction duplicate = ImmediateTransaction.copy(transaction);
+			duplicate.setMoneyNode(target);
+			listener.onDuplicateTransaction(transaction, duplicate);
+		} catch (DatabaseException e) {
+			Toast.makeText(this.getActivity(), R.string.error_trans_duplicate, Toast.LENGTH_LONG);
+			Log.e("TMM", "Error doing duplication", e);
+		}
 	}
 }
 

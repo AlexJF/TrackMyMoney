@@ -7,7 +7,6 @@ package net.alexjf.tmm.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,10 +14,11 @@ import android.view.MenuItem;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.domain.ImmediateTransaction;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.fragments.ImmedTransactionDetailsFragment;
 import net.alexjf.tmm.fragments.ImmedTransactionEditorFragment.ImmedTransactionEditOldInfo;
 
-public class ImmedTransactionDetailsActivity extends ActionBarActivity {
+public class ImmedTransactionDetailsActivity extends BaseActionBarActivity {
 	private static final int REQCODE_EDIT = 0;
 
 	private static final String KEY_OLDTRANSACTIONINFO = "oldTransInfo";
@@ -29,9 +29,15 @@ public class ImmedTransactionDetailsActivity extends ActionBarActivity {
 	private ImmedTransactionEditOldInfo oldTransactionInfo;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		super.onCreateInternal(savedInstanceState);
 		setContentView(R.layout.activity_immedtransaction_details);
+		setTitle(R.string.title_activity_immedtrans_details);
+	}
+
+	@Override
+	protected void onDatabaseReady(Bundle savedInstanceState) {
+		super.onDatabaseReady(savedInstanceState);
 
 		Intent intent = getIntent();
 		currentImmedTransaction = (ImmediateTransaction)
@@ -47,12 +53,10 @@ public class ImmedTransactionDetailsActivity extends ActionBarActivity {
 						R.id.immedtransaction_details);
 		detailsFragment.setTransaction(currentImmedTransaction);
 
-		setTitle(R.string.title_activity_immedtrans_details);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
+		if (savedInstanceState != null) {
+			oldTransactionInfo = (ImmedTransactionEditOldInfo)
+					savedInstanceState.getParcelable(KEY_OLDTRANSACTIONINFO);
+		}
 	}
 
 	@Override
@@ -111,15 +115,5 @@ public class ImmedTransactionDetailsActivity extends ActionBarActivity {
 					oldTransactionInfo);
 		}
 		super.onSaveInstanceState(outState);
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle state) {
-		super.onRestoreInstanceState(state);
-
-		if (state != null) {
-			oldTransactionInfo = (ImmedTransactionEditOldInfo)
-					state.getParcelable(KEY_OLDTRANSACTIONINFO);
-		}
 	}
 }

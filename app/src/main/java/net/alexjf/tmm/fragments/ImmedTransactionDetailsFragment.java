@@ -47,8 +47,6 @@ public class ImmedTransactionDetailsFragment extends Fragment {
 				titleTextView.setText(item.label);
 			}
 
-			;
-
 			public void setValueText(TextView valueTextView,
 					TransactionDetails item) {
 				valueTextView.setText(item.value);

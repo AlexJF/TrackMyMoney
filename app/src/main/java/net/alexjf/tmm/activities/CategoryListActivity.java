@@ -20,11 +20,12 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.CategoryAdapter;
 import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.exceptions.DatabaseException;
+import net.alexjf.tmm.exceptions.ExitingException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryListActivity extends ActionBarActivity {
+public class CategoryListActivity extends BaseActionBarActivity {
 	public static final String KEY_INTENTION = "intention";
 	public static final String INTENTION_MANAGE = "manage";
 	public static final String INTENTION_SELECT = "select";
@@ -40,8 +41,8 @@ public class CategoryListActivity extends ActionBarActivity {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onCreateInternal(Bundle savedInstanceState) throws ExitingException {
+		super.onCreateInternal(savedInstanceState);
 		setContentView(R.layout.activity_category_list);
 
 		Intent intent = getIntent();
@@ -80,6 +81,12 @@ public class CategoryListActivity extends ActionBarActivity {
 		});
 
 		registerForContextMenu(categoriesListView);
+	}
+
+	@Override
+	protected void onDatabaseReady(Bundle savedInstanceState) {
+		super.onDatabaseReady(savedInstanceState);
+
 		updateData();
 	}
 
@@ -138,6 +145,8 @@ public class CategoryListActivity extends ActionBarActivity {
 					break;
 			}
 		}
+
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -177,8 +186,8 @@ public class CategoryListActivity extends ActionBarActivity {
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
+	protected void onResumeInternal() throws ExitingException {
+		super.onResumeInternal();
 		updateGui();
 	}
 }

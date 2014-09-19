@@ -116,6 +116,10 @@ public class TabAdapter extends FragmentPagerAdapter implements
 		return fragment;
 	}
 
+	public void addTab(ActionBar.Tab tab, Class<?> clss) {
+		addTab(tab, clss, null);
+	}
+
 	public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
 		TabInfo info = new TabInfo(clss, args);
 		tab.setTag(info);
@@ -186,6 +190,10 @@ public class TabAdapter extends FragmentPagerAdapter implements
 		if (onTabChangeListener != null) {
 			onTabChangeListener.onTabChanged(position);
 		}
+	}
+
+	public Fragment getTabFragment(int position) {
+		return tabs.get(position).fragment;
 	}
 }
 

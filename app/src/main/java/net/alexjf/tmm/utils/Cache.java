@@ -55,4 +55,9 @@ public class Cache<K, V> {
 	public void clear() {
 		map.clear();
 	}
+
+	@Override
+	public String toString() {
+		return map.toString();
+	}
 }

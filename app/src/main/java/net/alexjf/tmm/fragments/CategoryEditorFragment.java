@@ -93,12 +93,6 @@ public class CategoryEditorFragment extends Fragment
 		});
 
 		if (savedInstanceState != null) {
-			category = savedInstanceState.getParcelable(KEY_CURRENTCATEGORY);
-		}
-
-		updateCategoryFields();
-
-		if (savedInstanceState != null) {
 			selectedDrawableName = savedInstanceState.getString(KEY_SELECTEDICON);
 			int iconId = DrawableResolver.getInstance().getDrawableId(selectedDrawableName);
 			iconImageButton.setDrawableId(iconId);
@@ -116,7 +110,6 @@ public class CategoryEditorFragment extends Fragment
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putString(KEY_SELECTEDICON, selectedDrawableName);
-		outState.putParcelable(KEY_CURRENTCATEGORY, category);
 		super.onSaveInstanceState(outState);
 	}
 
