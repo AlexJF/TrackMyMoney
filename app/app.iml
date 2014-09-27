@@ -61,15 +61,15 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 20 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="opencsv-2.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-18.0.0" level="project" />
     <orderEntry type="library" exported="" name="sqlcipher-3.1.0" level="project" />
-    <orderEntry type="library" exported="" name="exp4j-0.3.11-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="joda-money-0.9.1" level="project" />
+    <orderEntry type="library" exported="" name="opencsv-2.3" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-18.0.0" level="project" />
     <orderEntry type="library" exported="" name="commons-codec" level="project" />
     <orderEntry type="library" exported="" name="achartengine-1.1.0" level="project" />
+    <orderEntry type="library" exported="" name="exp4j-0.3.11-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="guava-r09" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-18.0.0" level="project" />
-    <orderEntry type="library" exported="" name="joda-money-0.9.1" level="project" />
     <orderEntry type="module" module-name="aFileChooser-aFileChooser" exported="" />
   </component>
 </module>

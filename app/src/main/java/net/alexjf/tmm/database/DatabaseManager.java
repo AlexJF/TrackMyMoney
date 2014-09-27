@@ -59,10 +59,10 @@ public class DatabaseManager {
 			if (database.isOpen()) {
 				database.close();
 			}
+		}
 
-			if (clearCache) {
-				CacheFactory.getInstance().clearCaches();
-			}
+		if (clearCache) {
+			CacheFactory.getInstance().clearCaches();
 		}
 
 		database = null;
@@ -98,7 +98,7 @@ public class DatabaseManager {
 	/**
 	 * Deletes a database associated with a particular user
 	 *
-	 * @param User user whose database we want to delete.
+	 * @param username user whose database we want to delete.
 	 */
 	public void deleteDatabase(String username) {
 		context.deleteDatabase(getDatabaseName(username));

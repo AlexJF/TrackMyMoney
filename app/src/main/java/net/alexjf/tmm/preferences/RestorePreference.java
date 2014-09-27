@@ -88,8 +88,8 @@ public class RestorePreference
 					ZipEntry dbEntry = backupZip.getEntry("database");
 					InputStream is = backupZip.getInputStream(dbEntry);
 					DataInputStream dis = new DataInputStream(is);
-					// Close the database for we will replace it.
-					DatabaseManager.getInstance().closeDatabase();
+					// Close the database for we will replace it (and clean cache).
+					DatabaseManager.getInstance().closeDatabase(true);
 					User currentUser = Utils.getCurrentUser();
 					File filesDir = getActivity().getFilesDir();
 					File dbFile = new File(filesDir, "../databases/" +
