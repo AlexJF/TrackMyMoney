@@ -1,4 +1,4 @@
-1.2.0 - *
+1.2.0 - 27 Sep 2014
 - Fix several bugs related to caching with multiple users or restore operation.
 - When deleting a transaction associated with a transfer, do not automatically
   delete the opposing one.
