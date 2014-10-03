@@ -36,6 +36,7 @@ import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -348,7 +349,7 @@ public class ImmedTransactionStatsFragment extends Fragment
 			int color = colors[(categories.length - i - 1) % colors.length];
 			dataSet.add(category.getName(), categoryTotalValue);
 			catPercentageAdapter.add(new CategoryPercentageInfo(category,
-					Money.of(currency, categoryTotalValue), categoryTotalValue / totalValue,
+					Money.of(currency, categoryTotalValue, RoundingMode.HALF_EVEN), categoryTotalValue / totalValue,
 					color));
 			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
 			seriesRenderer.setColor(color);
