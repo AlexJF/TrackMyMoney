@@ -118,25 +118,57 @@
 			android:text="@string/transfer_check"/>
 	<LinearLayout
 			android:id="@+id/transfer_panel"
+			android:orientation="vertical"
 			android:visibility="gone"
-			android:orientation="horizontal"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/transfer_check">
-		<TextView
-				android:id="@+id/transfer_moneynode_label"
-				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
-				android:layout_alignBottom="@+id/transfer_moneynode_button"
-				android:layout_alignTop="@id/transfer_moneynode_button"
+		<LinearLayout
+				android:orientation="horizontal"
 				android:gravity="center_vertical"
-				android:text="@string/transfer_moneynode"/>
-		<net.alexjf.tmm.views.SelectorButton
-				android:id="@id/transfer_moneynode_button"
-				android:layout_weight="1"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:text="@string/choose"/>
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+			<TextView
+					android:id="@+id/transfer_moneynode_label"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="center_vertical"
+					android:text="@string/transfer_moneynode_from"/>
+			<net.alexjf.tmm.views.SelectorButton
+					android:id="@+id/transfer_moneynode_button"
+					android:layout_weight="1"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:text="@string/choose"/>
+		</LinearLayout>
+		<LinearLayout
+				android:id="@+id/transfer_conversion_panel"
+				android:visibility="gone"
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+			<TextView
+					android:id="@+id/transfer_conversion_amount_label"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/transfer_conversion_amount"/>
+			<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center_vertical"
+					android:orientation="horizontal">
+				<EditText
+						android:id="@+id/transfer_conversion_amount_value"
+						android:layout_weight="1"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:singleLine="true"/>
+				<TextView
+						android:id="@+id/transfer_conversion_amount_currency"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"/>
+			</LinearLayout>
+		</LinearLayout>
 	</LinearLayout>
 	<Button
 			android:id="@+id/add_button"

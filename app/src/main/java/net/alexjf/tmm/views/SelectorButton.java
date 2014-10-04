@@ -84,8 +84,10 @@ public class SelectorButton extends RelativeLayout {
 		selectionIcon = (ImageView) findViewById(R.id.selection_icon);
 		selectionButton = (Button) findViewById(R.id.selection_button);
 		errorIcon = (ImageView) findViewById(R.id.selection_error);
-		selectionButton.setText(attributeArray.getString(
-				R.styleable.SelectorButton_android_text));
+		if (attributeArray != null) {
+			selectionButton.setText(attributeArray.getString(
+					R.styleable.SelectorButton_android_text));
+		}
 		super.onFinishInflate();
 	}
 }

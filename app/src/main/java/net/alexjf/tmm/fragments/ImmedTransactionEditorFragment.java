@@ -15,8 +15,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ import net.alexjf.tmm.utils.DrawableResolver;
 import net.alexjf.tmm.utils.Utils;
 import net.alexjf.tmm.views.SelectorButton;
 import net.alexjf.tmm.views.SignToggleButton;
+import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
 import java.math.RoundingMode;
@@ -62,6 +65,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 	private OnImmediateTransactionEditListener listener;
 	private Category selectedCategory;
 	private MoneyNode selectedTransferMoneyNode;
+	private ImmediateTransaction transferTransaction;
 
 	private ImmediateTransaction transaction;
 	private MoneyNode currentMoneyNode;
@@ -78,7 +82,11 @@ public class ImmedTransactionEditorFragment extends Fragment
 	private TextView currencyTextView;
 	private CheckBox transferCheck;
 	private LinearLayout transferPanel;
+	private TextView transferMoneyNodeLabel;
 	private SelectorButton transferMoneyNodeButton;
+	private LinearLayout transferConversionPanel;
+	private EditText transferConversionAmountText;
+	private TextView transferConversionCurrencyLabel;
 	private Button addButton;
 
 	private DateFormat dateFormat;
@@ -106,8 +114,15 @@ public class ImmedTransactionEditorFragment extends Fragment
 		currencyTextView = (TextView) v.findViewById(R.id.currency_label);
 		transferCheck = (CheckBox) v.findViewById(R.id.transfer_check);
 		transferPanel = (LinearLayout) v.findViewById(R.id.transfer_panel);
+		transferMoneyNodeLabel = (TextView) v.findViewById(R.id.transfer_moneynode_label);
 		transferMoneyNodeButton = (SelectorButton) v.findViewById(
 				R.id.transfer_moneynode_button);
+		transferConversionPanel = (LinearLayout) v.findViewById(
+				R.id.transfer_conversion_panel);
+		transferConversionAmountText = (EditText) v.findViewById(
+				R.id.transfer_conversion_amount_value);
+		transferConversionCurrencyLabel = (TextView) v.findViewById(
+				R.id.transfer_conversion_amount_currency);
 		addButton = (Button) v.findViewById(R.id.add_button);
 
 		valueText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
@@ -157,6 +172,17 @@ public class ImmedTransactionEditorFragment extends Fragment
 				} catch (ParseException e) {
 				}
 				timePicker.show(getFragmentManager(), TAG_TIMEPICKER);
+			}
+		});
+
+		valueSignToggle.setOnChangeListener(new SignToggleButton.SignToggleButtonListener() {
+			@Override
+			public void onChange(boolean isPositive) {
+				if (isPositive) {
+					transferMoneyNodeLabel.setText(getResources().getString(R.string.transfer_moneynode_from));
+				} else {
+					transferMoneyNodeLabel.setText(getResources().getString(R.string.transfer_moneynode_to));
+				}
 			}
 		});
 
@@ -227,6 +253,25 @@ public class ImmedTransactionEditorFragment extends Fragment
 					value = value.negated();
 				}
 
+				Money currencyConversionValue = null;
+
+				// If an amount was entered for conversion to other currency, set
+				// value of transfer transaction to this amount
+				if (!TextUtils.isEmpty(transferConversionAmountText.getText())) {
+					try {
+						Calculable calc = new ExpressionBuilder(
+								transferConversionAmountText.getText().toString()).build();
+						currencyConversionValue = Money.of(selectedTransferMoneyNode.getCurrency(), calc.calculate(), RoundingMode.HALF_EVEN);
+					} catch (Exception e) {
+						Log.e("TMM", "Error calculating conversion amount expression: " + e.getMessage(), e);
+						currencyConversionValue = Money.zero(selectedTransferMoneyNode.getCurrency());
+					}
+
+					if (!valueSignToggle.isNegative()) {
+						currencyConversionValue = currencyConversionValue.negated();
+					}
+				}
+
 				// If we are creating a new transaction
 				if (transaction == null) {
 					ImmediateTransaction newTransaction =
@@ -238,6 +283,13 @@ public class ImmedTransactionEditorFragment extends Fragment
 						ImmediateTransaction otherTransaction =
 								new ImmediateTransaction(newTransaction,
 										selectedTransferMoneyNode);
+
+						// If a value was specified for the conversion to other currency,
+						// use that value instead of the negation of current one
+						if (currencyConversionValue != null) {
+							otherTransaction.setValue(currencyConversionValue);
+						}
+
 						newTransaction.setTransferTransaction(otherTransaction);
 						otherTransaction.setTransferTransaction(newTransaction);
 					}
@@ -254,10 +306,12 @@ public class ImmedTransactionEditorFragment extends Fragment
 					transaction.setValue(value);
 
 					if (selectedTransferMoneyNode != null) {
+						ImmediateTransaction otherTransaction = null;
+
 						// If edited transaction wasn't part of a transfer and
 						// now is, create transfer transaction
 						if (transaction.getTransferTransaction() == null) {
-							ImmediateTransaction otherTransaction =
+							otherTransaction =
 									new ImmediateTransaction(transaction,
 											selectedTransferMoneyNode);
 							transaction.setTransferTransaction(
@@ -268,7 +322,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 						// If edited transaction was already part of a
 						// transfer, update transfer transaction
 						else {
-							ImmediateTransaction otherTransaction =
+							otherTransaction =
 									transaction.getTransferTransaction();
 
 							otherTransaction.setMoneyNode(selectedTransferMoneyNode);
@@ -277,6 +331,12 @@ public class ImmedTransactionEditorFragment extends Fragment
 							otherTransaction.setExecutionDate(executionDateTime);
 							otherTransaction.setValue(
 									value.negated());
+						}
+
+						// If a value was specified for the conversion to other currency,
+						// use that value instead of the negation of current one
+						if (currencyConversionValue != null) {
+							otherTransaction.setValue(currencyConversionValue);
 						}
 					}
 					// If edited transaction no longer is a transfer but
@@ -460,15 +520,14 @@ public class ImmedTransactionEditorFragment extends Fragment
 
 	private void updateTransferFields() {
 		if (selectedTransferMoneyNode == null && transaction != null) {
-			ImmediateTransaction transferTransaction =
-					transaction.getTransferTransaction();
+			transferTransaction = transaction.getTransferTransaction();
 
 			if (transferTransaction != null) {
 				try {
 					transferTransaction.load();
 					selectedTransferMoneyNode = transferTransaction.getMoneyNode();
 				} catch (DatabaseException e) {
-					Log.e("TMM", "Unable to load transfer transaction", e);
+					Log.e("TMMT", "Error loading transfer transaction", e);
 				}
 			}
 		}
@@ -478,13 +537,36 @@ public class ImmedTransactionEditorFragment extends Fragment
 			transferMoneyNodeButton.setText(R.string.moneynode_nonselected);
 			transferMoneyNodeButton.setDrawableId(0);
 		} else {
-			transferCheck.setChecked(true);
-			transferMoneyNodeButton.setText(
-					selectedTransferMoneyNode.getName());
-			int drawableId = DrawableResolver.getInstance().getDrawableId(
-					selectedTransferMoneyNode.getIcon());
-			transferMoneyNodeButton.setDrawableId(drawableId);
-			transferMoneyNodeButton.setError(false);
+			try {
+				selectedTransferMoneyNode.load();
+				currentMoneyNode.load();
+
+				transferCheck.setChecked(true);
+				transferMoneyNodeButton.setText(
+						selectedTransferMoneyNode.getName());
+				int drawableId = DrawableResolver.getInstance().getDrawableId(
+						selectedTransferMoneyNode.getIcon());
+				transferMoneyNodeButton.setDrawableId(drawableId);
+				transferMoneyNodeButton.setError(false);
+
+				if (!selectedTransferMoneyNode.getCurrency().equals(
+						currentMoneyNode.getCurrency())) {
+					transferConversionPanel.setVisibility(View.VISIBLE);
+					transferConversionAmountText.setText("");
+					transferConversionCurrencyLabel.setText(
+							selectedTransferMoneyNode.getCurrency().getCurrencyCode());
+				} else {
+					transferConversionPanel.setVisibility(View.GONE);
+				}
+
+				if (transferTransaction != null) {
+					transferTransaction.load();
+					transferConversionAmountText.setText(transferTransaction.getValue().getAmount().toString());
+				}
+
+			} catch (DatabaseException e) {
+				Log.e("TMM", "Unable to load transfer transaction", e);
+			}
 		}
 	}
 
@@ -520,9 +602,23 @@ public class ImmedTransactionEditorFragment extends Fragment
 			error = true;
 		}
 
-		if (transferCheck.isChecked() && selectedTransferMoneyNode == null) {
-			transferMoneyNodeButton.setError(true);
-			error = true;
+		if (transferCheck.isChecked()) {
+			if (selectedTransferMoneyNode == null) {
+				transferMoneyNodeButton.setError(true);
+				error = true;
+			} else {
+				CurrencyUnit thisTransactionCurrency = currentMoneyNode.getCurrency();
+				CurrencyUnit otherTransactionCurrency = selectedTransferMoneyNode.getCurrency();
+
+				if (!thisTransactionCurrency.equals(otherTransactionCurrency) &&
+						TextUtils.isEmpty(transferConversionAmountText.getText())) {
+					transferConversionAmountText.setError(
+							res.getString(R.string.error_trans_other_currency),
+							errorDrawable
+					);
+					error = true;
+				}
+			}
 		}
 
 		return !error;

@@ -361,7 +361,19 @@ public class ImmediateTransaction extends Transaction {
 	@Override
 	public void setValue(Money value) {
 		super.setValue(value);
-		deltaValueFromPrevious = value.minus(valueOnDatabase);
+
+		if (value != null) {
+			// If new value has the same currency as the delta, update delta
+			if (value.isSameCurrency(deltaValueFromPrevious)) {
+				deltaValueFromPrevious = value.minus(valueOnDatabase);
+			}
+			// Else, if the new value has a different currency then reset
+			// both delta and cached value on database to new currency.
+			else {
+				deltaValueFromPrevious = value;
+				valueOnDatabase = Money.zero(deltaValueFromPrevious.getCurrencyUnit());
+			}
+		}
 	}
 
 	public ImmediateTransaction clone() throws CloneNotSupportedException {

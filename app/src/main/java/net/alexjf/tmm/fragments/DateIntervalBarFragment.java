@@ -130,12 +130,8 @@ public class DateIntervalBarFragment extends Fragment
 								notifyDatesChanged();
 							}
 
-							;
-
 							public void onNothingSelected(AdapterView<?> parent) {
 							}
-
-							;
 						});
 
 				setDateInterval(positionToSelect);

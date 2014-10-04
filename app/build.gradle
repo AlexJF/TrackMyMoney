@@ -31,7 +31,7 @@ android {
 	buildToolsVersion '20.0.0'
 
 	defaultConfig {
-		versionCode 10
+		versionCode 11
 		minSdkVersion 8
 		targetSdkVersion 20
 		applicationId "net.alexjf.tmm"

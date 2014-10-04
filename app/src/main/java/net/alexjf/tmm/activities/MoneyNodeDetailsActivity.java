@@ -57,6 +57,7 @@ public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 
 	private MoneyNode currentMoneyNode;
 	private ImmediateTransactionAdapter immedTransAdapter;
+	private boolean dateIntervalSet;
 	private Date startDate;
 	private Date endDate;
 	private Money income;
@@ -79,6 +80,7 @@ public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 	private TabAdapter tabAdapter;
 
 	public MoneyNodeDetailsActivity() {
+		dateIntervalSet = false;
 	}
 
 	@Override
@@ -180,19 +182,6 @@ public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		if (startDate != null) {
-			outState.putString(KEY_CURRENTSTARTDATE,
-					dateTimeFormat.format(startDate));
-		}
-		if (endDate != null) {
-			outState.putString(KEY_CURRENTENDDATE,
-					dateTimeFormat.format(endDate));
-		}
-		super.onSaveInstanceState(outState);
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_moneynode_details, menu);
@@ -256,6 +245,7 @@ public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 	}
 
 	public void onDateIntervalChanged(Date startDate, Date endDate) {
+		dateIntervalSet = true;
 		this.startDate = startDate;
 		this.endDate = endDate;
 
@@ -272,6 +262,14 @@ public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 	private void updateData() {
 		// If database not ready, do nothing
 		if (!isDatabaseReady()) {
+			return;
+		}
+
+		// If no date interval set yet, skip. Initially, because of
+		// onDatabaseReady, updateData might get called before the DateIntervalBarFragment
+		// has had time to set the correct interval. No point getting data at this
+		// point because we'll get it again once the interval is set correctly.
+		if (!dateIntervalSet) {
 			return;
 		}
 

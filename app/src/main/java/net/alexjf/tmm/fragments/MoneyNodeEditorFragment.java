@@ -172,6 +172,8 @@ public class MoneyNodeEditorFragment extends Fragment
 			iconSelectorButton.setDrawableId(iconId);
 		}
 
+		updateNodeFields();
+
 		return v;
 	}
 

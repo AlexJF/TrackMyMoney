@@ -22,6 +22,7 @@ public class SignToggleButton extends Button {
 	private int positiveColor;
 	private int negativeColor;
 	private boolean positive = true;
+	private SignToggleButtonListener listener;
 
 	public SignToggleButton(Context context) {
 		super(context);
@@ -58,32 +59,39 @@ public class SignToggleButton extends Button {
 			public void onClick(View arg0) {
 				toggleSign();
 			}
-
 		});
+
+		listener = null;
 	}
 
 	public void toggleSign() {
 		if (positive) {
-			setNegative();
+			setNegativeInternal();
 		} else {
-			setPositive();
+			setPositiveInternal();
+		}
+
+		if (listener != null) {
+			listener.onChange(isPositive());
 		}
 	}
 
 	public void setValue(boolean positive) {
-		if (positive) {
-			setPositive();
-		} else {
-			setNegative();
+		if (this.positive != positive) {
+			toggleSign();
 		}
 	}
 
 	public void setToNumberSign(BigDecimal number) {
-		positive = number.signum() >= 0;
-		setValue(positive);
+		boolean numberPositive = number.signum() >= 0;
+		setValue(numberPositive);
 	}
 
 	public void setPositive() {
+		setValue(true);
+	}
+
+	private void setPositiveInternal() {
 		setText("+");
 		setTextColor(positiveColor);
 		positive = true;
@@ -94,6 +102,10 @@ public class SignToggleButton extends Button {
 	}
 
 	public void setNegative() {
+		setValue(false);
+	}
+
+	private void setNegativeInternal() {
 		setText("−");
 		setTextColor(negativeColor);
 		positive = false;
@@ -124,4 +136,11 @@ public class SignToggleButton extends Button {
 		super.onRestoreInstanceState(state);
 	}
 
+	public void setOnChangeListener(SignToggleButtonListener listener) {
+		this.listener = listener;
+	}
+
+	public static interface SignToggleButtonListener {
+		public void onChange(boolean isPositive);
+	}
 }

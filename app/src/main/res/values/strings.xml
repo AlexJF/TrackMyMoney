@@ -7,7 +7,7 @@
 	<string name="app_name_label">Application Name</string>
 	<string name="app_name_value">Track My Money</string>
 	<string name="app_version_label">Version</string>
-	<string name="app_version_value">1.2.0</string>
+	<string name="app_version_value">1.2.1</string>
 	<string name="app_author_label">Author</string>
 	<string name="app_author_value">Alexandre Fonseca</string>
 	<string name="app_copyright">Copyright © 2013 - 2014</string>
@@ -89,7 +89,8 @@
 	<string name="editTransaction">Edit transaction</string>
 	<string name="executionDate">Execution Date:</string>
 	<string name="transfer_check">Is this a transfer?</string>
-	<string name="transfer_moneynode">From:</string>
+	<string name="transfer_moneynode_from">From:</string>
+	<string name="transfer_moneynode_to">To:</string>
 	<string name="title_fragment_duplicate_trans">Duplicate transaction</string>
 	<string name="duplicate_trans_moneynode">Destination:</string>
 	<!-- Category Related -->
@@ -182,4 +183,6 @@
 	<string name="error_export">Export error: %1$s.</string>
 	<string name="error_backup">Backup error: %1$s.</string>
 	<string name="error_restore">Restore error: %1$s.</string>
+	<string name="transfer_conversion_amount">Conversion amount</string>
+	<string name="error_trans_other_currency">You have to specify a value for the associated transaction in the different currency.</string>
 </resources>

@@ -552,13 +552,6 @@ public class MoneyNode extends DatabaseObject {
 
 		if (result == 1) {
 			notifyBalanceChange(transaction.getValue().negated());
-
-			// Since other transaction in transfer is deleted by sqlite due
-			// to cascade, notify other money node of updated balance
-			if (transferTransaction != null) {
-				transferTransaction.getMoneyNode().notifyBalanceChange(
-						transaction.getValue());
-			}
 		}
 	}
 

@@ -87,7 +87,8 @@
 	<string name="editTransaction">Editar transacção</string>
 	<string name="executionDate">Data de execução:</string>
 	<string name="transfer_check">É uma transferência?</string>
-	<string name="transfer_moneynode">De:</string>
+	<string name="transfer_moneynode_from">De:</string>
+	<string name="transfer_moneynode_to">Para:</string>
 	<string name="title_fragment_duplicate_trans">Duplicar transacção</string>
 	<string name="duplicate_trans_moneynode">Destino:</string>
 	<!-- Category Related -->
@@ -180,4 +181,6 @@
 	<string name="error_export">Erro de exportação: %1$s.</string>
 	<string name="error_backup">Erro de backup: %1$s.</string>
 	<string name="error_restore">Erro de restauro: %1$s.</string>
+	<string name="transfer_conversion_amount">Conversão de quantia</string>
+	<string name="error_trans_other_currency">Tem de especicifar o valor da transacção associada com moeda diferente.</string>
 </resources>

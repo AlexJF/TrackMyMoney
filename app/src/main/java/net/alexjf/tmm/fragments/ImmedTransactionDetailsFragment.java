@@ -135,15 +135,17 @@ public class ImmedTransactionDetailsFragment extends Fragment {
 		TransactionDetails valueDetails = new TransactionDetails(valueLabel,
 				value.toString());
 
+		String transferLabel = res.getString(R.string.transfer_moneynode_from);
+
 		if (value.isPositive()) {
 			valueDetails.valueColor = res.getColor(R.color.positive);
 		} else if (value.isNegative()) {
+			transferLabel = res.getString(R.string.transfer_moneynode_to);
 			valueDetails.valueColor = res.getColor(R.color.negative);
 		}
 
 		adapter.add(valueDetails);
 
-		String fromLabel = res.getString(R.string.transfer_moneynode);
 		ImmediateTransaction transferTransaction =
 				transaction.getTransferTransaction();
 
@@ -154,7 +156,7 @@ public class ImmedTransactionDetailsFragment extends Fragment {
 				transferNode.load();
 				int drawableId = DrawableResolver.getInstance().getDrawableId(
 						transferNode.getIcon());
-				adapter.add(new TransactionDetails(fromLabel,
+				adapter.add(new TransactionDetails(transferLabel,
 						transferNode.getName(), drawableId));
 			} catch (DatabaseException e) {
 				Log.e("TMM", "Error loading transfer money node", e);
