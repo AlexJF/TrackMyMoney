@@ -261,7 +261,11 @@ public class ImmedTransactionEditorFragment extends Fragment
 					try {
 						Calculable calc = new ExpressionBuilder(
 								transferConversionAmountText.getText().toString()).build();
-						currencyConversionValue = Money.of(selectedTransferMoneyNode.getCurrency(), calc.calculate(), RoundingMode.HALF_EVEN);
+						currencyConversionValue = Money.of(
+								selectedTransferMoneyNode.getCurrency(),
+								calc.calculate(),
+								RoundingMode.HALF_EVEN);
+						currencyConversionValue = currencyConversionValue.abs();
 					} catch (Exception e) {
 						Log.e("TMM", "Error calculating conversion amount expression: " + e.getMessage(), e);
 						currencyConversionValue = Money.zero(selectedTransferMoneyNode.getCurrency());
@@ -561,7 +565,8 @@ public class ImmedTransactionEditorFragment extends Fragment
 
 				if (transferTransaction != null) {
 					transferTransaction.load();
-					transferConversionAmountText.setText(transferTransaction.getValue().getAmount().toString());
+					transferConversionAmountText.setText(
+							transferTransaction.getValue().getAmount().abs().toString());
 				}
 
 			} catch (DatabaseException e) {
