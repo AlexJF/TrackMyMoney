@@ -1,3 +1,11 @@
+1.2.1 - 04 Oct 2014
+- Fix crash that could happen while calculating stats of certain transaction
+  values that led to the violation of money scale.
+- Allow transfers between money nodes with different currencies by specifying
+  conversion amounts.
+- Do not register transfer if destination/source money node was selected but
+  the transfer checkbox was then unchecked.
+
 1.2.0 - 27 Sep 2014
 - Fix several bugs related to caching with multiple users or restore operation.
 - When deleting a transaction associated with a transfer, do not automatically

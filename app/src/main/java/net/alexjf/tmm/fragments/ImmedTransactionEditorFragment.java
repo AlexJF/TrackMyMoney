@@ -222,6 +222,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 				}
 
 				String description = descriptionText.getText().toString().trim();
+				boolean isTransfer = transferCheck.isChecked();
 
 				Date executionDate;
 				Date executionTime;
@@ -257,7 +258,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 
 				// If an amount was entered for conversion to other currency, set
 				// value of transfer transaction to this amount
-				if (!TextUtils.isEmpty(transferConversionAmountText.getText())) {
+				if (isTransfer && !TextUtils.isEmpty(transferConversionAmountText.getText())) {
 					try {
 						Calculable calc = new ExpressionBuilder(
 								transferConversionAmountText.getText().toString()).build();
@@ -283,7 +284,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 									description, selectedCategory, executionDateTime);
 
 					// If this new transaction is a transfer
-					if (selectedTransferMoneyNode != null) {
+					if (isTransfer && selectedTransferMoneyNode != null) {
 						ImmediateTransaction otherTransaction =
 								new ImmediateTransaction(newTransaction,
 										selectedTransferMoneyNode);
@@ -309,7 +310,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 					transaction.setExecutionDate(executionDateTime);
 					transaction.setValue(value);
 
-					if (selectedTransferMoneyNode != null) {
+					if (isTransfer && selectedTransferMoneyNode != null) {
 						ImmediateTransaction otherTransaction = null;
 
 						// If edited transaction wasn't part of a transfer and
@@ -615,13 +616,25 @@ public class ImmedTransactionEditorFragment extends Fragment
 				CurrencyUnit thisTransactionCurrency = currentMoneyNode.getCurrency();
 				CurrencyUnit otherTransactionCurrency = selectedTransferMoneyNode.getCurrency();
 
-				if (!thisTransactionCurrency.equals(otherTransactionCurrency) &&
-						TextUtils.isEmpty(transferConversionAmountText.getText())) {
-					transferConversionAmountText.setError(
-							res.getString(R.string.error_trans_other_currency),
-							errorDrawable
-					);
-					error = true;
+				if (!thisTransactionCurrency.equals(otherTransactionCurrency)) {
+					String conversionAmount = transferConversionAmountText.getText().toString();
+
+					if (TextUtils.isEmpty(conversionAmount)) {
+						transferConversionAmountText.setError(
+								res.getString(R.string.error_trans_other_currency_unspecified),
+								errorDrawable
+						);
+						error = true;
+					} else {
+						try {
+							new ExpressionBuilder(conversionAmount).build();
+						} catch (Exception e) {
+							transferConversionAmountText.setError(
+									res.getString(R.string.error_trans_value_invalid),
+									errorDrawable);
+							error = true;
+						}
+					}
 				}
 			}
 		}

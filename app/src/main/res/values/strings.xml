@@ -184,5 +184,5 @@
 	<string name="error_backup">Backup error: %1$s.</string>
 	<string name="error_restore">Restore error: %1$s.</string>
 	<string name="transfer_conversion_amount">Conversion amount</string>
-	<string name="error_trans_other_currency">You have to specify a value for the associated transaction in the different currency.</string>
+	<string name="error_trans_other_currency_unspecified">You have to specify a value for the associated transaction in the different currency.</string>
 </resources>

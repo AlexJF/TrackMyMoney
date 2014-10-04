@@ -182,5 +182,5 @@
 	<string name="error_backup">Erro de backup: %1$s.</string>
 	<string name="error_restore">Erro de restauro: %1$s.</string>
 	<string name="transfer_conversion_amount">Conversão de quantia</string>
-	<string name="error_trans_other_currency">Tem de especicifar o valor da transacção associada com moeda diferente.</string>
+	<string name="error_trans_other_currency_unspecified">Tem de especicifar o valor da transacção associada com moeda diferente.</string>
 </resources>
