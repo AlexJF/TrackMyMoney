@@ -1,14 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 		package="net.alexjf.tmm"
-		android:versionCode="12"
-		android:installLocation="preferExternal"
+		android:installLocation="auto"
 		android:versionName="@string/app_version_value">
 
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
-	<uses-sdk
-			android:minSdkVersion="8"
-			android:targetSdkVersion="20"/>
 
 	<application
 			android:name="TrackMyMoneyApplication"

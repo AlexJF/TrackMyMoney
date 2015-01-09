@@ -84,9 +84,9 @@ public class BackupPreference
 				ZipOutputStream zos = null;
 
 				try {
+					tmmDir.mkdirs();
 					os = new FileOutputStream(exportPath);
 					zos = new ZipOutputStream(new BufferedOutputStream(os));
-					tmmDir.mkdirs();
 
 					DatabaseManager dbManager = DatabaseManager.getInstance();
 					File dbFile = new File(
