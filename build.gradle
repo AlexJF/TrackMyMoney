@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.1'
+        classpath 'com.android.tools.build:gradle:0.14.2'
     }
 }
 
@@ -12,7 +12,6 @@ allprojects {
     afterEvaluate {
         if (getPlugins().hasPlugin("android") ||
             getPlugins().hasPlugin("android-library")) {
-            println name
 
             android {
                 lintOptions {
@@ -24,5 +23,5 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = "1.10"
+    gradleVersion = "2.1"
 }

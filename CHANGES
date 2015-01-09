@@ -1,3 +1,9 @@
+1.2.2 - xx Jan 2015
+- Fix occasional crash on resume in the transaction listing activity if relogin
+  required.
+- Fix sharing of backups in recent Android versions.
+- Removed seconds from transactions time.
+
 1.2.1 - 04 Oct 2014
 - Fix crash that could happen while calculating stats of certain transaction
   values that led to the violation of money scale.

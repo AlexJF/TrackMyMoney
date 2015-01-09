@@ -312,6 +312,10 @@ public class MoneyNodeDetailsActivity extends BaseActionBarActivity
 	}
 
 	private void updateGui() {
+		if (!isDatabaseReady()) {
+			return;
+		}
+
 		immedTransAdapter.sort(new ImmediateTransaction.DateComparator(true));
 		immedTransAdapter.notifyDataSetChanged();
 		updateDetailsPanel();

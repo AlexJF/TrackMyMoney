@@ -155,8 +155,8 @@ public class BackupPreference
 		if (resultData.getBoolean(KEY_SENDTO)) {
 			File file = (File) resultData.getSerializable(KEY_FILE);
 			Intent i = new Intent(Intent.ACTION_SEND);
-			i.setType("text/plain");
-			i.putExtra(Intent.EXTRA_STREAM, Uri.parse(file.getPath()));
+			i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+			i.setType("application/zip");
 			String title = activity.getResources().getString(
 					R.string.export_share_title);
 			activity.startActivity(Intent.createChooser(i, title));

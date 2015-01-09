@@ -25,7 +25,7 @@ import org.joda.money.Money;
 import java.text.DateFormat;
 
 public class ImmedTransactionDetailsFragment extends Fragment {
-	private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance();
+	private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.SHORT);
 
 	private ListView detailsListView;
 	private TwoLineTextAdapter<TransactionDetails> adapter;

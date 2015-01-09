@@ -96,7 +96,7 @@ public class ImmedTransactionEditorFragment extends Fragment
 
 	public ImmedTransactionEditorFragment() {
 		dateFormat = DateFormat.getDateInstance();
-		timeFormat = DateFormat.getTimeInstance();
+		timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 	}
 
 	@Override

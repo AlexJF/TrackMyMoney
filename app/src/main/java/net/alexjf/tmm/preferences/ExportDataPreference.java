@@ -187,8 +187,8 @@ public class ExportDataPreference
 		if (resultData.getBoolean(KEY_SENDTO)) {
 			File file = (File) resultData.getSerializable(KEY_FILE);
 			Intent i = new Intent(Intent.ACTION_SEND);
-			i.setType("text/plain");
-			i.putExtra(Intent.EXTRA_STREAM, Uri.parse(file.getPath()));
+			i.setType("text/csv");
+			i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 			String title = activity.getResources().getString(
 					R.string.export_share_title);
 			activity.startActivity(Intent.createChooser(i, title));

@@ -27,11 +27,12 @@ import java.util.List;
 public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransaction> {
 	private static final int ROW_VIEW_RESID = R.layout.list_row_immedtransaction;
 
+	private static DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.SHORT);
+
 	private Resources resources;
 	private int colorValuePositive;
 	private int colorValueNegative;
 	private Integer colorValueDefault;
-	private DateFormat dateFormat;
 
 	public ImmediateTransactionAdapter(Context context) {
 		super(context, ROW_VIEW_RESID);
@@ -48,7 +49,6 @@ public class ImmediateTransactionAdapter extends ArrayAdapter<ImmediateTransacti
 		resources = context.getResources();
 		colorValuePositive = resources.getColor(R.color.positive);
 		colorValueNegative = resources.getColor(R.color.negative);
-		dateFormat = DateFormat.getDateTimeInstance();
 	}
 
 	@Override
