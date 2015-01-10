@@ -4,13 +4,15 @@
  ******************************************************************************/
 package net.alexjf.tmm.importexport;
 
+import android.content.Context;
+import android.net.Uri;
 import net.alexjf.tmm.exceptions.ExportException;
 import net.alexjf.tmm.exceptions.ImportException;
 
 import java.util.Date;
 
 public abstract class ImportExport {
-	public abstract void importData(String location, boolean replace)
+	public abstract void importData(Context context, Uri location, boolean replace)
 			throws ImportException;
 
 	public void exportData(String location) throws ExportException {

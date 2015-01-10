@@ -1,3 +1,7 @@
+1.2.3 - 10 Jan 2015
+- Fix reading of files from other locations outside SDCard (say Google Drive).
+- Fix CVS import/export with new Joda Money library.
+
 1.2.2 - 09 Jan 2015
 - Fix occasional crash on resume in the transaction listing activity if relogin
   required.

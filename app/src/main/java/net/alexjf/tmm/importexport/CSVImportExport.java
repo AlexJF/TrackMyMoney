@@ -4,6 +4,9 @@
  ******************************************************************************/
 package net.alexjf.tmm.importexport;
 
+import android.content.Context;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -45,12 +48,14 @@ public class CSVImportExport extends ImportExport {
 	}
 
 	@Override
-	public void importData(String location, boolean replace)
+	public void importData(Context context, Uri location, boolean replace)
 			throws ImportException {
 		CSVReader reader = null;
 		try {
+			ParcelFileDescriptor pdf = context.getContentResolver().openFileDescriptor(location, "r");
+
 			Log.d("TMM", "Reading CSV from location: " + location);
-			reader = new CSVReader(new FileReader(location));
+			reader = new CSVReader(new FileReader(pdf.getFileDescriptor()));
 
 			List<MoneyNode> moneyNodes = new LinkedList<MoneyNode>();
 			List<Category> categories = new LinkedList<Category>();
@@ -252,8 +257,8 @@ public class CSVImportExport extends ImportExport {
 				trans.load();
 				writer.writeNext(new String[]{
 						Integer.toString(nodeIdx),
-						trans.getValue().toString(),
-						trans.getDescription().toString(),
+						trans.getValue().getAmount().toString(),
+						trans.getDescription(),
 						Integer.toString(categories.indexOf(trans.getCategory())),
 						dateTimeFormat.format(trans.getExecutionDate())
 				});

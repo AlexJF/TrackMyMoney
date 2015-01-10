@@ -76,11 +76,11 @@ public class ImportDataPreference
 			@Override
 			protected Bundle doInBackground(String... args) {
 				CSVImportExport importer = new CSVImportExport();
-				String path = args[0];
+				Uri uri = Uri.parse(args[0]);
 
 				boolean replace = Boolean.parseBoolean(args[1]);
 				try {
-					importer.importData(path, replace);
+					importer.importData(getContext(), uri, replace);
 				} catch (Exception e) {
 					setThrowable(e);
 				}
@@ -98,7 +98,7 @@ public class ImportDataPreference
 
 	@Override
 	public void onFileChosen(Uri uri) {
-		locationEditText.setText(uri.getPath());
+		locationEditText.setText(uri.toString());
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class ImportDataPreference
 		PreferencesActivity activity = getActivity();
 		Toast.makeText(activity,
 				getActivity().getResources().getString(R.string.import_success),
-				3).show();
+				Toast.LENGTH_LONG).show();
 		activity.setForceDataRefresh(true);
 	}
 
@@ -117,7 +117,7 @@ public class ImportDataPreference
 		String strError = getActivity().getResources().getString(
 				R.string.error_import);
 		Toast.makeText(getActivity(),
-				String.format(strError, e.getMessage()), 3).show();
+				String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
 		Log.e("TMM", e.getMessage(), e);
 	}
 }

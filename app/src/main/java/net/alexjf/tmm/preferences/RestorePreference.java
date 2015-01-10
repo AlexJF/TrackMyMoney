@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -82,8 +83,41 @@ public class RestorePreference
 				(TASK_RESTORE, strLoading) {
 			@Override
 			protected Bundle doInBackground(String... args) {
+				File tmpBackupFile = null;
+
 				try {
-					ZipFile backupZip = new ZipFile(args[0]);
+					Uri fileUri = Uri.parse(args[0]);
+
+					ParcelFileDescriptor parcelFileDescriptor =
+							getContext().getContentResolver().openFileDescriptor(fileUri, "r");
+
+					FileInputStream fileInputStream = new FileInputStream(parcelFileDescriptor.getFileDescriptor());
+					FileOutputStream fileOutputStream = null;
+
+					// Copy file specified by URI to a local temporary file (file might not be available for
+					// direct read using the File API - Google Drive files for instance).
+					try {
+						tmpBackupFile = File.createTempFile("backup", null, getContext().getCacheDir());
+						fileOutputStream = new FileOutputStream(tmpBackupFile);
+
+						byte[] buffer = new byte[1024];
+						int length;
+
+						while ((length = fileInputStream.read(buffer)) > 0) {
+							fileOutputStream.write(buffer, 0, length);
+						}
+
+						fileOutputStream.close();
+						fileOutputStream = null;
+					} finally {
+							fileInputStream.close();
+
+						if (fileOutputStream != null) {
+							fileOutputStream.close();
+						}
+					}
+
+					ZipFile backupZip = new ZipFile(tmpBackupFile);
 
 					ZipEntry dbEntry = backupZip.getEntry("database");
 					InputStream is = backupZip.getInputStream(dbEntry);
@@ -125,13 +159,13 @@ public class RestorePreference
 							String key = entry.getKey();
 
 							if (v instanceof Boolean)
-								prefEdit.putBoolean(key, ((Boolean) v).booleanValue());
+								prefEdit.putBoolean(key, (Boolean) v);
 							else if (v instanceof Float)
-								prefEdit.putFloat(key, ((Float) v).floatValue());
+								prefEdit.putFloat(key, (Float) v);
 							else if (v instanceof Integer)
-								prefEdit.putInt(key, ((Integer) v).intValue());
+								prefEdit.putInt(key, (Integer) v);
 							else if (v instanceof Long)
-								prefEdit.putLong(key, ((Long) v).longValue());
+								prefEdit.putLong(key, (Long) v);
 							else if (v instanceof String)
 								prefEdit.putString(key, ((String) v));
 						}
@@ -142,6 +176,10 @@ public class RestorePreference
 					}
 				} catch (Exception e) {
 					setThrowable(e);
+				} finally {
+					if (tmpBackupFile != null) {
+						tmpBackupFile.delete();
+					}
 				}
 
 				return null;
@@ -156,7 +194,7 @@ public class RestorePreference
 
 	@Override
 	public void onFileChosen(Uri uri) {
-		locationEditText.setText(uri.getPath());
+		locationEditText.setText(uri.toString());
 	}
 
 	@Override

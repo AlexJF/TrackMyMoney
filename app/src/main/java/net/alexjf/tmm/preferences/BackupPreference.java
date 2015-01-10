@@ -18,6 +18,7 @@ import android.widget.Toast;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.PreferencesActivity;
 import net.alexjf.tmm.database.DatabaseManager;
+import net.alexjf.tmm.exceptions.BackupException;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 import net.alexjf.tmm.utils.PreferenceManager;
 
@@ -77,6 +78,12 @@ public class BackupPreference
 			protected Bundle doInBackground(Void... args) {
 				DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.bak'");
 				File extDir = Environment.getExternalStorageDirectory();
+
+				if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+					setThrowable(new BackupException("External storage not writable"));
+					return null;
+				}
+
 				File tmmDir = new File(extDir, "TMM");
 				File exportPath = new File(tmmDir, dateFormat.format(new Date()));
 

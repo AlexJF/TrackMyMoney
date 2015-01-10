@@ -20,6 +20,7 @@ import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import net.alexjf.tmm.R;
 import net.alexjf.tmm.activities.PreferencesActivity;
+import net.alexjf.tmm.exceptions.ExportException;
 import net.alexjf.tmm.importexport.CSVImportExport;
 import net.alexjf.tmm.utils.AsyncTaskWithProgressDialog;
 
@@ -97,8 +98,6 @@ public class ExportDataPreference
 							dateSelectorLayout.setVisibility(View.GONE);
 						}
 					}
-
-					;
 				});
 
 		startDateButton.setOnClickListener(new OnClickListener() {
@@ -147,6 +146,12 @@ public class ExportDataPreference
 			protected Bundle doInBackground(Date... args) {
 				CSVImportExport exporter = new CSVImportExport();
 				DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.cvs'");
+
+				if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+					setThrowable(new ExportException("External storage not writable"));
+					return null;
+				}
+
 				File extDir = Environment.getExternalStorageDirectory();
 				File tmmDir = new File(extDir, "TMM");
 				File exportPath = new File(tmmDir, dateFormat.format(new Date()));
@@ -195,7 +200,7 @@ public class ExportDataPreference
 		}
 		Toast.makeText(activity,
 				activity.getResources().getString(R.string.export_success),
-				3).show();
+			Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -204,7 +209,7 @@ public class ExportDataPreference
 		String strError = getActivity().getResources().getString(
 				R.string.error_export);
 		Toast.makeText(getActivity(),
-				String.format(strError, e.getMessage()), 3).show();
+				String.format(strError, e.getMessage()), Toast.LENGTH_LONG).show();
 		Log.e("TMM", e.getMessage(), e);
 	}
 
