@@ -25,6 +25,8 @@ import net.alexjf.tmm.R;
 import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.MoneyNode;
+import net.alexjf.tmm.fragments.MoneyNodeEditorFragment;
+import net.alexjf.tmm.fragments.MoneyNodeListFragment.OnMoneyNodeActionListener;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.ExitingException;
 import net.alexjf.tmm.utils.Utils;
@@ -33,10 +35,9 @@ import org.joda.money.Money;
 
 import java.util.*;
 
-public class MoneyNodeListActivity extends BaseActionBarActivity {
+public class MoneyNodeListActivity extends BaseActionBarActivity implements  OnMoneyNodeActionListener {
 	private static final int REQCODE_ADD = 0;
-	private static final int REQCODE_EDIT = 1;
-	private static final int REQCODE_PREFS = 2;
+	private static final int REQCODE_PREFS = 1;
 
 	public static final String KEY_INTENTION = "intention";
 	public static final String KEY_EXCLUDE = "exclude";
@@ -87,28 +88,7 @@ public class MoneyNodeListActivity extends BaseActionBarActivity {
 		ListView moneyNodesListView = (ListView) findViewById(
 				R.id.moneynode_list);
 
-		View emptyView = findViewById(R.id.moneynode_list_empty);
-
-		moneyNodesListView.setEmptyView(emptyView);
 		moneyNodesListView.setAdapter(adapter);
-		moneyNodesListView.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				MoneyNode selectedNode = adapter.getItem(position);
-
-				if (intention.equals(INTENTION_MANAGE)) {
-					Intent intent = new Intent(MoneyNodeListActivity.this,
-							MoneyNodeDetailsActivity.class);
-					intent.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
-					startActivity(intent);
-				} else {
-					Intent data = new Intent();
-					data.putExtra(MoneyNode.KEY_MONEYNODE, selectedNode);
-					setResult(ActionBarActivity.RESULT_OK, data);
-					finish();
-				}
-			}
-		});
 
 		balancePanel = (ViewGroup) findViewById(R.id.balance_panel);
 		balanceTextView = (TextView) findViewById(R.id.balance_value);
@@ -281,9 +261,6 @@ public class MoneyNodeListActivity extends BaseActionBarActivity {
 				case REQCODE_ADD:
 					// Changes reflected by onResume
 					break;
-				case REQCODE_EDIT:
-					// Changes reflected by onResume
-					break;
 				case REQCODE_PREFS:
 					// Changes reflected by onResume
 					break;
@@ -291,43 +268,6 @@ public class MoneyNodeListActivity extends BaseActionBarActivity {
 		}
 
 		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		android.view.MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.context_moneynode_list, menu);
-	}
-
-	@Override
-	public boolean onContextItemSelected(android.view.MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		MoneyNode node = adapter.getItem(info.position);
-		switch (item.getItemId()) {
-			case R.id.menu_remove:
-				try {
-					MoneyNode.deleteMoneyNode(node);
-					updateData();
-				} catch (DatabaseException e) {
-					Log.e("TMM", "Unable to delete money node", e);
-					Toast.makeText(
-							this,
-							getResources().getString(
-									R.string.error_moneynode_delete),
-							Toast.LENGTH_LONG).show();
-				}
-				return true;
-			case R.id.menu_edit:
-				Intent intent = new Intent(this,
-						MoneyNodeEditActivity.class);
-				intent.putExtra(MoneyNode.KEY_MONEYNODE, node);
-				startActivityForResult(intent, REQCODE_EDIT);
-				return true;
-			default:
-				return super.onContextItemSelected(item);
-		}
 	}
 
 	@Override
@@ -350,5 +290,35 @@ public class MoneyNodeListActivity extends BaseActionBarActivity {
 		Utils.clearRememberedLogin();
 		startActivity(intent);
 		finish();
+	}
+
+	@Override
+	public void onMoneyNodeAdded(MoneyNode moneyNode) {
+		// Update handled by onResume
+	}
+
+	@Override
+	public void onMoneyNodeSelected(MoneyNode moneyNode) {
+		if (intention.equals(INTENTION_MANAGE)) {
+			Intent intent = new Intent(MoneyNodeListActivity.this,
+					MoneyNodeDetailsActivity.class);
+			intent.putExtra(MoneyNode.KEY_MONEYNODE, moneyNode);
+			startActivity(intent);
+		} else {
+			Intent data = new Intent();
+			data.putExtra(MoneyNode.KEY_MONEYNODE, moneyNode);
+			setResult(ActionBarActivity.RESULT_OK, data);
+			finish();
+		}
+	}
+
+	@Override
+	public void onMoneyNodeRemoved(MoneyNode moneyNode) {
+		// Update handled by onResume
+	}
+
+	@Override
+	public void onMoneyNodeEdited(MoneyNode moneyNode, MoneyNodeEditorFragment.MoneyNodeEditOldInfo oldInfo) {
+		// Update handled by onResume
 	}
 }

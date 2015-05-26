@@ -24,17 +24,14 @@
 				android:layout_toRightOf="@id/balance_label"
 				android:layout_marginLeft="5dp"/>
 	</LinearLayout>
-	<ListView
-			android:id="@+id/moneynode_list"
+	<RelativeLayout
 			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
-			android:layout_marginTop="5dp"/>
-	<TextView
-			android:id="@+id/moneynode_list_empty"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:gravity="center_horizontal|center_vertical"
-			android:text="@string/moneynode_empty"
-			android:visibility="gone"/>
+			android:layout_height="wrap_content"
+			android:padding="15dp">
+		<fragment
+				android:id="@+id/moneynode_list"
+				android:name="net.alexjf.tmm.fragments.MoneyNodeEditorFragment"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+	</RelativeLayout>
 </LinearLayout>

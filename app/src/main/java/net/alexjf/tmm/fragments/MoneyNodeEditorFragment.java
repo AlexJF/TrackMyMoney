@@ -9,6 +9,8 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputType;
@@ -22,6 +24,7 @@ import android.widget.*;
 import de.congrace.exp4j.Calculable;
 import de.congrace.exp4j.ExpressionBuilder;
 import net.alexjf.tmm.R;
+import net.alexjf.tmm.domain.Category;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.fragments.IconPickerFragment.OnIconPickedListener;
@@ -32,6 +35,7 @@ import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -311,6 +315,80 @@ public class MoneyNodeEditorFragment extends Fragment
 		}
 
 		return !error;
+	}
+
+	public static class MoneyNodeEditOldInfo implements Parcelable {
+		public static final String KEY_OLDINFO = "oldImmedTransactionInfo";
+		private static final DateFormat dateFormat = DateFormat.getDateTimeInstance();
+
+		private String name;
+		private String description;
+		private Date creationDate;
+		private Money initialBalance;
+
+		public MoneyNodeEditOldInfo(MoneyNode moneyNode) {
+			this(moneyNode.getName(), moneyNode.getDescription(), moneyNode.getCreationDate(), moneyNode.getInitialBalance());
+		}
+
+		public MoneyNodeEditOldInfo(
+				String name,
+				String description,
+				Date creationDate,
+				Money initialBalance) {
+			this.name = name;
+			this.description = description;
+			this.creationDate = creationDate;
+			this.initialBalance = initialBalance;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public Date getCreationDate() {
+			return creationDate;
+		}
+
+		public Money getInitialBalance() {
+			return initialBalance;
+		}
+
+		public void writeToParcel(Parcel out, int flags) {
+			out.writeString(name);
+			out.writeString(description);
+			out.writeString(dateFormat.format(creationDate));
+			out.writeString(initialBalance.toString());
+		}
+
+		public int describeContents() {
+			return 0;
+		}
+
+		public static final Parcelable.Creator<MoneyNodeEditOldInfo> CREATOR =
+				new Parcelable.Creator<MoneyNodeEditOldInfo>() {
+					public MoneyNodeEditOldInfo createFromParcel(Parcel in) {
+						String name = in.readString();
+						String description = in.readString();
+						Date creationDate = null;
+
+						try {
+							creationDate = dateFormat.parse(in.readString());
+						} catch (ParseException e) {
+							Log.e("TMM", e.getMessage(), e);
+						}
+						Money initialBalance = Money.parse(in.readString());
+						return new MoneyNodeEditOldInfo(name, description,
+								creationDate, initialBalance);
+					}
+
+					public MoneyNodeEditOldInfo[] newArray(int size) {
+						return new MoneyNodeEditOldInfo[size];
+					}
+				};
 	}
 }
 
