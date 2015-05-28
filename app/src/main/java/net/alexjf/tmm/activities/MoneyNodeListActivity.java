@@ -26,6 +26,7 @@ import net.alexjf.tmm.adapters.MoneyNodeAdapter;
 import net.alexjf.tmm.database.DatabaseManager;
 import net.alexjf.tmm.domain.MoneyNode;
 import net.alexjf.tmm.fragments.MoneyNodeEditorFragment;
+import net.alexjf.tmm.fragments.MoneyNodeListFragment;
 import net.alexjf.tmm.fragments.MoneyNodeListFragment.OnMoneyNodeActionListener;
 import net.alexjf.tmm.exceptions.DatabaseException;
 import net.alexjf.tmm.exceptions.ExitingException;
@@ -35,7 +36,7 @@ import org.joda.money.Money;
 
 import java.util.*;
 
-public class MoneyNodeListActivity extends BaseActionBarActivity implements  OnMoneyNodeActionListener {
+public class MoneyNodeListActivity extends BaseActionBarActivity implements OnMoneyNodeActionListener {
 	private static final int REQCODE_ADD = 0;
 	private static final int REQCODE_PREFS = 1;
 
@@ -85,16 +86,13 @@ public class MoneyNodeListActivity extends BaseActionBarActivity implements  OnM
 
 		adapter = new MoneyNodeAdapter(this);
 
-		ListView moneyNodesListView = (ListView) findViewById(
-				R.id.moneynode_list);
-
-		moneyNodesListView.setAdapter(adapter);
+		MoneyNodeListFragment moneyNodesList = (MoneyNodeListFragment)
+				getSupportFragmentManager().findFragmentById(R.id.moneynode_list);
+		moneyNodesList.setAdapter(adapter);
 
 		balancePanel = (ViewGroup) findViewById(R.id.balance_panel);
 		balanceTextView = (TextView) findViewById(R.id.balance_value);
 		balances = new LinkedHashMap();
-
-		registerForContextMenu(moneyNodesListView);
 	}
 
 	@Override
