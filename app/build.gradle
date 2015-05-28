@@ -21,13 +21,13 @@ dependencies {
 	}
 	compile fileTree(include: '*.jar', dir: 'libs')
 	compile project(':libraries:aFileChooser:aFileChooser')
-	compile 'com.android.support:support-v4:21.0.3'
-	compile 'com.android.support:appcompat-v7:21.0.3'
+	compile 'com.android.support:support-v4:22.1.1'
+	compile 'com.android.support:appcompat-v7:22.1.1'
 }
 
 android {
 	compileSdkVersion 21
-	buildToolsVersion '21.1.2'
+	buildToolsVersion '22.0.1'
 
 	defaultConfig {
 		versionCode 13
