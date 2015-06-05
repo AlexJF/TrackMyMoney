@@ -312,7 +312,7 @@ public class MoneyNodeListActivity extends BaseActionBarActivity implements OnMo
 
 	@Override
 	public void onMoneyNodeRemoved(MoneyNode moneyNode) {
-		// Update handled by onResume
+		updateData();
 	}
 
 	@Override
