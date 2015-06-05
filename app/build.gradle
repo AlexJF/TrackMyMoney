@@ -26,13 +26,13 @@ dependencies {
 }
 
 android {
-	compileSdkVersion 21
+	compileSdkVersion 22
 	buildToolsVersion '22.0.1'
 
 	defaultConfig {
 		versionCode 14
 		minSdkVersion 8
-		targetSdkVersion 21
+		targetSdkVersion 22
 		applicationId "net.alexjf.tmm"
 	}
 
