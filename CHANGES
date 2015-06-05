@@ -1,6 +1,11 @@
+1.2.4 - 05 Jun 2015
+- Fix CSV export (typo in file extension .cvs -> .csv).
+- Underlying changes for eventual UI reorganization.
+- Updated to latest Android library and build versions.
+
 1.2.3 - 10 Jan 2015
 - Fix reading of files from other locations outside SDCard (say Google Drive).
-- Fix CVS import/export with new Joda Money library.
+- Fix CSV import/export with new Joda Money library.
 
 1.2.2 - 09 Jan 2015
 - Fix occasional crash on resume in the transaction listing activity if relogin

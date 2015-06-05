@@ -30,7 +30,7 @@ android {
 	buildToolsVersion '22.0.1'
 
 	defaultConfig {
-		versionCode 13
+		versionCode 14
 		minSdkVersion 8
 		targetSdkVersion 21
 		applicationId "net.alexjf.tmm"
