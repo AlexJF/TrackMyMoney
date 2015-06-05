@@ -145,7 +145,7 @@ public class ExportDataPreference
 			@Override
 			protected Bundle doInBackground(Date... args) {
 				CSVImportExport exporter = new CSVImportExport();
-				DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.cvs'");
+				DateFormat dateFormat = new SimpleDateFormat("'TMM_'yyyy_MM_dd_HH_mm_ss'.csv'");
 
 				if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 					setThrowable(new ExportException("External storage not writable"));
